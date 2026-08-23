@@ -6,6 +6,10 @@ algorithm terminates and returns yes" is "a derivation exists" — which is why 
 theorems split into a soundness half that holds outright and a completeness half that needs the
 termination hypothesis the paper states.
 
+Every rule but `mp-nf` requires its source to already be a normal form — Figure 6 writes the
+sources with the subscript `n` — which is what makes the six cases mutually exclusive and
+minimal promotion deterministic (Lemma 5.1).
+
 Minimal promotion takes a term to the next station on its *minimal superpath*: reduce to normal
 form if it is not one, otherwise promote the head — a variable to its bound, an applied
 abstraction into its body, and `λx≤tₙ.Top` to `Top`, the top of every path.
@@ -62,15 +66,15 @@ data _∣_⊢_⟶mp_ : Ctx → Stack → Tm → Tm → Set where
            → Γ ∣ (v ∷ s) ⊢ u ⟶mp u'
            → Γ ∣ s ⊢ app u v ⟶mp app u' v
 
-  mp-fun   : ∀ {Γ t u u'} (L : List Name) → NF t
+  mp-fun   : ∀ {Γ t u u'} (L : List Name) → NF (lam t u)
            → (∀ {x} → x ∉ L → ((x , t) ∷ Γ) ∣ [] ⊢ (u ^ fvar x) ⟶mp (u' ^ fvar x))
            → Γ ∣ [] ⊢ lam t u ⟶mp lam t u'
 
-  mp-funop : ∀ {Γ s α t u u'} (L : List Name) → NF t
+  mp-funop : ∀ {Γ s α t u u'} (L : List Name) → NF (lam t u)
            → (∀ {x} → x ∉ L → ((x , α) ∷ Γ) ∣ s ⊢ (u ^ fvar x) ⟶mp (u' ^ fvar x))
            → Γ ∣ (α ∷ s) ⊢ lam t u ⟶mp lam t u'
 
-  mp-top   : ∀ {Γ s t} → Γ ∣ s prevalid → NF t
+  mp-top   : ∀ {Γ s t} → Γ ∣ s prevalid → NF (lam t Top)
            → Γ ∣ s ⊢ lam t Top ⟶mp Top
 
 infix 3 _∣_⊢_⟶mp*_
