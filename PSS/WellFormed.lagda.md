@@ -134,17 +134,21 @@ prevalid-strengthen : ∀ {Γ s x δ}
                     → x ∉ fvStack s
                     → ((x , δ) ∷ Γ) ∣ s prevalid
                     → Γ ∣ s prevalid
-prevalid-strengthen {s = []}    x∉ (P-Ctx2 p _ _) = p
-prevalid-strengthen {s = α ∷ s} x∉ (P-Ctx3 p fvα) =
-  P-Ctx3 (prevalid-strengthen (∉-++ʳ (fv α) x∉) p)
+prevalid-strengthen {s = []}    x∉ (P-Ctx2 p _ _ _) = p
+prevalid-strengthen {s = α ∷ s} x∉ (P-Ctx3 p lα fvα) =
+  P-Ctx3 (prevalid-strengthen (∉-++ʳ (fv α) x∉) p) lα
          (⊑-strengthen (∉-++ˡ x∉) fvα)
 
 prevalid-bound : ∀ {Γ s x δ} → ((x , δ) ∷ Γ) ∣ s prevalid → fv δ ⊑ dom Γ
-prevalid-bound (P-Ctx2 _ _ fvδ) = fvδ
-prevalid-bound (P-Ctx3 p _)     = prevalid-bound p
+prevalid-bound (P-Ctx2 _ _ _ fvδ) = fvδ
+prevalid-bound (P-Ctx3 p _ _)     = prevalid-bound p
+
+prevalid-bound-lc : ∀ {Γ s x δ} → ((x , δ) ∷ Γ) ∣ s prevalid → LC δ
+prevalid-bound-lc (P-Ctx2 _ _ lδ _) = lδ
+prevalid-bound-lc (P-Ctx3 p _ _)    = prevalid-bound-lc p
 
 prevalid-pop : ∀ {Γ s v} → Γ ∣ (v ∷ s) prevalid → Γ ∣ s prevalid
-prevalid-pop (P-Ctx3 p _) = p
+prevalid-pop (P-Ctx3 p _ _) = p
 
 wf⇒prevalid   : ∀ {Γ s t} → Γ ∣ s ⊢ t wf → Γ ∣ s prevalid
 ≤wf⇒prevalid  : ∀ {Γ s v t} → Γ ∣ s ⊢ v ≤wf t → Γ ∣ s prevalid
@@ -155,7 +159,7 @@ wf⇒prevalid (W-Top p)      = p
 wf⇒prevalid (W-Fun L F wt) = wf⇒prevalid wt
 wf⇒prevalid (W-App d₁ d₂)  = prevalid-pop (≤*wf⇒prevalid d₁)
 wf⇒prevalid (W-FunOp {Γ} {s} {δ} L F wt) =
-  P-Ctx3 (prevalid-strengthen x∉stk pv) (prevalid-bound pv)
+  P-Ctx3 (prevalid-strengthen x∉stk pv) (prevalid-bound-lc pv) (prevalid-bound pv)
   where
     x : Name
     x = fresh (L ++ fvStack s)

@@ -127,16 +127,20 @@ can be dropped, and every bound in a prevalid context is scoped by that context.
 ```agda
 prevalid-nil : ∀ {Γ s} → Γ ∣ s prevalid → Γ ∣ [] prevalid
 prevalid-nil P-Ctx1            = P-Ctx1
-prevalid-nil p@(P-Ctx2 _ _ _)  = p
-prevalid-nil (P-Ctx3 p _)      = prevalid-nil p
+prevalid-nil p@(P-Ctx2 _ _ _ _) = p
+prevalid-nil (P-Ctx3 p _ _)     = prevalid-nil p
 
 prevalid-suffix : ∀ (Δ : Ctx) {Γ} → (Δ ++ Γ) ∣ [] prevalid → Γ ∣ [] prevalid
 prevalid-suffix []            p              = p
-prevalid-suffix ((y , t) ∷ Δ) (P-Ctx2 p _ _) = prevalid-suffix Δ p
+prevalid-suffix ((y , t) ∷ Δ) (P-Ctx2 p _ _ _) = prevalid-suffix Δ p
 
 prevalid-entry-fv : ∀ {Γ y t} → Γ ∣ [] prevalid → (y , t) ∈ Γ → fv t ⊑ dom Γ
-prevalid-entry-fv (P-Ctx2 p _ fvu) (here refl) = λ h → there (fvu h)
-prevalid-entry-fv (P-Ctx2 p _ _)   (there m)   = λ h → there (prevalid-entry-fv p m h)
+prevalid-entry-fv (P-Ctx2 p _ _ fvu) (here refl) = λ h → there (fvu h)
+prevalid-entry-fv (P-Ctx2 p _ _ _)   (there m)   = λ h → there (prevalid-entry-fv p m h)
+
+prevalid-entry-lc : ∀ {Γ y t} → Γ ∣ [] prevalid → (y , t) ∈ Γ → LC t
+prevalid-entry-lc (P-Ctx2 _ _ lu _) (here refl) = lu
+prevalid-entry-lc (P-Ctx2 p _ _ _)  (there m)   = prevalid-entry-lc p m
 ```
 
 The substituted variable is not bound anywhere in the later part of the context, nor free in
@@ -152,14 +156,14 @@ x∉-domΔ ((y , t) ∷ Δ) {Γ} {x} {v} p h = go (prevalid-nil p) h
                    (∈-++⁺ʳ (dom Δ) (here refl))
 
     go : ((y , t) ∷ (Δ ++ (x , v) ∷ Γ)) ∣ [] prevalid → x ∈ (y ∷ dom Δ) → ⊥
-    go (P-Ctx2 q y∉ _) (here p')  = y∉ (subst (_∈ dom (Δ ++ (x , v) ∷ Γ)) p' x∈tail)
-    go (P-Ctx2 q y∉ _) (there p') = x∉-domΔ Δ q p'
+    go (P-Ctx2 q y∉ _ _) (here p')  = y∉ (subst (_∈ dom (Δ ++ (x , v) ∷ Γ)) p' x∈tail)
+    go (P-Ctx2 q y∉ _ _) (there p') = x∉-domΔ Δ q p'
 
 x∉-domΓ : ∀ (Δ : Ctx) {Γ x v s} → (Δ ++ (x , v) ∷ Γ) ∣ s prevalid → x ∉ dom Γ
 x∉-domΓ Δ p = go (prevalid-suffix Δ (prevalid-nil p))
   where
     go : ∀ {Γ x v} → ((x , v) ∷ Γ) ∣ [] prevalid → x ∉ dom Γ
-    go (P-Ctx2 _ x∉ _) = x∉
+    go (P-Ctx2 _ x∉ _ _) = x∉
 
 x∉-boundΓ : ∀ (Δ : Ctx) {Γ x v s y t} → (Δ ++ (x , v) ∷ Γ) ∣ s prevalid
           → (y , t) ∈ Γ → x ∉ fv t
@@ -174,12 +178,13 @@ x∉-boundΓ Δ {Γ} p m h =
 
 ```agda
 prevalid-subst : ∀ {Γ s v} x (Δ : Ctx)
+               → LC v
                → fv v ⊑ dom Γ
                → (Δ ++ (x , v) ∷ Γ) ∣ s prevalid
                → (substCtx x v Δ ++ Γ) ∣ substStack x v s prevalid
-prevalid-subst x []            fvv (P-Ctx2 p _ _)     = p
-prevalid-subst {Γ} {v = v} x ((y , t) ∷ Δ) fvv (P-Ctx2 p y∉ fvt) =
-  P-Ctx2 (prevalid-subst x Δ fvv p) y∉' (⊑-subst x Δ {t} fvv fvt)
+prevalid-subst x []            lv fvv (P-Ctx2 p _ _ _) = p
+prevalid-subst {Γ} {v = v} x ((y , t) ∷ Δ) lv fvv (P-Ctx2 p y∉ lt fvt) =
+  P-Ctx2 (prevalid-subst x Δ lv fvv p) y∉' (subst-lc lt lv) (⊑-subst x Δ {t} fvv fvt)
   where
     y∉' : y ∉ dom (substCtx x v Δ ++ Γ)
     y∉' h with ∈-++⁻ (dom (substCtx x v Δ))
@@ -188,8 +193,8 @@ prevalid-subst {Γ} {v = v} x ((y , t) ∷ Δ) fvv (P-Ctx2 p y∉ fvt) =
                              (∈-++⁺ˡ (subst (y ∈_) (dom-substCtx x v Δ) q)))
     ... | inj₂ q = y∉ (subst (y ∈_) (sym (dom-++ Δ ((x , v) ∷ Γ)))
                              (∈-++⁺ʳ (dom Δ) (there q)))
-prevalid-subst x Δ fvv (P-Ctx3 {α = α} p fvα) =
-  P-Ctx3 (prevalid-subst x Δ fvv p) (⊑-subst x Δ {α} fvv fvα)
+prevalid-subst x Δ lv fvv (P-Ctx3 {α = α} p lα fvα) =
+  P-Ctx3 (prevalid-subst x Δ lv fvv p) (subst-lc lα lv) (⊑-subst x Δ {α} fvv fvα)
 ```
 
 ## Lemma B.9 — promotion under substitution
@@ -225,7 +230,7 @@ untouched, because a bound recorded in `Γ` cannot mention `x`, which is introdu
     promote-Δ : (substCtx x v Δ ++ Γ) ∣ substStack x v s
                   ⊢ ((fvar y) [ x := v ]) ⟶≤ (t [ x := v ])
     promote-Δ rewrite subst-fvar-≢ {x} {y} v y≢x =
-      Srs-Prom (prevalid-subst x Δ fvv pv)
+      Srs-Prom (prevalid-subst x Δ lv fvv pv)
                (∈-++⁺ˡ (∈-substCtx x v Δ m))
 
 ⟶≤-subst {Γ} {s} {v = v} x Δ lv x∉v fvv (Srs-Prom {_} {_} {y} {t} pv mem)
@@ -234,7 +239,7 @@ untouched, because a bound recorded in `Γ` cannot mention `x`, which is introdu
     promote-self : (substCtx x v Δ ++ Γ) ∣ substStack x v s
                      ⊢ ((fvar x) [ x := v ]) ⟶≤ (v [ x := v ])
     promote-self rewrite subst-fvar-≡ {x} v | subst-fresh {v} x v x∉v =
-      Srs-Eq (prevalid-subst x Δ fvv pv) (⟶≡-refl lv)
+      Srs-Eq (prevalid-subst x Δ lv fvv pv) (⟶≡-refl lv)
 
 ⟶≤-subst {Γ} {s} {v = v} x Δ lv x∉v fvv (Srs-Prom {_} {_} {y} {t} pv mem)
     | inj₂ (there m) = promote-Γ
@@ -250,13 +255,13 @@ untouched, because a bound recorded in `Γ` cannot mention `x`, which is introdu
                   ⊢ ((fvar y) [ x := v ]) ⟶≤ (t [ x := v ])
     promote-Γ rewrite subst-fvar-≢ {x} {y} v y≢x
                     | subst-fresh {t} x v (x∉-boundΓ Δ pv m) =
-      Srs-Prom (prevalid-subst x Δ fvv pv)
+      Srs-Prom (prevalid-subst x Δ lv fvv pv)
                (∈-++⁺ʳ (substCtx x v Δ) m)
 
-⟶≤-subst x Δ lv x∉v fvv (Srs-Top pv) = Srs-Top (prevalid-subst x Δ fvv pv)
+⟶≤-subst x Δ lv x∉v fvv (Srs-Top pv) = Srs-Top (prevalid-subst x Δ lv fvv pv)
 
 ⟶≤-subst x Δ lv x∉v fvv (Srs-Eq pv e) =
-  Srs-Eq (prevalid-subst x Δ fvv pv) (⟶≡-subst x lv lv e (⟶≡-refl lv))
+  Srs-Eq (prevalid-subst x Δ lv fvv pv) (⟶≡-subst x lv lv e (⟶≡-refl lv))
 
 ⟶≤-subst x Δ lv x∉v fvv (Srs-App d) = Srs-App (⟶≤-subst x Δ lv x∉v fvv d)
 

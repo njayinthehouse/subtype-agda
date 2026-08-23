@@ -66,7 +66,13 @@ x ≤ t ∈ Γ = (x , t) ∈ Γ
 ## Prevalidity
 
 `Γ ∣ s prevalid` is well-scopedness of the extended context: no name is bound twice, and every
-bound and every stacked operand mentions only names already in scope.
+bound and every stacked operand is a genuine term mentioning only names already in scope.
+
+The local-closure premises are an artefact of the encoding, not an addition to the system. In
+the paper's named presentation every context entry is a term by construction; locally nameless
+admits raw syntax with dangling indices, so "is a term" has to be said. Theorem 4.5 needs it:
+promoting a variable under a *reflexive* context reduction requires `t ⟶≡ t` for its bound,
+and reflexivity of `⟶≡` holds only on locally closed terms (Lemma 2.2).
 
 The paper stresses that prevalidity — unlike well-formedness — is *preserved by reduction*.
 Keeping it a separate judgement rather than a type-level invariant is what makes that
@@ -80,11 +86,13 @@ data _∣_prevalid : Ctx → Stack → Set where
   P-Ctx2 : ∀ {Γ x t}
          → Γ ∣ [] prevalid
          → x ∉ dom Γ
+         → LC t
          → fv t ⊑ dom Γ
          → ((x , t) ∷ Γ) ∣ [] prevalid
 
   P-Ctx3 : ∀ {Γ s α}
          → Γ ∣ s prevalid
+         → LC α
          → fv α ⊑ dom Γ
          → Γ ∣ (α ∷ s) prevalid
 ```
