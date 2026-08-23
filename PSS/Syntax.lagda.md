@@ -167,6 +167,9 @@ Splitting and combining freshness across an append, used wherever `fv` meets `la
 ∉-++ʳ : ∀ {x} (l₁ : List Name) {l₂} → x ∉ l₁ ++ l₂ → x ∉ l₂
 ∉-++ʳ l₁ n p = n (∈-++⁺ʳ l₁ p)
 
+∉-tail : ∀ {y x} {l : List Name} → y ∉ (x ∷ l) → y ∉ l
+∉-tail n p = n (there p)
+
 ∉-++ : ∀ {x} {l₁ l₂ : List Name} → x ∉ l₁ → x ∉ l₂ → x ∉ l₁ ++ l₂
 ∉-++ {l₁ = l₁} n₁ n₂ p with ∈-++⁻ l₁ p
 ... | inj₁ q = n₁ q

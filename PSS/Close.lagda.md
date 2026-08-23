@@ -28,13 +28,6 @@ open import Relation.Binary.PropositionalEquality
 open import PSS.Syntax
 ```
 
-Dropping the head of an avoid-set.
-
-```agda
-∉-tail : ∀ {y x} {l : List Name} → y ∉ (x ∷ l) → y ∉ l
-∉-tail n p = n (there p)
-```
-
 ## Computation lemmas for `closeRec`
 
 As with opening, the decidable comparison is isolated so later proofs never unfold a `with`.

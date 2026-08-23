@@ -27,13 +27,6 @@ open import PSS.Syntax
 open import PSS.Reduction
 ```
 
-Dropping the head of an avoid-set.
-
-```agda
-∉-tail : ∀ {y x} {l : List Name} → y ∉ (x ∷ l) → y ∉ l
-∉-tail n p = n (there p)
-```
-
 ## `⟶≡` preserves local closure
 
 ```agda
