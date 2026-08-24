@@ -252,10 +252,7 @@ rebuilds with the matching pair of congruences.
 
 **Narrowing holds for λ⊲ once the hypothesis is stack-polymorphic.**
 
-```
-⊲-narrow : Below Γ x P Q → … → (Δ ++ (x , Q) ∷ Γ) ∣ s ⊢ p ≤ q
-                             → (Δ ++ (x , P) ∷ Γ) ∣ s ⊢ p ≤ q
-```
+> `⊲-narrow : Below Γ x P Q → … → (Δ ++ (x , Q) ∷ Γ) ∣ s ⊢ p ≤ q → (Δ ++ (x , P) ∷ Γ) ∣ s ⊢ p ≤ q`
 
 where `Below Γ x P Q` asks for `P ≤ Q` in **every** context extension and at **every** stack.
 
