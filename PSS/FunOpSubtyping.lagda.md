@@ -97,8 +97,17 @@ at the empty stack, so nothing weaker will do. And it is exactly the invariant t
 rule can supply: when `Srs-App` pushes an operand, well-formedness of the application has already
 established that the operand is below the annotation it will meet.
 
-What remains, to close `Embed/TypePreserving` outright, is to thread that invariant through the
-translation's induction — the stack must carry, alongside each entry, the obligation that it be
-below the domain it instantiates. `MPSS/StackObligation` shows the same requirement arising in
-v2's system, and shows that recording the obligation is necessary but that the single-step shape
-of the binder rules is a further obstacle there.
+**Why this does not yet close `Embed/TypePreserving`.** Threading the invariant through the
+translation runs into the same obstruction one level up. To supply `Below` for the operand, the
+`t-app` case would have to know `⟦u⟧ ≤ ⟦A⟧` *at every stack*. Its induction hypothesis gives that
+at the empty stack, and promoting it to every stack is precisely the transport `push-is-false`
+refutes.
+
+So the invariant is not derivable inside the translation. It has to come from a judgement that
+already carries it — λ⊲'s well-formedness, where `W-App` demands the operand be a well-subtype of
+the annotation. That points at retargeting the translation from `≤` to `≤*wf`, which is a
+different theorem, not a repair of this one.
+
+`MPSS/StackObligation` finds the same requirement in v2's system, and shows that recording the
+obligation is necessary but that the single-step shape of the binder rules is a further obstacle
+there.
