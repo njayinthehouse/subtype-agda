@@ -21,6 +21,8 @@ open import Data.List.Base using (List; []; _∷_; _++_)
 open import Data.Product.Base using (_×_; _,_; ∃-syntax; proj₁; proj₂)
 open import Data.List.Membership.Propositional using (_∈_; _∉_)
 open import Data.List.Relation.Unary.Any using (here; there)
+open import Data.Empty using (⊥-elim)
+open import Relation.Nullary using (¬_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; subst)
 
 open import PSS.Syntax
@@ -76,6 +78,40 @@ ce-pro-commute {α = α} coh ok m lα (Sc-Eq pv (Ce-Pro m' lα'))
 The `Srs-Prom` case is the one that needs coherence, and it is the case that fails without it:
 with `x ≡ α ∈ Δ` and `x ≤ t ∈ Γ` for unrelated `α` and `t`, the left edge lands on `α`, the right
 on `t`, and no `t₃` joins them.
+
+## No collapse, even under coherence
+
+The tempting shortcut is that under coherence the rebuilt system might collapse onto λ⊲ — every
+`⟶≤ᶜ` step being a `⟶≤` step — so that the whole metatheory transfers with no restatement. It
+does not. `Ce-App` can change an *operand* by unfolding it, and no λ⊲ promotion can: `Srs-App`
+rewrites only the operator, and `Srs-Eq` would need `⟶≡` to move a variable, which it cannot.
+
+```agda
+Γ₃ : Ctx
+Γ₃ = (1 , Top) ∷ (0 , Top) ∷ []
+
+Δ₃ : EqCtx
+Δ₃ = (1 , Top) ∷ []
+
+coh₃ : Coherent Γ₃ Δ₃
+coh₃ (here refl) = here refl
+
+pv₃ : Γ₃ ∣ [] prevalid
+pv₃ = P-Ctx2 (P-Ctx2 P-Ctx1 (λ ()) lc-Top (λ ())) 1∉ lc-Top (λ ())
+  where
+    1∉ : ∀ {A : Set} → 1 ∈ dom ((0 , Top) ∷ []) → A
+    1∉ (here ())
+
+steps-ᶜ : Γ₃ ∣ [] ∣ Δ₃ ⊢ app (fvar 0) (fvar 1) ⟶≤ᶜ app (fvar 0) Top
+steps-ᶜ = Sc-Eq pv₃ (Ce-App Ce-Var (Ce-Pro (here refl) lc-Top))
+
+no-collapse : ¬ (Γ₃ ∣ [] ⊢ app (fvar 0) (fvar 1) ⟶≤ app (fvar 0) Top)
+no-collapse (Srs-Eq _ (Cr-App _ ()))
+
+collapse-is-false :
+  ¬ (∀ {Γ s Δ u v} → Coherent Γ Δ → Γ ∣ s ∣ Δ ⊢ u ⟶≤ᶜ v → Γ ∣ s ⊢ u ⟶≤ v)
+collapse-is-false collapse = no-collapse (collapse coh₃ steps-ᶜ)
+```
 
 ## What this establishes
 
