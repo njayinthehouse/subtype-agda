@@ -103,10 +103,20 @@ translation runs into the same obstruction one level up. To supply `Below` for t
 at the empty stack, and promoting it to every stack is precisely the transport `push-is-false`
 refutes.
 
-So the invariant is not derivable inside the translation. It has to come from a judgement that
-already carries it — λ⊲'s well-formedness, where `W-App` demands the operand be a well-subtype of
-the annotation. That points at retargeting the translation from `≤` to `≤*wf`, which is a
-different theorem, not a repair of this one.
+The obvious next move is to retarget the translation from `≤` to `≤*wf`, so the invariant comes
+from λ⊲'s well-formedness rather than being derived. **That does not work either.** `W-App` reads
+
+> `W-App : Γ ∣ (v ∷ s) ⊢ u ≤*wf lam t Top → Γ ∣ [] ⊢ v ≤*wf t → Γ ∣ s ⊢ app u v wf`
+
+and its operand premise sits at the **empty stack**. So even well-formedness records "the operand
+is below the annotation" only at `[]`, which `PSS/BoundedNarrowing` proves is too weak.
+
+**Conclusion.** No judgement in λ⊲ carries `α ≤ t` at every stack, so the parameter is not
+dischargeable in λ⊲ as it stands. Three facts pin this down: `funop-≤` needs the
+stack-polymorphic hypothesis; `PSS/BoundedNarrowing` refutes the empty-stack version; and `W-App`
+— the only rule that records the fact at all — records it at the empty stack. Closing the case
+requires changing the system, which is what MPSS does by binding `x ≡ α` instead of `x ≤ α` — and
+`MPSS/StackObligation` shows that change is necessary but still not sufficient.
 
 `MPSS/StackObligation` finds the same requirement in v2's system, and shows that recording the
 obligation is necessary but that the single-step shape of the binder rules is a further obstacle
