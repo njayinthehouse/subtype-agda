@@ -119,3 +119,57 @@ Lemma 6 cites Proposition 17 in its `Os-Con` cases and Theorem 5 cites it for th
 both are on well-formed terms, and `MPSS/BetaScopeWf` shows the failure reaches them. The repair
 is to bind the parameter in `Me-Bet`'s body premise, as `Me-Fun` and `Me-FOp` already do. That
 changes `⟶ᵉ`, so Lemma 1 and Lemma 2 would need rechecking against the repaired relation.
+
+---
+
+## Further defects, found while discharging the obligations
+
+These are not refutations — each statement below is true and is proved in this development. What
+is wrong is the paper's own justification for it.
+
+### Proposition 27: the wrong rule is cited
+
+> **Proposition 27 (Reduction preserves subtyping derivation).** Let `Γ;s` be an extended context.
+> Let `u`, `u′` and `v` be terms such that `Γ ⊢ u ≤*wf v` and `u ↦ u′`, and `Γ ⊢ u′ wf`. Then
+> `Γ ⊢ u′ ≤*wf v`.
+
+The proof reads:
+
+> By 17, we have `Γ;nil ⊢ u ⟶≡ u′`. By rule `Ws-Rfl` and `Ws-Lf1`, we have `Γ ⊢ u′ ≤wf u`. […]
+
+`Ws-Lf1` moves the **left**-hand side:
+
+> `Γ;nil ⊢ v ⟶≡ v′    Γ ⊢ v′ ≤wf t  /  Γ ⊢ v ≤wf t`
+
+so from `u ⟶≡ u′` and `Ws-Rfl : u′ ≤wf u′` it yields `Γ ⊢ u ≤wf u′` — the opposite of what is
+claimed. The rule that gives the stated conclusion is `Ws-Rgh`, which moves the right-hand side,
+and which the paper's own proof of Theorem 5 cites for this very step. The conclusion stands;
+`MPSS/Preservation` derives it with `Ws-Rgh`.
+
+### Theorem 5: an uncited dependency on Proposition 17
+
+The proof of Theorem 5 says "hence `Γ ⊢ t′ ≤*wf t` by rule `Ws-Rgh`", having just obtained
+`Γ ⊢ t′ ≤*wf t′`. `Ws-Rgh` needs an equivalence step `Γ;nil ⊢ t ⟶≡ t′`, and all that is in hand
+is the operational step `t ↦ t′`. Bridging them is exactly Proposition 17, which is not cited
+here. So Theorem 5 depends on the refuted proposition in its own right, not only through Lemma 6.
+
+### Lemma 23: the `Wf-App` case is deferred to a proof that does not cover it
+
+> To do so, we do the same reasoning as in Lemma 7 by using instead Lemmas 24 and 25.
+
+The step being deferred is: turn each single well-subtyping step `Γ,x≤t,Γ′ ⊢ b ≤wf c` into
+`Γ,x≤t′,Γ′ ⊢ b ≤*wf c`. Three of the four rules go through as described — `Ws-Rfl` by Lemma 26,
+`Ws-Lf1` and `Ws-Rgh` by Lemma 25, since narrowing a *subtype* annotation is invisible to `⟶≡`.
+
+`Ws-Lf2` does not. It carries a promotion `b ⟶≤ b′`, and Lemma 24 does not preserve it: narrowing
+`x ≤ t` to `x ≤ t′` changes what `Ms-Pro` returns for `x`, so the new promotion lands on some `b″`
+with `b′ ⟶≡ b″`, not on `b′`. To continue one then needs `b″ ≤*wf c` from `b′ ≤*wf c` — pushing an
+equivalence step along the **left** of a well-subtyping derivation. That is the static analogue of
+`push≡` in `MPSS/Transitivity`, and unlike its machine counterpart it cannot be had from Lemmas 1
+and 2 alone: its own `Ws-Lf2` case must rebuild the rule's well-formedness premises, which is
+Lemma 6-shaped reasoning. Lemma 7's argument does not supply this, because Lemma 7 substitutes
+rather than narrows and so never disturbs a promotion's target.
+
+So Lemma 23's hardest case is discharged by reference to an argument that does not reach it. This
+does not make Lemma 23 false — no counterexample is claimed — but it is not proved in the paper,
+and `MPSS/Evaluation` therefore takes it as a hypothesis rather than deriving it.
