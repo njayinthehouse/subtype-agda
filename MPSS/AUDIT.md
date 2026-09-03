@@ -245,3 +245,69 @@ under an operand bind its parameter to that operand — that creates it.
 None of this shows the diamond is false, and none of it rules out a measure of some other shape.
 What it shows is that the proof as printed does not carry one, and that the missing ingredient is
 specifically an accounting for the `Me-Pro`/`Me-FOp` interaction.
+
+---
+
+## Lemma 24: the well-formedness conclusion is not established
+
+> **Lemma 24 (Narrowing of context in subtyping reductions).** […] Then there exists a term `v′`
+> such that `Γ, x≤t′, Γ′; nil ⊢ u ⟶≤ v′`, and `Γ, x≤t′, Γ′; nil ⊢ v ⟶≤ v′`, and
+> **`Γ, x≤t′, Γ′ ⊢ v′ wf`**.
+
+The third conclusion is what Lemma 23 needs and cannot do without: its `Ws-Lf2` case has a
+promotion whose target moves under narrowing, and `Ws-Lf2` will not accept the new target without
+its well-formedness. `MPSS/Narrowing24` proves the first two conclusions — with the join
+strengthened from `⟶≤` to `⟶≡` — and not the third.
+
+The paper's argument for the third is:
+
+> We now need to show that `v′` is well-formed in context `Γ, x≤t′, Γ′` **by induction on the
+> structure of `v′`**.
+
+and it fails in three separate ways.
+
+**It proves too much.** Three of the four cases use no hypothesis relating `v′` to `u` at all:
+
+> Case `v′ = x`: A variable is well-formed by rule `Wf-PrS` or `Wf-PrE`.
+> Case `v′ = Top`: We have `Γ, x≤t′, Γ′ ⊢ Top wf` by rule `Wf-Top`.
+
+An induction that establishes well-formedness from the shape of a term alone would establish it
+for every term, and `Top Top` is not well-formed — `Wf-App` would put `Top` below an abstraction,
+which Theorem 11 forbids. Well-formedness is not a structural property, precisely because
+`Wf-App` carries subtyping premises.
+
+**The abstraction case asserts its conclusion.**
+
+> Case `v′ = λy≤t″.w`: We have `Γ, x≤t′, Γ′ ⊢ λy≤t″.w wf` by rule `Wf-Fun` with premise
+> `Γ, x≤t′, Γ′, y≤t″ ⊢ w wf`. By the induction hypothesis, we have `Γ, x≤t′, Γ′, y≤t″ ⊢ w wf`.
+
+The goal is stated as though established, and the premise it reduces to is then said to follow by
+an induction hypothesis — but the induction is on the structure of `v′`, and the statement being
+proved is about the one `v′` the lemma produces, not about arbitrary terms, so there is no such
+hypothesis for the body. `Wf-Fun`'s second premise, `Γ, x≤t′, Γ′ ⊢ t″ wf`, is not mentioned.
+
+**The application case pushes a promotion the wrong way.** Here `u = Co[x]` and `v′ = Co[t′]`, so
+with `v′ = a b` the corresponding part of `u` is `a′ b`, where `a′` is `a` with `x` where `a` has
+`t′`. From `u` well-formed the proof has `Γ, x≤t′, Γ′ ⊢ a′ ≤*wf λy≤w.Top`, and it needs the same
+for `a`. It writes:
+
+> Because `a′` is `a` but with a promotion of `x` to `t` in head position, we have
+> `Γ, x≤t′, Γ′ ⊢ a ≤wf a′` from rule `Ws-Lf2`.
+
+In the narrowed context `x` promotes to `t′`, not to `t`, so the step available is `a′ ⟶≤ a`, and
+`Ws-Lf2` gives `Γ, x≤t′, Γ′ ⊢ a′ ≤wf a` — the opposite of what is written. Nor does the
+correctly-oriented fact help: from `a′ ≤*wf λy≤w.Top` and `a′ ≤wf a` one cannot conclude
+`a ≤*wf λy≤w.Top`, any more than `x ≤ Int` and `x ≤ String` give `Int ≤ String`. Recovering the
+conclusion would need `⟶≤` to be confluent, which is not among the paper's results — it proves
+the diamond for `⟶≡` and commutation of the two, not confluence of `⟶≤`.
+
+**Status.** The statement looks true and provable by a different route: induct on the covariant
+context, and at each `Co t` node use `push≡*wf` (`MPSS/Preservation`) to carry
+`Co′[t] ≤*wf λy≤w.Top` across the step `Co′[t] ⟶≡ Co′[t′]`, with the inner well-formedness coming
+from the induction. That route needs a congruence of `⟶≡` through a covariant context and local
+closure of the context's own terms, neither of which is developed here. No counterexample is
+claimed.
+
+Because Lemma 23 rests on this conclusion, and Lemma 6 on Lemma 23, this is the one remaining gap
+between the machine-checked development and preservation — the others being Lemmas 1 and 2 and
+Conjecture 8, of which only the conjecture is flagged by the paper.
