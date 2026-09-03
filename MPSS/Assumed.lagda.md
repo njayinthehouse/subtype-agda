@@ -29,7 +29,7 @@ open import Data.Product.Base using (_×_; _,_; ∃-syntax)
 
 open import MPSS.WellFormed
 open import MPSS.CtxReduction
-open import MPSS.Conjecture8 using (CoCtx; plug; CoLC)
+open import MPSS.Conjecture8 using (CoCtx; plug)
 ```
 
 ## Lemma 1 — strong commutation
@@ -60,10 +60,19 @@ Lem-2 = ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂}
 
 ## Conjecture 8
 
+Stated without the `CoLC` premise, and the omission is deliberate. `CoLC C` asks every term
+inside the covariant context to be locally closed, and the paper's contexts are not: in
+`λx≤t.Co`, the bound `x` may occur in the `t` of an inner `Co t` node, which in the locally
+nameless encoding is a dangling index. Requiring `CoLC` would therefore assume something strictly
+weaker than the paper conjectures, and it is the general form that Lemma 9 needs — the covariant
+context it extracts is read off a term, with no guarantee that its inner terms avoid enclosing
+binders. Local closure of the two plugs, which is all the proofs actually use, follows from the
+well-formedness premises through `wf⇒lc`.
+
 ```agda
 Conj-8 : Set
 Conj-8 = ∀ {Γ u t} (C : CoCtx)
-       → CoLC C → LC u → LC t
+       → LC u → LC t
        → Γ ⊢ u ≤*wf t
        → Γ ⊢ plug C u wf
        → Γ ⊢ plug C t wf
