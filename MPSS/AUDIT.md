@@ -181,6 +181,13 @@ So narrowing a `≤wf` chain requires well-formedness the rules do not provide, 
 shows that `⟶≡` preserves well-formedness — a statement the paper never makes, and the
 equivalence-reduction analogue of Lemma 6 itself.
 
+**That statement is false** (`MPSS/EqvWf`). Contexts are required only to be prevalid, so an
+annotation need only be locally closed and scoped, never well-formed; `Wf-PrE` then calls a
+variable well-formed on the strength of the annotation merely existing, and one `Me-Pro` step
+exposes the annotation. With `Γ₀ = x ≡ (Top Top)`, `Γ₀ ⊢ x wf` and `Γ₀;nil ⊢ x ⟶≡ Top Top`, but
+`Top Top` is not well-formed, since `Wf-App` would put `Top` below an abstraction. So the obvious
+route to Lemma 23 is closed, and the gap is not a matter of a missing routine induction.
+
 Lemma 7's reasoning does not supply this, because Lemma 7 substitutes rather than narrows: it
 never disturbs a promotion's target, so its chain-level argument never has to star an unstarred
 step, and never meets the `Ws-Rfl` obstruction.
