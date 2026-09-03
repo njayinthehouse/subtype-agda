@@ -356,5 +356,9 @@ Two things this settles about the earlier reading of the problem:
   needed for λ⊲, and the same one `PSS/BoundedNarrowing` shows cannot be weakened to the empty
   stack.
 
-The residual for Conjecture 8 is therefore a single statement: **from `Γ ⊢ α ≤*wf w` derive
-`Reach Γ α w`.** Nothing structural remains.
+The residual for Conjecture 8 is therefore a single statement about the obligation. **In the
+unrestricted form written here it is false**: `MPSS/ReachFails` exhibits `Γ ⊢ P ≤*wf Q` with `P`
+unable to reach `Q` at the stack `[Top]`, so `Reach` cannot be derived from `≤*wf` alone. What
+survives is the obligation restricted to stacks under which the application stays well-formed —
+`P Top` is not well-formed — and that restricted form is what Conjecture 8 needs. Nothing
+structural remains beyond it.
