@@ -7,12 +7,15 @@ titled "Subtyping and equivalence in System λ⊲" and its rule names are ours: 
 
 We deviate from the printed rules in exactly three places. This module proves each deviation
 harmless, so that `type-safety` is the paper's theorem and not an artefact of the encoding.
+A fourth deviation is at the level of theorem *statements*, not rules, and is recorded here
+rather than discharged.
 
 | deviation | status |
 | --- | --- |
 | `As-Left` split into `As-Left-1` / `As-Left-2` | the metavariable instantiation — proved identical |
 | `⟶≡` drops the paper's `Γ ∣ s` index | proved vacuous — the two relations coincide |
 | prevalidity carries extra `LC` premises | characterised exactly, and the `LC` hypothesis on `type-safety` is proved **redundant** |
+| Theorem 4.4 and Lemma 5.7 stated over `≤*wf`, the paper states them over `≤*` | **recorded, not discharged** — see Deviation 4 below |
 
 ```agda
 {-# OPTIONS --safe #-}
@@ -221,8 +224,9 @@ type-safety-paper d = type-safety (≤*wf⇒lcˡ d) d
 ## What this establishes
 
 Theorems 4.1, 4.2 and 4.3 are stated here exactly as v1 prints them, with **no hypothesis the
-paper does not have**, and `type-safety-paper` is their combination. The three deviations from
-the printed rules are each proved inert:
+paper does not have**, and `type-safety-paper` is their combination. Theorem 4.4 and Lemma 5.7
+are **not** yet stated as printed (Deviation 4). The three deviations from the printed rules are
+each proved inert:
 
 1. `As-Left`'s split is the metavariable instantiation, identical on the nose.
 2. The `Γ ∣ s` index on `⟶≡` is never read by any rule, and the indexed and unindexed relations
@@ -230,10 +234,33 @@ the printed rules are each proved inert:
 3. Prevalidity's `LC` premises characterise exactly the locally closed fragment, and the
    subject's local closure is recovered from well-formedness rather than assumed.
 
-The remaining gap between this and the paper is the binding representation itself — locally
-nameless with cofinite quantification, versus the paper's named binders with a variable
+## Deviation 4 — Theorem 4.4 and Lemma 5.7 are stated over `≤*wf`
+
+v1 prints both over plain transitive subtyping:
+
+> **Theorem 4.4.** If `Γ;s ⊢ u ≤* v` then `Γ;s ⊢ u ≤ v`.
+>
+> **Lemma 5.7.** If `Γ;s ⊢ (λx≤t.u) ≤* (λx≤t′.u′)` then `Γ;s ⊢ t ≡ t′`.
+
+`Thm-4·4` in `PSS/Transitivity` and `Lem-5·7` in `PSS/Minimal` take `≤*wf` instead, which puts a
+well-formedness premise on every intermediate term of the transitive chain. That is a strictly
+stronger hypothesis than the paper's. The reason is again local closure: `⊲*` on raw syntax can
+pass through non-terms (`Cr-TopApp` fires on `app Top u` for any `u`), and binary transitivity
+needs the middle term locally closed. The paper's named presentation has that for free. The
+faithful transcription is a transitive closure whose `Ast-Trans` carries `LC` of its middle term,
+over which both statements follow from `⊲-trans` with no new ideas. **That form is owed**; until
+it lands, 4.4 and 5.7 are mechanized only in the shape §4 consumes them, not as printed.
+
+## The remaining gap
+
+The gap between this and the paper that will not close is the binding representation itself —
+locally nameless with cofinite quantification, versus the paper's named binders with a variable
 convention. That is `../PLAN.md` D1, and it is the standard trade.
 
-**arXiv v2 (CSL 2026) withdraws the type-safety claim**, demoting the type system to a sketch
-and listing its proof as future work. `type-safety-paper` is a machine-checked proof of the
-statement v1 made and v2 retracted, for v1's system as printed.
+**On arXiv v2 (CSL 2026).** v2 replaces λ⊲ by a different system, MPSS, and proves progress and
+preservation for it only *conditionally*, on its Conjecture 8 (`../PLAN.md`, "Conjecture 8").
+Its abstract does not describe v1's argument as flawed; it says the original type-safety attempt
+— Hutchins' — rested on a conjectured commutativity. So the accurate comparison is: v1 claimed
+type safety unconditionally for λ⊲, v2 claims it conditionally for MPSS, and
+`type-safety-paper` is an unconditional machine-checked proof for v1's system as printed, subject
+to the four deviations above.

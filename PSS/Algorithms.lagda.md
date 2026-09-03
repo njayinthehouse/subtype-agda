@@ -14,15 +14,28 @@ Minimal promotion takes a term to the next station on its *minimal superpath*: r
 form if it is not one, otherwise promote the head — a variable to its bound, an applied
 abstraction into its body, and `λx≤tₙ.Top` to `Top`, the top of every path.
 
-Two deviations from the printed rules, both forced by the encoding and neither changing the
-relation:
+Two deviations from the printed rules. The first is forced by the encoding and does not change
+the relation. The second is a **correction to Figure 6**, and a finding about v1.
 
 - The neutral-spine rule `x u₁ₙ⋯uₘₙ ⟶mp t u₁ₙ⋯uₘₙ` is split into a base case at the variable
   and a congruence case gated on the operator being neutral. In locally nameless a spine is a
   left-nested `app`, so the recursive form is the natural one and generates the same relation.
 - The `Srs-FunOp`-shaped rule is stated with the *remaining* stack `s` in its premise. Figure 6
-  prints `nil` there, which cannot be right — the conclusion has stack `α::s`, and the rule
-  mirrors `Srs-FunOp`, whose premise keeps `s`.
+  prints (checked against the source, 2026-09-02)
+
+  > `Γ,x≤α;nil ⊢ uₙ ⟶mp u′  /  Γ;α::s ⊢ λx≤tₙ.uₙ ⟶mp λx≤tₙ.u′`
+
+  with `nil` in the premise while the conclusion has stack `α::s`. The rule it mirrors,
+  `Srs-FunOp`, keeps `s`. With `nil` as printed, `mp⇒⟶≤*` below would need a body promotion at
+  the empty stack to transport to stack `s` — the stack monotonicity that `PSS/BoundedNarrowing`
+  refutes. Concretely, with `y ≤ Top` in `Γ`, `P = λz≤y.z` and `Q = λz≤y.y`, the printed rule
+  gives `λx≤t.P ⟶mp λx≤t.Q` at stack `α :: Top :: []`, because the body `P` is minimally
+  promoted at the empty stack, where `Srs-Fun` binds `z ≤ y`. But at stack `Top :: []` the body
+  `P` promotes only to `P`, `λz≤y.Top` or `Top` (`Reach` in `PSS/BoundedNarrowing`), so
+  `λx≤t.P ⟶≤* λx≤t.Q` fails there, and the soundness half of Theorem 5.5 would fail for the
+  printed rule via `st-step` followed by `st-refl`. **This refutation is prose; the witness is
+  not yet mechanized against a transcription of the printed rule.** The `s` form is what
+  Theorems 5.5 and 5.6 below are proved for.
 
 ```agda
 {-# OPTIONS --safe #-}
@@ -260,6 +273,10 @@ accepts really is well-formed.
 
 **Owed.** The completeness halves — "if the judgement holds *and the algorithm terminates*, the
 algorithm says yes" — need the termination hypothesis as an explicit premise, since λ⊲ is not
-normalising and the algorithm reduces its argument to normal form. Also owed: Lemma 5.1
-(minimal promotion is unique), Lemma 5.3 in its full minimality form, and Lemma 5.7 with
-Theorem 5.8 (the inversion lemma and incremental typechecking).
+normalising and the algorithm reduces its argument to normal form. Also owed: Theorem 5.8
+(incremental typechecking), and a mechanized witness for the Figure 6 `nil` defect above.
+
+**Done elsewhere** (this list was stale and caused Lemma 5.1 to be proved twice — see
+`PSS/MinimalUnique`): Lemma 5.1 is `mp-unique` in `PSS/Minimal`; Lemma 5.7 is `Lem-5·7` in
+`PSS/Minimal`; Lemma 5.3, against the repaired Definition 5.2, is `Lem-5·3` in
+`PSS/MinimalityRepaired`.

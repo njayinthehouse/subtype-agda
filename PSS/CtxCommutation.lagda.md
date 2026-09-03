@@ -2,9 +2,12 @@
 
 `PSS/CtxSubtyping` rebuilds promotion and subtyping over `⟶≐`. The metatheory's load-bearing
 theorem is strong commutation (v1's Theorem 4.5). Since `⟶≐` extends `⟶≡` by exactly one rule —
-`Ce-Pro`, which fires only on a variable — the rebuilt commutation proof is v1's plus the cases
-where `Ce-Pro` is the left-hand step. This module settles those, which is where the new content
-is.
+`Ce-Pro`, which fires only on a variable — the rebuilt commutation proof should be v1's plus the
+cases where `Ce-Pro` is the left-hand step. This module settles those cases **at a fixed extended
+context**: `Γ`, `s` and `Δ` are the same on both sides of the square, with no context reduction.
+Theorem 4.5 proper reduces `Γ` and `s` along `↣`, and its rebuilt form would also have to reduce
+`Δ` to keep coherence with the reduced bounds; that version, and the transfer of v1's remaining
+cases over `⟶≐`, are owed (`PSS/CtxScope` has the reduction relations but not the theorem).
 
 They do **not** close unconditionally. If `Δ` says `x ≡ α` while `Γ` says `x ≤ t` with `α` and `t`
 unrelated, the two edges land in unrelated places and nothing joins them. What is needed is that
@@ -115,11 +118,16 @@ collapse-is-false collapse = no-collapse (collapse coh₃ steps-ᶜ)
 
 ## What this establishes
 
-**The `Ce-Pro` critical pairs of strong commutation, and the side condition they need.**
+**The `Ce-Pro` critical pairs of strong commutation at a fixed extended context, and the side
+condition they need.**
 
-The rebuilt system's commutation proof is v1's Theorem 4.5 plus exactly these cases, because
-`Ce-Pro` is the only rule `⟶≐` adds and it fires only on a variable — so it forms a critical pair
-with nothing except the promotions out of that same variable.
+`Ce-Pro` is the only rule `⟶≐` adds and it fires only on a variable, so it forms a critical pair
+with nothing except the promotions out of that same variable; those pairs are `ce-pro-commute`.
+What is *not* here: context reduction. Theorem 4.5 commutes over `Γ ∣ s ↣ Γ' ∣ s'`, and the
+rebuilt theorem must also reduce `Δ`, since coherence between an unreduced `Δ` and a reduced `Γ'`
+fails as soon as a bound moves. Nothing in the rebuild has yet been proved with reduced contexts,
+so "v1's Theorem 4.5 plus exactly these cases" is the expected shape of the proof, not a
+proved statement.
 
 **Coherence is necessary, not decorative.** The `Srs-Prom` case is the whole difficulty: the left
 edge unfolds `x` to its equational annotation `α`, the right promotes `x` to its bound `t`, and

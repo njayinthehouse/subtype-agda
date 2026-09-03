@@ -336,11 +336,21 @@ narrowing, because λ⊲ does not have it. The obstruction is not a missing lemm
 promotion is not stack-monotone, and narrowing a bound is exactly the operation that needs it to
 be.
 
-**What would still suffice.** The refutation turns on a *single* step: under `x ≤ Q` the variable
-reaches `Q` in one `Srs-Prom`, and under `x ≤ P` it needs `P ⟶≤* Q`, which is available only at
-the empty stack. A narrowing lemma stated over `⟶≤*` chains **at a fixed stack** is not refuted by
-this witness, and the `MPSS/StackObligation` experiment points the same way: the information
-survives, it just costs extra steps that the single-step rules cannot absorb.
+**The multi-step, fixed-stack form is refuted too.** An earlier version of this note said that a
+narrowing lemma with hypothesis `P ⟶≤* Q` (or `P ≤ Q`) *at the same stack as the conclusion* was
+not touched by this witness and remained open. It is not open: the same witness refutes it once
+the narrowed variable is placed under an application, because `Srs-App` changes the stack inside
+the derivation while the hypothesis stays at the outer one. Take the stack empty throughout, so
+the hypothesis is `hyp` above. The premise `ΓQ ∣ [] ⊢ app (fvar 1) Top ≤ app Q Top` holds by
+`As-Left-1 (Srs-App (Srs-Prom _ (here refl))) (As-Refl _)`. The conclusion
+`ΓP ∣ [] ⊢ app (fvar 1) Top ≤ app Q Top` fails: by `⊲⇒diag` it needs a diagonal `w` that is both
+reachable from `app (fvar 1) Top` at the empty stack under `ΓP` and a `⟶≡*`-reduct of `app Q Top`.
+The reachable terms are `app (fvar 1) Top`, `app P Top`, `app (λx≤y.Top) Top`, `app Top Top` and
+`Top` (the operator is promoted at stack `[Top]`, where `Reach` applies, and `Cr-Beta` on
+`app P Top` or `app (λx≤y.Top) Top` gives `Top`). The reducts of `app Q Top` are `app Q Top` and
+`fvar 0` (`Q-fixed`, plus one `Cr-Beta`). The two sets are disjoint. **This extension is prose;
+only the single-step statement `BoundedNarrowing` is mechanized.**
 
-So the honest status is: bounded narrowing in the F<:-shaped form is refuted; a multi-step form
-at a fixed stack remains open, and is the version worth attempting next.
+So the status is: bounded narrowing is refuted in the F<:-shaped form, and in the multi-step form
+at a fixed stack. What survives is a hypothesis at *every* stack and context extension, which is
+the route `PSS/NarrowPoly` takes; the `MPSS/StackObligation` experiment points the same way.

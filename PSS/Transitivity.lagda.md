@@ -101,8 +101,21 @@ Thm-4·4 (Wf-Trans d₁ d₂ wu) =
   ⊲-trans (≤*wf⇒lcˡ d₁) (wf⇒lc wu) (Thm-4·4 d₁) (Thm-4·4 d₂)
 ```
 
-The plain `⊲*` form holds too, given local closure of the terms it passes through; `⊲-trans`
-above is that content, and `Wf-Trans` is the packaging that supplies the hypothesis.
+**This is not the statement as printed.** v1's Theorem 4.4 reads
+
+> Let `Γ;s` be an extended context. Let `u` and `v` be terms. If `Γ;s ⊢ u ≤* v` then
+> `Γ;s ⊢ u ≤ v`.
+
+over plain transitive subtyping `≤*`, with no well-formedness anywhere. What is mechanized above
+is the `≤*wf` form, which carries a `wf` premise on every intermediate term. That is a fourth
+deviation from the paper, recorded in `PSS/Faithfulness` alongside the three rule-level ones. It
+is not a soundness issue: the only thing `⊲-trans` needs from an intermediate is local closure,
+which the paper's named presentation supplies silently by calling `u` and `v` "terms". The plain
+form is therefore provable from `⊲-trans` over a transitive closure whose `Ast-Trans` carries
+`LC` of its middle term, and is **owed** in that shape. Note that `⊲*` on raw syntax genuinely
+passes through non-terms — `Cr-TopApp` fires on `app Top u` for any `u`, locally closed or not —
+so some such premise is needed, and `Wf-Trans`'s `Γ ∣ s ⊢ u wf` is the paper's own choice of it
+for §4.
 
 ## Theorem 4.3 — no supertype of `Top`
 
@@ -121,7 +134,8 @@ Thm-4·3 d = Top≰lam (Thm-4·4 d)
 
 ## What this establishes
 
-Transitivity elimination (4.4) and no-supertype-of-`Top` (4.3), plus Proposition B.3 and the
-fact that well-formed terms are locally closed.
+Transitivity elimination (4.4, in the `≤*wf` form — the printed `≤*` form is owed, see above)
+and no-supertype-of-`Top` (4.3), plus Proposition B.3 and the fact that well-formed terms are
+locally closed.
 
 **Next:** progress (4.1) and preservation (4.2), i.e. type safety.

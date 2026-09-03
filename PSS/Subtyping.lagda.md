@@ -106,6 +106,9 @@ on `s`, pointwise, leaving the binding structure alone.
 This relation is what generation 0's formulation omitted, and its absence is why the reduction
 of Theorem 4.4 to "two diamonds" there never closed (`../PLAN.md` D4).
 
+The paper names the reflexive rule `Ctx-Sym`; it is called `Ctx-Refl` here, since that is what
+it is. The other two names are the paper's.
+
 ```agda
 infix 3 _∣_↣_∣_
 data _∣_↣_∣_ : Ctx → Stack → Ctx → Stack → Set where

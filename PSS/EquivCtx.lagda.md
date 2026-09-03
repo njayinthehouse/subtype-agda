@@ -592,14 +592,20 @@ A **context-sensitive equivalence for λ⊲** with its full basic metatheory:
   rules ever need.
 - **The diamond** (`⟶≐-diamond`) and **Church–Rosser** (`⟶≐-confluent`), given a functional `Δ`.
 
-The finding worth recording: **the two-reduced-context complication in MPSS is not intrinsic to
-context-sensitive equivalence.** v2 needs its diamond quantified over two reduced extended
-contexts, with a per-variable side condition on `Me-Pro`, because its unfolding rule is
-*simultaneous* — it reduces the annotation as well as substituting it. Making the unfolding
-atomic costs exactly four variable cases here, three of them one-liners, and the fourth spending
-only functionality of `Δ`. Every other case of the `⟶≡` diamond carries over verbatim, because
-`Ce-Pro` fires only on a variable and a variable has no other redex, so no new critical pair
-with `Ce-Beta` or any congruence can arise.
+What this does and does not show about MPSS. v2's diamond (its Lemma 2) is quantified over
+*two reduced extended contexts*, with a per-variable side condition on `Me-Pro`, because its
+unfolding rule is *simultaneous* — it reduces the annotation as well as substituting it. The
+diamond here holds `Δ` **fixed**: no context is reduced. At a fixed equational context, making
+the unfolding atomic costs exactly four variable cases, three of them one-liners, and the fourth
+spending only functionality of `Δ`; every other case of the `⟶≡` diamond carries over verbatim,
+because `Ce-Pro` fires only on a variable and a variable has no other redex, so no new critical
+pair with `Ce-Beta` or any congruence can arise. Whether this stays cheap when `Δ` is reduced
+alongside the term — the analogue of Theorem 4.5's `↣`, which is what a fair comparison with v2's
+Lemma 2 requires — is **not proved here**. `PSS/CtxScope` has the context-reduction relations
+over `⟶≐` and records that even prevalidity preservation is still owed; the reduced-context
+diamond and commutation are owed with it. The claim that the two-context complication is not
+intrinsic to context-sensitive equivalence is therefore a conjecture supported by the
+fixed-context case, not a result.
 
 What is bought is the thing v1 gives up by fiat when it declares the context "immaterial to the
 equivalence reduction": the equational theory can now see what the subtyping theory sees. The

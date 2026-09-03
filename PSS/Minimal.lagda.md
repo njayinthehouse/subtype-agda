@@ -178,6 +178,11 @@ subtyping derivation diagrammatically, the promotion chain out of the left abstr
 reach `Top` — the right-hand equivalence chain would then have to take an abstraction to `Top`,
 which `Cr-Fun` cannot do. So both annotations reduce to a common one.
 
+**Stated over `≤*wf`, not as printed.** v1's Lemma 5.7 has hypothesis `Γ;s ⊢ (λx≤t.u) ≤* (λx≤t′.u′)`,
+over plain transitive subtyping. Ours takes `≤*wf` because it goes through `Thm-4·4`, which is
+itself mechanized only in the `≤*wf` form. This is Deviation 4 in `PSS/Faithfulness`; the
+printed form is owed together with the printed Theorem 4.4.
+
 ```agda
 ≋-left* : ∀ {Γ s u u' w} → Γ ∣ s ⊢ u' ≋ w → u ⟶≡* u' → Γ ∣ s ⊢ u ≋ w
 ≋-left* d εₑ       = d
@@ -199,8 +204,10 @@ Lem-5·7 d with ⊲⇒diag (Thm-4·4 d)
 
 ## What this establishes
 
-**Lemma 5.1** (minimal promotion is deterministic, so the minimal superpath is well defined)
-and **Lemma 5.7** (the inversion lemma). Existence of the minimal promotion is *conditional*:
+**Lemma 5.1** (minimal promotion is deterministic, so the minimal superpath is well defined;
+`mp-unique` here — `PSS/MinimalUnique` later re-proved it as `Lem-5·1`, a duplicate) and
+**Lemma 5.7** (the inversion lemma, in the `≤*wf` form). Existence of the minimal promotion is
+*conditional*:
 `mp-nf` requires the term to have a normal form, and λ⊲ is not normalising, so the algorithm
 may fail to make a step — which is exactly the termination side condition the paper attaches to
 Theorems 5.5 and 5.6.

@@ -1,7 +1,16 @@
 # Lemma 5.1 — minimal promotion is unique
 
-One of the items owed against arXiv v1's §5. Minimal promotion is deterministic: a term has at
-most one minimal promotion in a given extended context.
+Minimal promotion is deterministic: a term has at most one minimal promotion in a given extended
+context.
+
+**This module is a duplicate.** Lemma 5.1 was already proved as `mp-unique` in `PSS/Minimal`
+(commit 89e031f, 2026-08-23), one day before this module was written (commit 0c7835a,
+2026-08-24). The cause was the closing "Owed" paragraph of `PSS/Algorithms`, which still listed
+Lemma 5.1 as open after `PSS/Minimal` had discharged it; that paragraph is now corrected. The
+module is kept because `PSS/MinimalityRepaired` and `PSS/CtxCommutation` import `bound-unique`
+from it, and `bound-unique`, `open-inj` and `Top-no-mp` here duplicate `prevalid-functional`,
+`open-inj` and `no-mp-Top` in `PSS/Minimal` (and `open-inj` in `PSS/Close`). Consolidating is
+a code change and is left for a separate commit.
 
 The rules of `⟶mp` look overlapping but are not. `mp-nf` demands `¬ NF u` while every other rule
 applies only to normal forms; `mp-fun` and `mp-funop` are separated by the stack; and `mp-fun`
