@@ -194,3 +194,66 @@ step, and never meets the `Ws-Rfl` obstruction.
 
 This does not make Lemma 23 false — no counterexample is claimed — but it is not proved in the
 paper, and `MPSS/Evaluation` therefore takes it as a hypothesis rather than deriving it.
+
+---
+
+## Lemma 2: the induction is not well-founded as written
+
+This is an analysis of the proof, not a refutation of the statement. No counterexample to the
+diamond property is claimed.
+
+### What the proof says
+
+> We now proceed by induction on the derivation tree of `Γ₀;s₀ ⊢ t₀ ⟶≡ t₁`.
+
+and then, in the case where the two edges end in `Me-Pro` and `Me-Var`:
+
+> By Lemma 36, `Γ₀;s₀ ↣ Γ₂;s₂` implies `Γ₀;nil ↣ Γ₂;nil`. Because `Γ₀` is of the form
+> `Γ₀′, x ≡ α₀, Γ₀″`, we have `Γ₂ = Γ₂′, x ≡ α₂, Γ₂″`. By multiple use of the rule `Ct-Ann`, we
+> have `Γ₀′;nil ⊢ α₀ ⟶≡ α₂`. By weakening (Lemma 19), we have `Γ₀;s₀ ⊢ α₀ ⟶≡ α₂`. By induction
+> hypothesis on `Γ₀;s₀ ⊢ α₀ ⟶≡ α₁` […]
+
+### The step that fails
+
+The induction hypothesis is applied to the pair `(α₀ ⟶≡ α₁, α₀ ⟶≡ α₂)`. The first component is a
+subderivation of the `Me-Pro` edge. **The second is not a subderivation of anything.** It is
+constructed, by `Ct-Ann` and weakening, out of the context reduction `Γ₀;s₀ ↣ Γ₂;s₂` — a
+hypothesis of the lemma, not part of either derivation being inducted on, and of unrelated size.
+
+The two edges are also not consistently oriented. Induction "on the derivation of `t₀ ⟶≡ t₁`"
+would make `t₁` the horizontal edge, but in this case the IH is applied to a subderivation of the
+edge ending in `Me-Pro`, which the case names as the *other* one. In the mirror orientation the
+roles swap, so no single edge carries the induction.
+
+### Why the obvious repairs do not work
+
+Writing `|d|` for derivation size and `S` for the fixed context reductions:
+
+- **Sum or multiset of `|d₁|, |d₂|`.** In `Me-Var`/`Me-Pro` the pair `(1, 1+k)` becomes `(m, k)`
+  where `m` is the size of the piece extracted from `S`. Nothing bounds `m` by `k`.
+- **Lexicographic `(|d₂|, |d₁|)`.** Works in this orientation and fails in the mirror one, where
+  it is `|d₁|` that shrinks and `|d₂|` that is replaced by a piece of `S`. Symmetry does not
+  rescue it: the order is not symmetric, and making it so (`max`, `min`, multiset) reintroduces
+  the unbounded `m`.
+- **A term measure with the context unfolded.** Assign each variable a weight one greater than
+  its annotation's, which is well defined because prevalidity forces an annotation to be scoped
+  strictly earlier in the context. `Me-Pro` then strictly decreases it. But `Me-FOp` moves the
+  stack head into the context as an equivalence annotation, so the body is measured with the
+  bound variable weighted by the *stack head* rather than by the abstraction's own annotation,
+  and the measure increases whenever the head is heavier. Repairing that by charging the stack
+  additively with a coefficient at least the number of bound occurrences breaks `Me-App`, which
+  pushes the operand and needs the coefficient to be at most one. Charging it multiplicatively
+  fixes `Me-FOp` and breaks `Me-App` the same way.
+- **Lexicographic `(configuration depth, term depth, derivation size)`,** with configuration
+  depth `max(ρ u, maxᵢ (1 + ρ sᵢ))`. `Me-Pro` decreases the second component and `Me-App` the
+  third, but `Me-FOp` increases the second while leaving the first equal, since the bound
+  variable's weight `1 + ρ α` is exactly the stack entry's contribution.
+
+The obstruction is stable across these: `Me-Pro` needs a variable lookup to cost strictly more
+than its annotation, and `Me-FOp` needs a stack entry to cost at least as much as the variable it
+becomes. Those two are in direct conflict, and it is `Me-FOp` — the rule that lets an abstraction
+under an operand bind its parameter to that operand — that creates it.
+
+None of this shows the diamond is false, and none of it rules out a measure of some other shape.
+What it shows is that the proof as printed does not carry one, and that the missing ingredient is
+specifically an accounting for the `Me-Pro`/`Me-FOp` interaction.
