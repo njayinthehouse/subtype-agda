@@ -9,8 +9,8 @@ context a recursive call lands at.
 `Φ Γ t w ns` is the weight of `t` with every free variable charged for its annotation's weight,
 recursively. Two representation choices make it definable:
 
-- **bound indices carry an assignment `w`**, so going under a binder shifts the weights rather
-  than substituting into the term — that is what makes the opening lemma provable;
+- **bound indices carry a weight assignment `w`**, so going under a binder shifts the weights
+  rather than substituting into the term — that is what makes the opening lemma provable;
 - **the stack is carried as a list of weights `ns`, not of terms**, so the abstraction case can
   charge the operand it will meet without recursing on a term that is not a subterm. Recursion is
   then lexicographic on the context and the term, and Agda sees it.
@@ -48,17 +48,25 @@ open import PSS.Syntax using (∉-++)
 
 ## Weight assignments
 
+Weights are a **list**, not a function: index `i` gets the `i`-th entry, and anything beyond the
+list weighs one. That keeps shifting under a binder definitional — a function representation
+would need extensionality to prove the opening lemma, which `--safe` does not give.
+
 ```agda
 Wt : Set
-Wt = ℕ → ℕ
+Wt = List ℕ
+
+wt : Wt → ℕ → ℕ
+wt []       i       = 1
+wt (n ∷ ns) zero    = n
+wt (n ∷ ns) (suc i) = wt ns i
 
 infixr 5 _◂_
 _◂_ : ℕ → Wt → Wt
-(n ◂ w) zero    = n
-(n ◂ w) (suc i) = w i
+n ◂ w = n ∷ w
 
 one : Wt
-one _ = 1
+one = []
 ```
 
 ## The measure
@@ -66,7 +74,7 @@ one _ = 1
 ```agda
 Φ : Ctx → Tm → Wt → List ℕ → ℕ
 
-Φ Γ (bvar i)  w ns = w i
+Φ Γ (bvar i)  w ns = wt w i
 Φ Γ Top       w ns = 1
 Φ Γ (app u v) w ns = suc (Φ Γ u w (Φ Γ v w [] ∷ ns) + Φ Γ v w [])
 
