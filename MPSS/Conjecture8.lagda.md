@@ -18,6 +18,13 @@ And they say why they need it, which is the part that matters here:
 
 So the redesign that fixed commutativity is what opened this gap.
 
+**Correction (2026-09-02).** The blockquote above and the statement `Conjecture8` below are
+over the single-layer relation `≤wf`. v2 prints the conjecture over the **transitive** relation
+`≤*wf` — "Γ ⊢ u ≤*wf t … we conjecture that Γ ⊢ Co[u] ≤*wf Co[t]" — and Lemma 9 consumes it in
+that form. The two are not interchangeable. `MPSS/Conjecture8Star` restates it as printed and
+redoes the decomposition; this module is kept as the record of the earlier statement, and its
+`CoCtx` machinery is reused there.
+
 ```agda
 {-# OPTIONS --safe #-}
 
