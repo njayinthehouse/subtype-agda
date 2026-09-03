@@ -39,11 +39,39 @@ open import MPSS.Assumed using (Prop-17ʳ)
 open import PSS.Reduction using (_↦_)
 ```
 
+## Pushing an equivalence step along the left, statically
+
+Proposition 27's argument has nothing to do with the operational semantics: it works for any
+equivalence step, in either mode. Isolating it first makes the proposition a corollary and makes
+the lemma available elsewhere.
+
+`Ws-Rfl` gives `u′ ⊑wf u′`; `Ws-Rgh` walks the right-hand side back along `u ⟶≡ u′` to give
+`u′ ⊑wf u`; `Ws-Sub` lifts that to the transitive closure, and `Ws-Trs` composes it with the
+derivation in hand. The one thing it needs beyond the step is the reduct's well-formedness, which
+`Ws-Sub` demands.
+
+Note that this is *not* the static counterpart of `push≡` in `MPSS/Transitivity`, which needs both
+commutation results. It is cheaper because `Ws-Rgh` can absorb the step on the right rather than
+having to commute it past whatever the derivation does next.
+
+```agda
+push≡*wf : ∀ {Γ u u' v m}
+         → Γ ∣ [] ⊢ u ⟶ᵉ u'
+         → Γ ⊢ u ⊑*wf[ m ] v
+         → Γ ⊢ u' wf
+         → Γ ⊢ u' ⊑*wf[ m ] v
+push≡*wf {Γ} {u} {u'} e d w' = Ws-Trs (Ws-Sub w' u'⊑u wu) wu d
+  where
+    wu : Γ ⊢ u wf
+    wu = ⊑*wf⇒wfˡ d
+
+    u'⊑u = Ws-Rgh (Ws-Rfl (wf⇒prevalid wu)) e
+```
+
 ## Proposition 27
 
-`Ws-Rfl` gives `u′ ≤wf u′`; `Ws-Rgh` walks the right-hand side back along `u ⟶≡ u′` to give
-`u′ ≤wf u`; `Ws-Sub` lifts that to the transitive closure, and `Ws-Trs` composes it with the
-derivation in hand.
+Proposition 17 turns the operational step into an equivalence step, and the lemma above does the
+rest.
 
 ```agda
 Prop-27 : Prop-17ʳ
@@ -52,17 +80,10 @@ Prop-27 : Prop-17ʳ
         → u ↦ u'
         → Γ ⊢ u' wf
         → Γ ⊢ u' ⊑*wf[ sub-m ] v
-Prop-27 prop-17 {Γ} {u} {u'} {v} d st w' =
-  Ws-Trs (Ws-Sub w' u'≤u wu) wu d
+Prop-27 prop-17 {Γ} {u} d st w' = push≡*wf e d w'
   where
-    wu : Γ ⊢ u wf
     wu = ⊑*wf⇒wfˡ d
-
-    e : Γ ∣ [] ⊢ u ⟶ᵉ u'
-    e = prop-17 (Pv-Nil (wf⇒prevalid wu)) (wf⇒lc wu) (wf-fv wu) st
-
-    u'≤u : Γ ⊢ u' ⊑wf[ sub-m ] u
-    u'≤u = Ws-Rgh (Ws-Rfl (wf⇒prevalid wu)) e
+    e  = prop-17 (Pv-Nil (wf⇒prevalid wu)) (wf⇒lc wu) (wf-fv wu) st
 ```
 
 ## Theorem 5
@@ -83,6 +104,6 @@ Thm-5 prop-17 lem-6 d st = Prop-27 prop-17 d st (lem-6 (⊑*wf⇒wfˡ d) st)
 
 ## What this establishes
 
-Proposition 27 outright, modulo the repaired Proposition 17, and Theorem 5 modulo that and Lemma
-6. Neither needs Conjecture 8 directly — the conjecture enters one level down, in Lemma 7, which
+`push≡*wf`, which needs nothing assumed at all; Proposition 27, modulo the repaired Proposition
+17; and Theorem 5 modulo that and Lemma 6. Neither needs Conjecture 8 directly — the conjecture enters one level down, in Lemma 7, which
 Lemma 6 uses for the β case.
