@@ -97,13 +97,19 @@ Wf-⟶ᵉ-false lem-1 lem-2 h = no-wf lem-1 lem-2 (h w₀ step)
 
 ## What this establishes
 
-The obvious route to Lemma 23 is closed. More broadly it says that MPSS's well-formedness
+The *naive* route to Lemma 23 is closed — the one that narrows a well-subtyping chain step by
+step and so needs each intermediate to be well-formed. The paper does not take that route: its
+Lemma 7 accumulates the equivalence steps as reduction sequences in an existential diagram, which
+needs well-formedness only at the chain's endpoints and at the `Ws-Lf2` nodes, where it is a
+premise. So this is not evidence against Lemma 23.
+
+What it does establish stands on its own. More broadly it says that MPSS's well-formedness
 judgement is not stable under the very reduction its subtyping relation is built from, and the
 cause is that contexts carry a scoping condition where they would need a typing one. `Ws-Lf2`
 already compensates for this by hand, carrying well-formedness of both sides as premises; the gap
 in Lemma 23 is exactly the place where `Ws-Lf1` and `Ws-Rgh` would need the same compensation and
 do not have it.
 
-Two things this does *not* say. It is not a counterexample to Lemma 23, which may well be true.
-And it is not independent of the paper's commutation results, since Theorem 11 is what rules out
-the reduct.
+Two things this does *not* say. It is not a counterexample to Lemma 23, which the paper's own
+technique may well establish. And it is not independent of the commutation results, since
+Theorem 11 is what rules out the reduct.

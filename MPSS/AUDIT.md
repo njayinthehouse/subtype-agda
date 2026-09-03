@@ -153,47 +153,35 @@ The proof of Theorem 5 says "hence `Γ ⊢ t′ ≤*wf t` by rule `Ws-Rgh`", hav
 is the operational step `t ↦ t′`. Bridging them is exactly Proposition 17, which is not cited
 here. So Theorem 5 depends on the refuted proposition in its own right, not only through Lemma 6.
 
-### Lemma 23: the `Wf-App` case is deferred to a proof that does not cover it
+### Lemma 23: the `Wf-App` case, and a correction
 
 > To do so, we do the same reasoning as in Lemma 7 by using instead Lemmas 24 and 25.
 
-The step being deferred is: turn each single well-subtyping step `Γ,x≤t,Γ′ ⊢ b ≤wf c` into
-`Γ,x≤t′,Γ′ ⊢ b ≤*wf c`. Two of the four rules go through as described — `Ws-Lf1` and `Ws-Rgh`
-carry an equivalence step, and Lemma 25 transfers those verbatim, since narrowing a *subtype*
-annotation is invisible to `⟶≡`.
+**An earlier entry here claimed this deferral does not reach the case. That claim was wrong and
+is withdrawn.** It was based on a reconstruction in which narrowing a `≤wf` chain forces the
+conclusion to be starred at the first `Ws-Lf2`, after which every other rule must be reassembled
+through `Ws-Sub` — which demands well-formedness at the `Ws-Lf1` and `Ws-Rgh` intermediates,
+where the rules do not provide it.
 
-`Ws-Lf2` is the rule the conclusion is starred for. It carries a promotion `b ⟶≤ b′`, and Lemma 24
-does not preserve it: narrowing `x ≤ t` to `x ≤ t′` changes what `Ms-Pro` returns for `x`, so the
-new promotion lands on some `b″` with `b′ ⟶≡ b″`. Recovering from that is *not* the difficulty —
-`push≡*wf` in `MPSS/Preservation` does it in three rules, generalizing the paper's own
-Proposition 27 argument, and `Ws-Lf2` supplies exactly the well-formedness premises it needs.
+Lemma 7's actual reasoning does not work that way, and does not need those intermediates to be
+well-formed. Its sub-induction produces, for each single step `a ≤wf b`, an existential diagram —
+terms `a′`, `b′`, `c` with `a[x\α] ⟶≡↠ a′[x\α]`, `b[x\α] ⟶≡↠ c[x\α]`,
+`b′[x\α] ⟶≡↠ c[x\α]`, and `a′[x\α] ≤*wf b′[x\α]` — so the equivalence steps are accumulated as
+*reduction sequences* rather than as `⊑wf` steps needing to be starred. Reassembly then uses
+well-formedness only at the chain's endpoints, which `Ws-Sub` supplies, and at the `Ws-Lf2` nodes,
+which carry it as premises. The same shape transfers to narrowing with Lemmas 24 and 25 in place
+of Lemma 31.
 
-The difficulty is `Ws-Rfl`, and it is structural. Once any `Ws-Lf2` in the chain has forced the
-conclusion to be starred, every other rule has to be re-assembled with `Ws-Sub`, and `Ws-Sub`
-demands that both its endpoints be well-formed. Well-formedness is available at exactly two
-places in a well-subtyping derivation: at the ends, from `Ws-Sub` itself, and at the `Ws-Lf2`
-nodes, which carry it as premises — the paper says as much, that `Ws-Lf2` alone gets "the extra
-requirements that both `v` and `v′` are well-formed". It is *not* available at the intermediate
-terms `v′` introduced by `Ws-Lf1` and `Ws-Rgh`, and those are precisely the terms the starred
-reassembly needs it for.
+So the deferral is legitimate in outline. What remains true is narrower: neither Lemma 7 nor
+Lemma 23 is written out for its hardest case, and the technique they share is stated only once,
+inside another lemma's proof.
 
-So narrowing a `≤wf` chain requires well-formedness the rules do not provide, unless one first
-shows that `⟶≡` preserves well-formedness — a statement the paper never makes, and the
-equivalence-reduction analogue of Lemma 6 itself.
-
-**That statement is false** (`MPSS/EqvWf`). Contexts are required only to be prevalid, so an
-annotation need only be locally closed and scoped, never well-formed; `Wf-PrE` then calls a
-variable well-formed on the strength of the annotation merely existing, and one `Me-Pro` step
-exposes the annotation. With `Γ₀ = x ≡ (Top Top)`, `Γ₀ ⊢ x wf` and `Γ₀;nil ⊢ x ⟶≡ Top Top`, but
-`Top Top` is not well-formed, since `Wf-App` would put `Top` below an abstraction. So the obvious
-route to Lemma 23 is closed, and the gap is not a matter of a missing routine induction.
-
-Lemma 7's reasoning does not supply this, because Lemma 7 substitutes rather than narrows: it
-never disturbs a promotion's target, so its chain-level argument never has to star an unstarred
-step, and never meets the `Ws-Rfl` obstruction.
-
-This does not make Lemma 23 false — no counterexample is claimed — but it is not proved in the
-paper, and `MPSS/Evaluation` therefore takes it as a hypothesis rather than deriving it.
+**What `MPSS/EqvWf` does and does not show.** It refutes "`⟶≡` preserves well-formedness", which
+is the *naive* route to Lemma 23 — the one that narrows a chain step by step and needs each
+intermediate to be well-formed. The paper never claims that statement, and its diagram technique
+avoids needing it. The refutation stands on its own as a fact about MPSS: well-formedness is not
+stable under the reduction its subtyping is built from, because contexts carry a scoping condition
+where they would need a typing one. It is not evidence against Lemma 23.
 
 ---
 
