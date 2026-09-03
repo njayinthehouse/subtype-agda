@@ -63,6 +63,14 @@ infix 3 _∣_⊢_⟶ᵉ*_
 data _∣_⊢_⟶ᵉ*_ : Ctx → Stack → Tm → Tm → Set where
   εᵉ   : ∀ {Γ s a} → Γ ∣ s prevalid → Γ ∣ s ⊢ a ⟶ᵉ* a
   _◅ᵉ_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c
+
+_++ᵉ_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ* b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c
+εᵉ _     ++ᵉ q = q
+(d ◅ᵉ p) ++ᵉ q = d ◅ᵉ (p ++ᵉ q)
+
+⟶ᵉ*-prevalid : ∀ {Γ s a b} → Γ ∣ s ⊢ a ⟶ᵉ* b → Γ ∣ s prevalid
+⟶ᵉ*-prevalid (εᵉ pv)  = pv
+⟶ᵉ*-prevalid (d ◅ᵉ _) = ⟶ᵉ-prevalid d
 ```
 
 ## Reflexivity at a stack entry
