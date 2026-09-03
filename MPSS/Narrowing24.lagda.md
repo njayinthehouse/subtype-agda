@@ -44,7 +44,7 @@ open import MPSS.Scope using (⟶ᵉ-lc; ⟶ˢ-lc)
 open import MPSS.StackPush using (⟶ˢ-refl; ⟶ᵉ-refl; pushᵉ; fv-open-cons)
 open import MPSS.Weakening using (⟶ᵉ-weaken)
 open import MPSS.Narrow using (⟶ᵉ-transfer)
-open import MPSS.Wrap using (wrapˢ-fun; wrapˢ-fop)
+open import MPSS.Wrap using (wrapˢ-fun; wrapˢ-fop; wrapᵉ-fun; wrapᵉ-fop)
 open import PSS.Scope using (fv-open-lower; fv-open-split)
 open import PSS.Close using (close-open; fv-close)
 open import PSS.Syntax using (closeRec)
@@ -145,7 +145,7 @@ Lem-24 : ∀ (Δ : Ctx) {Γ x t t′ s u v}
        → LC u → fv u ⊑ dom (Δ ++ (x , sub , t′) ∷ Γ)
        → (Δ ++ (x , sub , t) ∷ Γ) ∣ s ⊢ u ⟶ˢ v
        → ∃[ v′ ] ( ((Δ ++ (x , sub , t′) ∷ Γ) ∣ s ⊢ u ⟶ˢ v′)
-                 × ((Δ ++ (x , sub , t′) ∷ Γ) ∣ s ⊢ v ⟶ˢ v′) )
+                 × ((Δ ++ (x , sub , t′) ∷ Γ) ∣ s ⊢ v ⟶ᵉ v′) )
 ```
 
 `Ms-Pro` is the case with content. On a variable other than `x` the entry survives and the two
@@ -155,17 +155,17 @@ step joins them.
 ```agda
 Lem-24 Δ {Γ} {x} {t} {t′} est lt′ ft′ lu fu (Ms-Pro {x = y} {t = ty} pv m)
   with ∈-++⁻ Δ m
-... | inj₁ p = ty , Ms-Pro pv′ m′ , ⟶ˢ-refl pv′ lty fty
+... | inj₁ p = ty , Ms-Pro pv′ m′ , ⟶ᵉ-refl pv′ lty fty
   where
     pv′ = prevalid-narrowˢ Δ lt′ ft′ pv
     m′  = ∈-++⁺ˡ p
     lty = prevalid-bound-lc (prevalid-ctx pv′) m′
     fty = prevalid-bound-fv (prevalid-ctx pv′) m′
-... | inj₂ (here refl) = t′ , Ms-Pro pv′ m′ , Ms-Equ pv′ (pushᵉ {s = []} est pv′)
+... | inj₂ (here refl) = t′ , Ms-Pro pv′ m′ , pushᵉ {s = []} est pv′
   where
     pv′ = prevalid-narrowˢ Δ lt′ ft′ pv
     m′  = ∈-++⁺ʳ Δ (here refl)
-... | inj₂ (there p) = ty , Ms-Pro pv′ m′ , ⟶ˢ-refl pv′ lty fty
+... | inj₂ (there p) = ty , Ms-Pro pv′ m′ , ⟶ᵉ-refl pv′ lty fty
   where
     pv′ = prevalid-narrowˢ Δ lt′ ft′ pv
     m′  = ∈-++⁺ʳ Δ (there p)
@@ -178,11 +178,11 @@ equivalence reduction.
 
 ```agda
 Lem-24 Δ est lt′ ft′ lu fu (Ms-Top pv) =
-  Top , Ms-Top pv′ , Ms-Top pv′
+  Top , Ms-Top pv′ , Me-Top pv′
   where pv′ = prevalid-narrowˢ Δ lt′ ft′ pv
 
 Lem-24 Δ {Γ} {x} {t} {t′} est lt′ ft′ lu fu (Ms-Equ pv e) =
-  _ , Ms-Equ pv′ e′ , ⟶ˢ-refl pv′ (⟶ᵉ-lc lu e′) (fv-⟶ᵉ-dom e′ fu)
+  _ , Ms-Equ pv′ e′ , ⟶ᵉ-refl pv′ (⟶ᵉ-lc lu e′) (fv-⟶ᵉ-dom e′ fu)
   where
     pv′ = prevalid-narrowˢ Δ lt′ ft′ pv
     e′  = ⟶ᵉ-transfer (narrow-transfer Δ lt′ ft′) e
@@ -193,7 +193,10 @@ The congruence cases recurse and rebuild.
 ```agda
 Lem-24 Δ est lt′ ft′ (lc-app lu lw) fu (Ms-App {v = w} d)
   with Lem-24 Δ est lt′ ft′ lu (λ h → fu (∈-++⁺ˡ h)) d
-... | v′ , p , q = app v′ w , Ms-App p , Ms-App q
+... | v′ , p , q = app v′ w , Ms-App p
+                 , Me-App q (⟶ᵉ-refl (prevalid-nil pvW)
+                                     (prevalid-head-lc pvW) (prevalid-head-fv pvW))
+  where pvW = ⟶ˢ-prevalid p
 ```
 
 Both binder cases join the bodies at one fresh name, close the join, and wrap.
@@ -243,14 +246,14 @@ Lem-24 Δ {Γ} {x} {t} {t′} {u = lam a b} est lt′ ft′ (lc-lam L₀ la F₀
     lw : LC w
     lw = ⟶ˢ-lc lb (proj₁ (proj₂ ih))
 
-    result : ∃[ v′ ] ((Γn ∣ [] ⊢ lam a b ⟶ˢ v′) × (Γn ∣ [] ⊢ lam a b′ ⟶ˢ v′))
+    result : ∃[ v′ ] ((Γn ∣ [] ⊢ lam a b ⟶ˢ v′) × (Γn ∣ [] ⊢ lam a b′ ⟶ᵉ v′))
     result = lam a (closeRec 0 z w)
            , subst (λ q → Γn ∣ [] ⊢ lam a q ⟶ˢ lam a (closeRec 0 z w))
                    (close-open 0 z b z∉b)
                    (wrapˢ-fun z z∉Γ lb lw (proj₁ (proj₂ ih)))
-           , subst (λ q → Γn ∣ [] ⊢ lam a q ⟶ˢ lam a (closeRec 0 z w))
+           , subst (λ q → Γn ∣ [] ⊢ lam a q ⟶ᵉ lam a (closeRec 0 z w))
                    (close-open 0 z b′ z∉b′)
-                   (wrapˢ-fun z z∉Γ lb′ lw (proj₂ (proj₂ ih)))
+                   (wrapᵉ-fun z z∉Γ lb′ lw (proj₂ (proj₂ ih)))
 
 Lem-24 Δ {Γ} {x} {t} {t′} {s = α ∷ s} est lt′ ft′ (lc-lam L₀ la F₀) fu
        (Ms-FOp {t = a} {u = b} {u' = b′} L F) = result
@@ -297,14 +300,15 @@ Lem-24 Δ {Γ} {x} {t} {t′} {s = α ∷ s} est lt′ ft′ (lc-lam L₀ la F�
     lw : LC w
     lw = ⟶ˢ-lc lb (proj₁ (proj₂ ih))
 
-    result : ∃[ v′ ] ((Γn ∣ (α ∷ s) ⊢ lam a b ⟶ˢ v′) × (Γn ∣ (α ∷ s) ⊢ lam a b′ ⟶ˢ v′))
+    result : ∃[ v′ ] ((Γn ∣ (α ∷ s) ⊢ lam a b ⟶ˢ v′) × (Γn ∣ (α ∷ s) ⊢ lam a b′ ⟶ᵉ v′))
     result = lam a (closeRec 0 z w)
            , subst (λ q → Γn ∣ (α ∷ s) ⊢ lam a q ⟶ˢ lam a (closeRec 0 z w))
                    (close-open 0 z b z∉b)
                    (wrapˢ-fop z z∉Γ z∉s lb lw (proj₁ (proj₂ ih)))
-           , subst (λ q → Γn ∣ (α ∷ s) ⊢ lam a q ⟶ˢ lam a (closeRec 0 z w))
+           , subst (λ q → Γn ∣ (α ∷ s) ⊢ lam a q ⟶ᵉ lam a (closeRec 0 z w))
                    (close-open 0 z b′ z∉b′)
-                   (wrapˢ-fop z z∉Γ z∉s lb′ lw (proj₂ (proj₂ ih)))
+                   (wrapᵉ-fop z z∉Γ z∉s lb′ lw la (λ h → fu (∈-++⁺ˡ h))
+                              (proj₂ (proj₂ ih)))
 ```
 
 ## What this establishes
