@@ -459,3 +459,37 @@ This refutes measures of this shape, not all measures. What it rules out is any 
 weighs a stack entry uniformly, one more than the variable it becomes; the diamond may still hold,
 and may still be provable by an argument that is not a size measure at all — a complete-development
 translation in Takahashi's style needs none.
+
+### Takahashi's method relocates the obstruction, it does not remove it
+
+The complete development is the standard remedy when a parallel-reduction diamond stops closing by
+direct case analysis, and it is the natural thing to reach for here — the paper is already in that
+tradition, calling `⟶≡` a "simultaneous" reduction and citing Hutchins for it, though it never uses
+the vocabulary and does the diamond by pairwise cases instead.
+
+It also fits the paper's statement exactly. With the triangle in the form
+
+> `Γ;s ⊢ t ⟶≡ u  →  Γ;s ↣ Γ';s'  →  Γ';s' ⊢ u ⟶≡ t*`
+
+two instantiations give Lemma 2 with `t₃ := t*`, and the reduced configuration is not a
+complication but the thing the `Me-App` case needs — joining there wants the operator's target at
+the *reduced* operand's stack, which is what `Ct-Stk` supplies.
+
+What it costs is that `t*` must exist. `MPSS/Develop` writes the development out, one clause per
+rule, and Agda rejects it, naming two calls. One is the locally nameless tax: `b ^ z` is the same
+size as `b`, a subterm of `lam w b`, so any size-based recursion sees through it where the
+structural checker cannot. **The other is `star Γ (b :: s) a` — `Me-App` pushing the operand.** It
+is forced: every step out of `app a b` is `Me-App` with its operator premise at `b :: s`, so the
+development has to be computed there.
+
+That is the same push `ht-app-false` refutes. So the obstruction moves from the diamond's induction
+to the existence of `t*` and keeps its shape: `Me-FOp` binds a stack entry to a variable worth one
+more than the entry, so a stack entry must carry that charge; `Me-App` puts an operand on the stack
+without it. Whichever way it is charged, one of the two is unpaid.
+
+**Where this leaves Lemma 2.** Neither proved nor refuted, and now four approaches deep: the
+paper's own induction, three families of measure, the height of `MPSS/Height` with its
+counterexample, and the complete development. Each fails at the same pair of rules. That is
+evidence about the shape a proof must have, not evidence that the diamond is false — no
+counterexample has been found, and its counterpart in v1 is proved, differing exactly by the
+context and stack that create this tension.
