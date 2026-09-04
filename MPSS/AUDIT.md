@@ -422,3 +422,40 @@ two are in different contexts, so the induction hypothesis does not apply to the
 Under the repair — binding the parameter in `Me-Bet`'s body premise — both sit in the same
 extended context and the case goes through. That is independent evidence for the repair that
 `MPSS/Assumed` justifies on other grounds.
+
+### The measure, made precise — and refuted at one rule
+
+`MPSS/Height` carries the candidate out. It defines the unfolding height, machine-checks that
+`Me-Pro` strictly decreases it, machine-checks that three of the four structural rules leave it
+alone, and then **refutes the fourth by counterexample**. So the obstruction is no longer
+something noticed while searching; it is a theorem.
+
+The measure. `hvar Γ x` is `0` for a subtype-annotated or unbound variable and `1 + htm Γ' α` for
+`x ≐ α`, read at the context `Γ'` that scopes `α`; `htm` takes the maximum over a term's free
+variables. It is well defined because prevalidity scopes an annotation strictly earlier, so the
+recursion descends a finite chain. Giving a subtype annotation weight zero is what makes going
+under `Me-Fun` free — `Me-Pro` reads equivalence annotations only, so a variable it binds can never
+be unfolded.
+
+| | |
+| --- | --- |
+| `ht-unfold` | `suc (htm Γ α) ≤ hvar Γ x` — `Me-Pro` strictly decreases it |
+| `ht-fun` | `Me-Fun` does not increase it |
+| `ht-fop` | `Me-FOp` does not increase it |
+| `ht-bet` | `Me-Bet` does not increase it |
+| `ht-app-false` | **`Me-App` increases it** |
+
+The counterexample is the smallest configuration there is: at the empty context and empty stack,
+`M [] (⊤ :: nil) ⊤` is `1` and `M [] nil (⊤ ⊤)` is `0`.
+
+The two demands are exactly opposed, and each is forced. `Me-FOp` binds a stack entry to a
+variable worth one more than the entry, so a stack entry must carry that `suc` — without it the
+body outgrows the abstraction it came from. `Me-App` moves an operand onto the stack unchanged, so
+that same `suc` appears from nowhere. Charging the operand in the term instead does not help:
+`htm (app a b) = htm a ⊔ suc (htm b)` makes the charge compound with nesting depth, and the opening
+lemma then fails in its own application case — which is how the version above was arrived at.
+
+This refutes measures of this shape, not all measures. What it rules out is any assignment that
+weighs a stack entry uniformly, one more than the variable it becomes; the diamond may still hold,
+and may still be provable by an argument that is not a size measure at all — a complete-development
+translation in Takahashi's style needs none.
