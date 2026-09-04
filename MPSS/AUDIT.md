@@ -526,3 +526,36 @@ context's own unfolding depth — which neither candidate does — is not ruled 
 **Position on Lemma 2.** Neither proved nor refuted, and no counterexample found; its v1 counterpart
 is proved, differing exactly by the stack and context that create this tension. Five approaches have
 failed at the same pair of rules, and the failure is now characterised rather than merely repeated.
+
+### Erasing the configuration instead of measuring it
+
+The one approach left that never weighs a stack entry against a variable: don't measure the
+configuration, erase it. `MPSS/Unfold` translates `Γ;s ⊢ t` to a plain term by substituting away
+every equivalence annotation, so that the diamond could be inherited from v1's `⟶≡`, which has no
+context and no stack and whose diamond `PSS/Diamond` proves.
+
+`U` is **definable outright**, by plain structural recursion on the context — each step discharges
+one entry and substitutes it away, and an entry's annotation is scoped in exactly the tail being
+recursed on. It is the only construction in this investigation that needs no measure, no fuel and
+no well-founded machinery: the acyclicity that made every height argument delicate is already
+carried by the shape of the context. It is a homomorphism for every term former, and it does
+simulate the rules that look a variable up — `Me-Pro` becomes an ordinary reduction of the
+annotation, `Me-Var` becomes reflexivity, which is the part v1 gets for free.
+
+`sim-false` refutes the simulation, and only `Me-FOp` breaks it. The counterexample is minimal:
+with `⊤` on the stack, `λ⊤. x` steps to `λ⊤. ⊤`, because the body unfolds the parameter the rule
+has just bound to `⊤`. Under the unfolding both sides stay put, so the simulation would need
+`λ⊤. x ⟶≡ λ⊤. ⊤`, and the context-free reduction has no step from a variable to `⊤` — it has no
+rule that looks anything up.
+
+**The obstruction, named.** Three changes of clothes have now produced the same fact, and it can
+be stated without reference to measures at all: *the equivalence binding `Me-FOp` introduces is not
+eliminable by substitution*, because the rule keeps the abstraction whose parameter it has just
+defined. Measures fail because that binding must be paid for twice, once on the stack and once in
+the term; the complete development fails because the operand push that creates the binding is
+forced; and the unfolding fails because substituting the binding away discards the abstraction
+that survives it.
+
+This is exactly what v1 lacks. `Srs-FunOp` records `x ≤ α`, which `Me-Pro` cannot cash in, so no
+v1 variable ever unfolds and the whole difficulty is absent. That is why v1's diamond proof does
+not transfer, and it locates the cost of v2's central design change precisely.
