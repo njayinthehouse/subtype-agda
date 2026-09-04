@@ -301,13 +301,12 @@ correctly-oriented fact help: from `a′ ≤*wf λy≤w.Top` and `a′ ≤wf a` 
 conclusion would need `⟶≤` to be confluent, which is not among the paper's results — it proves
 the diamond for `⟶≡` and commutation of the two, not confluence of `⟶≤`.
 
-**Status.** The statement looks true and provable by a different route: induct on the covariant
-context, and at each `Co t` node use `push≡*wf` (`MPSS/Preservation`) to carry
-`Co′[t] ≤*wf λy≤w.Top` across the step `Co′[t] ⟶≡ Co′[t′]`, with the inner well-formedness coming
-from the induction. That route needs a congruence of `⟶≡` through a covariant context and local
-closure of the context's own terms, neither of which is developed here. No counterexample is
-claimed.
+**Status: the statement is true, and is now proved here by a different route.** `MPSS/CoNarrow`
+inducts on the covariant context, carrying `Co′[t] ≤*wf λy≤w.Top` across the step
+`Co′[t] ⟶≡ Co′[t′]` with `push≡*wf`, and proves that congruence simultaneously; the depth of the
+context is the measure, since opening preserves it. The promotion itself is rebuilt in
+`MPSS/CoPromote` from the covariant context rather than from the old derivation — which is what
+keeps `Ms-Fun`'s cofinite family uniform, the difficulty that a derivation-directed argument runs
+into. `MPSS/Lemma23` then proves Lemma 23 outright.
 
-Because Lemma 23 rests on this conclusion, and Lemma 6 on Lemma 23, this is the one remaining gap
-between the machine-checked development and preservation — the others being Lemmas 1 and 2 and
-Conjecture 8, of which only the conjecture is flagged by the paper.
+So the defect is in the argument, not the claim.

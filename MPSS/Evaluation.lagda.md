@@ -13,6 +13,10 @@ annotation `u`. Those two annotations are not the same term, so the operand cann
 until `z` and `u` are related — which is what inversion (Lemma 10) provides, as an equivalence,
 and what Lemmas 15 and 16 turn into a subtyping in the direction `Ws-Trs` can use.
 
+Lemma 23 carries the narrowed annotation's own well-formedness as an extra hypothesis. The paper
+does not state it, and the case that uses the lemma has it to hand — `Wf-Fun` records exactly
+that — so nothing is lost; what it buys is the local closure the locally nameless proof needs.
+
 Lemma 7 is stated here in the form the β case actually needs: the context suffix is empty, and
 substitution for the bound variable is opening. That is the same statement, since
 `Γ, x≤u ⊢ v wf` with `x` fresh is `(v ^ x)` well-formed and `v[x\w]` is `v ^ w`. The body is an
@@ -52,6 +56,7 @@ Lem-7₀ = ∀ {Γ u w} v (L : List Name)
 Lem-23 : Set
 Lem-23 = ∀ (Δ : Ctx) {Γ x t t' u}
        → (Δ ++ (x , sub , t) ∷ Γ) ⊢ u wf
+       → Γ ⊢ t wf
        → Γ ∣ [] ⊢ t ⟶ᵉ t'
        → Γ ⊢ t' wf
        → (Δ ++ (x , sub , t') ∷ Γ) ⊢ u wf
@@ -82,7 +87,7 @@ by Proposition 17, and Lemma 23 carries the body's derivation across the changed
 
 ```agda
   Lem-6 {Γ} (Wf-Fun L F wu) (E-Lam-l st) =
-    Wf-Fun L (λ {x} x∉ → lem-23 [] (F x∉) e wu') wu'
+    Wf-Fun L (λ {x} x∉ → lem-23 [] (F x∉) wu e wu') wu'
     where
       wu' = Lem-6 wu st
       e   = prop-17 (Pv-Nil (wf⇒prevalid wu)) (wf⇒lc wu) (wf-fv wu) st

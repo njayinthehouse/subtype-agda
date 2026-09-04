@@ -38,6 +38,7 @@ open import MPSS.Conjecture8 using (CoCtx; ∙; co-fun; co-app; plug)
 
 open import PSS.Syntax using (closeRec)
 open import PSS.Close using (close-open; fv-close; open-inj)
+open import PSS.Syntax using (open-lc-id)
 ```
 
 ## Decidable equality of terms
@@ -230,8 +231,33 @@ cp-open₀ : ∀ {x t} k z b b'
 cp-open₀ k z b b' z≢x z∉t z∉b z∉b' = cp-open k z b b' z≢x z∉t z∉b z∉b' refl refl
 ```
 
+## Retargeting and opening
+
+Changing the hole's content leaves the covariant context alone, which is what lets the narrowed
+promotion be rebuilt without looking at the old derivation at all.
+
+```agda
+cp-retarget : ∀ {x t t' u v} (c : CoPair x t u v) → CoPair x t' u (plug (coOf c) t')
+cp-retarget cp-var     = cp-var
+cp-retarget (cp-fun c) = cp-fun (cp-retarget c)
+cp-retarget (cp-app c) = cp-app (cp-retarget c)
+```
+
+The positive direction of `cp-open₀`, which needs only that the plugged term is locally closed —
+opening reaches the context, never the hole.
+
+```agda
+cp-open⁺ : ∀ {x t b b'} k z → LC t
+         → CoPair x t b b'
+         → CoPair x t (openRec k (fvar z) b) (openRec k (fvar z) b')
+cp-open⁺ {t = t} k z lt cp-var rewrite sym (open-lc-id lt k (fvar z)) = cp-var
+cp-open⁺ k z lt (cp-fun c) = cp-fun (cp-open⁺ (suc k) z lt c)
+cp-open⁺ k z lt (cp-app c) = cp-app (cp-open⁺ k z lt c)
+```
+
 ## What this establishes
 
 `CoPair`, the covariant-context condition stated on the source and target together; the covariant
 context it names, with the two plug equations; its decidability; and `cp-open₀`, which reflects it
-back through opening so that it can be carried into a cofinite family.
+back through opening so that it can be carried into a cofinite family; and `cp-retarget`, which
+swaps the hole's content while keeping the context.
