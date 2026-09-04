@@ -1,0 +1,409 @@
+{
+ "meta": {
+  "title": "MPSS Proof Ledger",
+  "eyebrow": "Pasquale &amp; García-Pérez · CSL 2026 · arXiv:2407.13882v2",
+  "headline": "What holds up type safety in MPSS",
+  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; an edge means <em>the proof above cites the result below</em>.",
+  "prover": "Agda",
+  "footer": [
+   "53 Agda modules",
+   "--safe · 0 postulates · 0 holes",
+   "Assumed: Lemma 1, Lemma 2, Conjecture 8, Proposition 17 (repaired)",
+   "Lemma 1 is additionally reduced to Lemma 2 plus four named statements in MPSS.Commutation"
+  ]
+ },
+ "nodes": {
+  "1": {
+   "name": "strong commutation",
+   "defect": "",
+   "status": "open"
+  },
+  "2": {
+   "name": "diamond property",
+   "defect": "induction not well-founded as written"
+  },
+  "3": {
+   "name": "transitivity elimination",
+   "defect": ""
+  },
+  "4": {
+   "name": "progress",
+   "defect": ""
+  },
+  "5": {
+   "name": "preservation",
+   "defect": "depends on Prop 17 at its Ws-Rgh step without citing it"
+  },
+  "6": {
+   "name": "evaluation preserves wf",
+   "defect": ""
+  },
+  "7": {
+   "name": "substitution preserves wf",
+   "defect": "cites Lemma 28 for a substituend Lemma 28 does not cover"
+  },
+  "8": {
+   "name": "context independence",
+   "defect": ""
+  },
+  "9": {
+   "name": "promotion under substitution",
+   "defect": "concludes by rule Ws-Lft, which does not exist"
+  },
+  "10": {
+   "name": "inversion",
+   "defect": ""
+  },
+  "11": {
+   "name": "no supertype of ⊤",
+   "defect": ""
+  },
+  "12": {
+   "name": "well-formedness extraction",
+   "defect": ""
+  },
+  "13": {
+   "name": "well-subtyping to subtyping",
+   "defect": ""
+  },
+  "14": {
+   "name": "well-equivalence to equivalence",
+   "defect": ""
+  },
+  "15": {
+   "name": "symmetry of ≡wf",
+   "defect": ""
+  },
+  "16": {
+   "name": "≡wf to ≤wf",
+   "defect": ""
+  },
+  "17": {
+   "name": "↦ to ⟶≡",
+   "defect": "base case needs an Me-Bet instance that cannot be built"
+  },
+  "18": {
+   "name": "reflexivity",
+   "defect": "Me-App's premise sits at the pushed stack; Pv-Sta refuses"
+  },
+  "19": {
+   "name": "weakening of context",
+   "defect": ""
+  },
+  "20": {
+   "name": "weakening, auxiliary",
+   "defect": ""
+  },
+  "21": {
+   "name": "weakening, promotion",
+   "defect": ""
+  },
+  "22": {
+   "name": "weakening, equivalence",
+   "defect": ""
+  },
+  "23": {
+   "name": "narrowing preserves wf",
+   "defect": ""
+  },
+  "24": {
+   "name": "narrowing a promotion",
+   "defect": "wf conclusion argued by an induction that would prove every term wf"
+  },
+  "25": {
+   "name": "narrowing, equivalence",
+   "defect": ""
+  },
+  "26": {
+   "name": "narrowing prevalidity",
+   "defect": ""
+  },
+  "27": {
+   "name": "reduction preserves subtyping",
+   "defect": "cites Ws-Lf1 where Ws-Rgh is meant"
+  },
+  "28": {
+   "name": "substitution preserves prevalidity",
+   "defect": ""
+  },
+  "29": {
+   "name": "promotion under subst, outside Co",
+   "defect": ""
+  },
+  "30": {
+   "name": "promotion under subst, inside Co",
+   "defect": ""
+  },
+  "31": {
+   "name": "reduction under substitution",
+   "defect": ""
+  },
+  "32": {
+   "name": "reduction under subst, auxiliary",
+   "defect": ""
+  },
+  "33": {
+   "name": "congruence of ≤",
+   "defect": "swaps which side of ≤ promotes and which equivalence-reduces"
+  },
+  "34": {
+   "name": "congruence of ⟶≤",
+   "defect": ""
+  },
+  "35": {
+   "name": "congruence of ⟶≡",
+   "defect": ""
+  },
+  "36": {
+   "name": "context weakening",
+   "defect": ""
+  }
+ },
+ "detail": {
+  "1": {
+   "account": "<strong>Reduced to Lemma 2 plus four named statements</strong>, by induction on the promotion, with no measure anywhere — the diamond absorbs the one case that would need one. The paper's own proof cites Lemma 2, so the two are sequential rather than mutual, and this is that reduction carried out.<br><br>Five of the eight cases are discharged outright: <code>Ms-Equ</code> is a single application of Lemma 2 and the only place it is used; <code>Ms-Top</code> joins at <code>⊤</code>; <code>Ms-Pro</code> reads the annotation's reduct off the context reduction by <code>↣-sub</code>; <code>Ms-App</code> recurses at the pushed stack, which is what <code>Ct-Stk</code> exists for; and <code>Me-TAp</code> against <code>Ms-App</code> collapses to <code>⊤</code>.<br><br>What remains is not of one weight. <code>Fun-Fun</code> and <code>FOp-FOp</code> are locally nameless bookkeeping over an induction hypothesis that does apply. <code>↣-Prevalid</code> is a fact about <code>↣</code> alone. <code>Bet-App</code> is the one with mathematical content — the case where the printed β-rule puts the two body premises in different contexts.<br><br>Still assumed downstream: nothing is rewired, so <code>MPSS.Transitivity</code> continues to take Lemma 1 as one hypothesis rather than four.",
+   "agda": {
+    "quote": "Case Me-Pro with Ms-Pro:",
+    "paper": "-- the paper opens a case for a variable that both promotes and unfolds.\n-- Ms-Pro reads a subtype annotation, Me-Pro an equivalence one:\n\n  Ms-Pro : Γ ∣ s prevalid → x ≤ t ∈ Γ           → Γ ∣ s ⊢ fvar x ⟶ˢ t\n  Me-Pro : Γ ∣ s prevalid → x ≐ α ∈ Γ → …       → Γ ∣ s ⊢ fvar x ⟶ᵉ α'",
+    "err": "",
+    "ours": "clash : ∀ {Γ x α t} → Γ prevalid → x ≐ α ∈ Γ → x ≤ t ∈ Γ → _\nclash (Pv-Ctx pv x∉ _ _) (there me) (here refl) = x∉ (∈-dom me)\nclash (Pv-EqA pv x∉ _ _) (here refl) (there ms) = x∉ (∈-dom ms)\nclash (Pv-Ctx pv _ _ _)  (there me) (there ms)  = clash pv me ms\nclash (Pv-EqA pv _ _ _)  (there me) (there ms)  = clash pv me ms\n\nLem-1 (Me-Pro pv me _) (Ms-Pro pv' ms) d =\n  ⊥-elim (clash (prevalid-ctx pv) me ms)",
+    "note": "A prevalid context gives each name one annotation of one kind — <code>Pv-Ctx</code> and <code>Pv-EqA</code> both demand the name be absent from the domain below. So the two memberships cannot both hold, and the case is vacuous. This is not an error in the proof: an impossible case discharged by hand costs nothing but the reader's time. It is recorded because a case list is a claim about what can occur, and this one over-counts."
+   }
+  },
+  "2": {
+   "account": "Not proved here, and assumed. The printed induction carries no well-founded measure: its hypothesis is applied to <code>α₀ ⟶≡ α₂</code>, built from the lemma's own hypothesis by <code>Ct-Ann</code> and weakening, which is a subderivation of neither argument and of unrelated size. Four families of candidate measures fail, and the obstruction is stable — <code>Me-Pro</code> needs a variable lookup to outweigh its annotation at the current stack, while <code>Me-FOp</code> needs a stack entry to outweigh the variable it becomes.<br><br>It is now the load-bearing assumption: <code>MPSS.Commutation</code> derives Lemma 1 from it as a black box, so the diamond is the single result the commutation theorem waits on. The two also share an obstruction — the <code>Me-App</code>/<code>Me-Bet</code> case needs the abstraction body's two premises in the same context, which the printed β-rule denies and the repair restores.",
+   "faults": [
+    {
+     "q": "By multiple use of the rule Ct-Ann, we have Γ₀′;nil ⊢ α₀ ⟶≡ α₂.",
+     "note": "This derivation is built from the lemma's own hypothesis Γ₀;s₀ ↣ Γ₂;s₂, not taken from either derivation being inducted on. The induction hypothesis is therefore applied to something that is not a subderivation and whose size nothing bounds."
+    },
+    {
+     "q": "We now proceed by induction on the derivation tree of Γ₀;s₀ ⊢ t₀ ⟶≡ t₁.",
+     "note": "The two edges are also not consistently oriented: in this case the hypothesis lands on a subderivation of the edge the case names as the other one, and in the mirror orientation the roles swap. No single edge carries the induction."
+    }
+   ],
+   "agda": {
+    "quote": "",
+    "paper": "",
+    "err": "",
+    "ours": "",
+    "note": "Not transcribable as a single step: the fault is in the shape of the induction over the whole proof, not in one rule application. The induction hypothesis is applied to α₀ ⟶≡ α₂, a derivation built from the lemma's own hypothesis by Ct-Ann and weakening — so there is no line to write down that Agda would reject, only a recursion whose termination cannot be justified."
+   }
+  },
+  "3": {
+   "account": "Induction on the collapsed derivation. Transitivity of the single-step relation, proved by pushing an equivalence step along the left: past <code>As-Left-1</code> that crosses a promotion and spends Lemma 1, past <code>As-Left-2</code> it crosses an equivalence step and spends Lemma 2. Both are applied at <code>Ct-Refl</code> — transitivity never moves the context."
+  },
+  "4": {
+   "account": "Induction on local closure, reading the well-formedness derivation alongside. The application case is the only one that consults the derivation, and Theorem 11 is what excludes a stuck <code>⊤</code> in operator position. Reuses v1's context-free normal-form and ↦ machinery."
+  },
+  "5": {
+   "account": "Proposition 27 with Lemma 6 supplying the reduct's well-formedness. The step Proposition 27 needs is isolated as <code>push≡*wf</code>, which absorbs any equivalence step on the left through <code>Ws-Rgh</code> and needs nothing assumed.",
+   "faults": [
+    {
+     "q": "hence Γ ⊢ t′ ≤*wf t by rule Ws-Rgh.",
+     "note": "Ws-Rgh needs an equivalence step Γ;nil ⊢ t ⟶≡ t′. All that is in hand is the operational step t ↦ t′, and bridging them is Proposition 17 — not cited here, and refuted."
+    }
+   ],
+   "agda": {
+    "quote": "hence Γ ⊢ t′ ≤*wf t by rule Ws-Rgh.",
+    "paper": "paper-5 : ∀ {Γ t t'} → Γ ⊢ t wf → t ↦ t' → Γ ⊢ t' ⊑wf[ sub-m ] t\npaper-5 w st = Ws-Rgh (Ws-Rfl (wf⇒prevalid w)) st",
+    "err": "error: [UnequalTerms]\n(t ↦ t') !=< (Γ ∣ [] ⊢ t ⟶ᵉ t')\nwhen checking that the expression st has type Γ ∣ [] ⊢ t ⟶ᵉ t'",
+    "ours": "ours-5 : Prop-17ʳ → ∀ {Γ t t'} → Γ ⊢ t wf → fv t ⊑ dom Γ → t ↦ t'\n       → Γ ⊢ t' ⊑wf[ sub-m ] t\nours-5 prop-17 w ft st =\n  Ws-Rgh (Ws-Rfl (wf⇒prevalid w))\n         (prop-17 (Pv-Nil (wf⇒prevalid w)) (wf⇒lc w) ft st)",
+    "note": "The typechecker spells out the missing citation: bridging ↦ and ⟶≡ is Proposition 17, which this proof never mentions — and which is refuted."
+   }
+  },
+  "6": {
+   "account": "Induction on <code>t ↦ t′</code>. The β case is the content: <code>Wf-App</code> records the operand below the domain <code>z</code> while <code>Wf-Fun</code> binds the body under the operator's own annotation <code>u</code>, and inversion plus Lemmas 15 and 16 are what relate the two before Lemma 7 substitutes."
+  },
+  "7": {
+   "account": "Three mutually recursive functions over the three mutually inductive judgements. The sub-induction returns a diagram — <code>a ⟶≡↠ a′</code>, <code>b ⟶≡↠ c</code>, <code>b′ ⟶≡↠ c</code>, and <code>a′ ≤*wf b′</code> unless <code>a′ = b′</code> — so equivalence steps accumulate as reduction sequences rather than as <code>⊑wf</code> steps needing to be starred. Well-formedness is then needed only at the chain's endpoints, where <code>Ws-Sub</code> supplies it, and at the <code>Ws-Lf2</code> nodes, where it is a premise.",
+   "faults": [
+    {
+     "q": "First, we establish that Γ,Γ′[x\\α] is prevalid by",
+     "note": "Lemma 28 only ever substitutes the annotation t, never the arbitrary α of this statement, so as cited it does not apply. The general form is true given fv α ⊆ dom Γ, which Γ ⊢ α ≤*wf t supplies."
+    }
+   ],
+   "agda": {
+    "quote": "First, we establish that Γ,Γ′[x\\α] is prevalid by",
+    "paper": "Lem-28-as-printed : Set\nLem-28-as-printed = ∀ (Δ : Ctx) {Γ x c t}\n                  → (Δ ++ (x , c , t) ∷ Γ) prevalid\n                  → (substCtx x t Δ ++ Γ) prevalid\n\npaper-7 : Lem-28-as-printed\n        → ∀ (Δ : Ctx) {Γ x c t α}\n        → (Δ ++ (x , c , t) ∷ Γ) prevalid → (substCtx x α Δ ++ Γ) prevalid\npaper-7 l28 Δ pv = l28 Δ pv",
+    "err": "error: [UnequalTerms]\nt != α of type Tm\nwhen checking that the expression pv has type Δ ++ (x , c , α) ∷ Γ prevalid",
+    "ours": "ours-7 : ∀ (Δ : Ctx) {Γ x c t α}\n       → LC α → fv α ⊑ dom Γ\n       → (Δ ++ (x , c , t) ∷ Γ) prevalid → (substCtx x α Δ ++ Γ) prevalid\nours-7 Δ lα fα pv = Lem-28-ctx Δ lα fα pv",
+    "note": "The printed lemma substitutes the annotation and only the annotation. The general form is true given α locally closed and scoped, both of which Γ ⊢ α ≤*wf t supplies — so the citation is repairable, but not as it stands."
+   }
+  },
+  "8": {
+   "account": "Neither proved nor refuted. Assumed, and restated without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so demanding every term in the context be locally closed would assume something strictly weaker than the paper conjectures."
+  },
+  "9": {
+   "account": "Case split on whether the source and target form a covariant pair, decided on the <em>terms</em> by <code>coPair?</code>. The covariant branch hands Conjecture 8 its context; the other hands <code>Ws-Lf2</code> a promotion. The <code>Ms-Pro</code> case is the whole content of the split: promoting the removed variable yields its own annotation, which is exactly <code>CoPair</code> at the empty context.",
+   "faults": [
+    {
+     "q": "Hence, by rule Ws-Lft,",
+     "note": "There is no rule Ws-Lft. The step carries a promotion, so the rule is Ws-Lf2, whose well-formedness premises this lemma already assumes — the paper attaches them to the following Ws-Sub instead."
+    }
+   ],
+   "agda": {
+    "quote": "Hence, by rule Ws-Lft,",
+    "paper": "paper-9 : ∀ {Γ v v' t} → Γ ⊢ v wf → Γ ∣ [] ⊢ v ⟶ˢ v' → Γ ⊢ v' ⊑wf[ sub-m ] t\n        → Γ ⊢ v ⊑wf[ sub-m ] t\npaper-9 w st d = Ws-Lft st d",
+    "err": "error: [NotInScope]\nNot in scope: Ws-Lft\n  (did you mean '_⊢_⊑wf[_]_.Ws-Lf1' …)",
+    "ours": "ours-9 : ∀ {Γ v v' t} → Γ ⊢ v wf → Γ ∣ [] ⊢ v ⟶ˢ v' → Γ ⊢ v' wf → Γ ⊢ v' ⊑wf[ sub-m ] t\n       → Γ ⊢ v ⊑wf[ sub-m ] t\nours-9 w st w' d = Ws-Lf2 w st w' d",
+    "note": "The step carries a promotion, so the rule is Ws-Lf2 — which also wants both sides well-formed, premises the lemma already has and the paper attaches to the following Ws-Sub instead."
+   }
+  },
+  "10": {
+   "account": "Once Theorem 3 has collapsed the derivation this is direct constructor analysis. Out of an abstraction, promotion is <code>Ms-Top</code>, <code>Ms-Equ</code>, <code>Ms-Fun</code> or <code>Ms-FOp</code> and equivalence reduction is <code>Me-Fun</code> or <code>Me-FOp</code>: <code>Ms-Top</code> is killed by <code>Top≰lam</code>, <code>Ms-Fun</code> and <code>Ms-FOp</code> leave the annotation alone, the rest move it one step."
+  },
+  "11": {
+   "account": "The single-step form needs no commutation at all and is proved outright: <code>⊤</code> promotes only to itself, an abstraction equivalence-reduces only to an abstraction, so the two never meet. The printed form over the transitive relation is then one application of Theorem 3 away."
+  },
+  "12": {
+   "account": "Direct induction on the well-subtyping derivation, reading the well-formedness off <code>Ws-Sub</code>'s premises."
+  },
+  "13": {
+   "account": "Direct induction. Worth noting the shift the modes force: <code>Ws-Lf1</code> takes an equivalence step where <code>As-Left-1</code> demands a promotion, so the subtyping reading routes through <code>Ms-Equ</code>."
+  },
+  "14": {
+   "account": "The equivalence-mode counterpart of Proposition 13, by the same induction."
+  },
+  "15": {
+   "account": "Induction on <code>⊑wf[eqv-m]</code>, exchanging <code>Ws-Lf1</code> and <code>Ws-Rgh</code>."
+  },
+  "16": {
+   "account": "Induction on <code>⊑wf[eqv-m]</code>, keeping each rule and changing only the mode index."
+  },
+  "17": {
+   "account": "<strong>Refuted by counterexample, on a well-formed subject.</strong> With <code>T = λz≤⊤.⊤</code> and <code>y ≤ λq≤T.⊤</code>, the redex <code>(λx≤T. y x) T</code> is well-formed, locally closed, scoped in the domain, and steps operationally to <code>y T</code> — and has no equivalence step to it. Exhaustive case analysis on the derivation: <code>Me-App</code> cannot produce a variable in operator position, and <code>Me-Bet</code>'s body premise is stuck.",
+   "faults": [
+    {
+     "q": "the result holds by rule Me-Bet and",
+     "note": "To match Os-Bet's contractum the proof must instantiate u′ := u, so it needs Γ;s ⊢ u ⟶≡ u where u is the redex body, with the parameter free and Γ not binding it. Me-App pushes operands and Pv-Sta scopes everything pushed, so when the body passes its parameter as an operand no such derivation exists — with or without Proposition 18."
+    }
+   ],
+   "agda": {
+    "quote": "the result holds by rule Me-Bet and",
+    "paper": "-- Me-Bet itself applies. Its body premise is the problem, and it is refutable:\nbody-stuck : ∀ {x w} → x ∉ dom Γ₀ → Γ₀ ∣ [] ⊢ (Body ^ fvar x) ⟶ᵉ w → ⊥\nbody-stuck x∉ (Me-App d _) with ⟶ᵉ-prevalid d\n... | Pv-Sta _ _ f = x∉ (f (here refl))",
+    "err": "",
+    "ours": "no-step : ¬ (Γ₀ ∣ [] ⊢ R ⟶ᵉ app (fvar 0) T)\nno-step d = no-step′ d refl",
+    "note": "Here the rule application is not the problem; supplying its body premise is. The body passes the parameter as an operand, so Me-App's own prevalidity at the pushed stack forces the parameter into dom Γ₀ — and it is fresh. No reflexivity, repaired or otherwise, produces that derivation."
+   }
+  },
+  "18": {
+   "account": "<strong>Refuted by counterexample.</strong> <code>y y</code> at the empty context: <code>Me-App</code> takes its operator premise at the stack <code>y::nil</code>, and <code>Pv-Sta</code> grants prevalidity there only when <code>fv(y) ⊆ ∅</code>. Refuted in four forms — both relations, and each with the local-closure and prevalidity hypotheses the paper omits — so no reading of &ldquo;term&rdquo; or &ldquo;extended context&rdquo; rescues it. The repaired form, reflexivity with <code>fv u ⊆ dom Γ</code>, is proved as <code>⟶ᵉ-refl</code>.",
+   "faults": [
+    {
+     "q": "noting that the",
+     "note": "Me-App takes its operator premise at the pushed stack v::s, and every leaf there carries Γ;v::s prevalid, which Pv-Sta grants only when fv(v) ⊆ dom Γ. The proof observes which rule occurs at an application node without ever checking that the premise's extended context is prevalid."
+    },
+    {
+     "q": "By straightforward induction on the derivation trees of",
+     "note": "That is the object being constructed, not a given. The induction can only be on u."
+    }
+   ],
+   "agda": {
+    "quote": "at the rest of the nodes only rules Me-App, Me-Fun, and Me-FOp occur",
+    "paper": "paper-18 : ∀ {Γ s u v} → Γ ∣ s ⊢ u ⟶ᵉ u → Γ ∣ [] ⊢ v ⟶ᵉ v\n         → Γ ∣ s ⊢ app u v ⟶ᵉ app u v\npaper-18 du dv = Me-App du dv",
+    "err": "error: [UnequalTerms]\ns != (v ∷ s) of type (List Tm)\nwhen checking that the expression du has type Γ ∣ v ∷ s ⊢ u ⟶ᵉ u",
+    "ours": "no-refl : ¬ ([] ∣ [] ⊢ selfapp ⟶ᵉ selfapp)\nno-refl (Me-App d _) = no-push (⟶ᵉ-prevalid d)\n\nprop-18ᵉ-lc-false : ¬ Prop-18ᵉ-lc\nprop-18ᵉ-lc-false refl-lc =\n  no-refl (refl-lc (Pv-Nil Pv-Emp) lc-selfapp)",
+    "note": "The left column is why the <em>proof</em> fails; the right is why the <em>proposition</em> does. Those are different claims, and only the second refutes anything. With <code>selfapp = y y</code> at the empty context, <code>Me-App</code>'s operator premise sits at the stack <code>y::nil</code>, and <code>Pv-Sta</code> grants prevalidity there only when <code>fv(y) ⊆ ∅</code>.<br><br>A repaired step does exist and is proved — <code>⟶ᵉ-refl</code> in <code>MPSS.StackPush</code> takes the operator premise at the pushed stack and asks for <code>fv u ⊆ dom Γ</code>, the hypothesis the proposition omits. That is a repair of the statement, not a proof of it."
+   }
+  },
+  "19": {
+   "account": "Induction over the three judgements, threading the inserted context block through every membership and scoping side condition."
+  },
+  "20": {
+   "account": "Membership under context insertion, and the domain inclusion it rests on."
+  },
+  "21": {
+   "account": "Promotion under context insertion."
+  },
+  "22": {
+   "account": "Equivalence reduction under context insertion."
+  },
+  "23": {
+   "account": "The same three-function shape as Lemma 7, and the same diagram. Narrowing changes no terms, so every case is free of substitution's transport; what it costs instead is that the promotion at a <code>Ws-Lf2</code> does not survive intact, so the step is rebuilt, its new target shown well-formed, and the old target reconnected by one <code>Ws-Rgh</code>."
+  },
+  "24": {
+   "account": "The first two conclusions by induction on the promotion, with the join strengthened from <code>⟶≤</code> to <code>⟶≡</code>. The third — that the new target is well-formed — is the one the paper's argument does not establish, and is proved separately: <code>Co-wf</code> and <code>Co-step</code> together in <code>MPSS.CoNarrow</code>, by induction on the covariant context's depth, which opening preserves. The rebuilt promotion is <code>cp-promote</code> in <code>MPSS.CoPromote</code>, built from the covariant context rather than from the old derivation — which is what keeps <code>Ms-Fun</code>'s cofinite family uniform.",
+   "faults": [
+    {
+     "q": "by induction on the structure of v′.",
+     "note": "Well-formedness is not a structural property — Wf-App carries subtyping premises. Three of the four cases below use no hypothesis relating v′ to u, so the argument would prove every term well-formed, and ⊤ ⊤ is not."
+    },
+    {
+     "q": "Because a′ is a but with a promotion of x to t in head position, we have",
+     "note": "In the narrowed context x promotes to t′, not t, so Ws-Lf2 gives a′ ≤wf a — the other way round. Nor does the correct orientation help: a′ ≤*wf B together with a′ ≤wf a says nothing about a, which would need ⟶≤ to be confluent."
+    }
+   ],
+   "agda": {
+    "quote": "by induction on the structure of v′.",
+    "paper": "paper-24 : ∀ {Γ x} → Γ prevalid → Γ ⊢ fvar x wf\npaper-24 pv = Wf-PrS pv (here refl)",
+    "err": "error: [UnequalTerms]\n_x_9 ∷ _xs_10 != Γ of type List …",
+    "ours": "ours-24 : ∀ {Γ x t} → Γ prevalid → x ≤ t ∈ Γ → Γ ⊢ fvar x wf\nours-24 pv m = Wf-PrS pv m",
+    "note": "A variable is well-formed only when the context has an entry for it, and the case gives no hypothesis relating v′ to anything. An induction of that shape would prove every term well-formed, and ⊤ ⊤ is not."
+   }
+  },
+  "25": {
+   "account": "Narrowing a <em>subtype</em> annotation is invisible to <code>⟶≡</code>, because <code>Me-Pro</code> reads only equivalence annotations. So no rule consults the changed entry and only prevalidity has to be rebuilt."
+  },
+  "26": {
+   "account": "Induction along the context. Domains are untouched by narrowing, so every scoping side condition survives a rewriting; the entry itself needs the new annotation locally closed and scoped in the older part, which reduction supplies."
+  },
+  "27": {
+   "account": "<code>Ws-Rfl</code> gives <code>u′ ⊑wf u′</code>; <code>Ws-Rgh</code> walks the right-hand side back along <code>u ⟶≡ u′</code>; <code>Ws-Sub</code> lifts that to the transitive closure and <code>Ws-Trs</code> composes. Isolated as <code>push≡*wf</code>, which works for any equivalence step in either mode.",
+   "faults": [
+    {
+     "q": "By rule Ws-Rfl and Ws-Lf1, we have Γ ⊢ u′ ≤wf u.",
+     "note": "Ws-Lf1 moves the left-hand side, so from u ⟶≡ u′ it yields Γ ⊢ u ≤wf u′ — the reverse of what is claimed. The rule that gives the stated conclusion is Ws-Rgh, which the paper's own Theorem 5 cites for this same step."
+    }
+   ],
+   "agda": {
+    "quote": "By rule Ws-Rfl and Ws-Lf1, we have Γ ⊢ u′ ≤wf u.",
+    "paper": "paper-27 : ∀ {Γ u u'} → Γ prevalid → Γ ∣ [] ⊢ u ⟶ᵉ u' → Γ ⊢ u' ⊑wf[ sub-m ] u\npaper-27 pv e = Ws-Lf1 e (Ws-Rfl pv)",
+    "err": "error: [UnequalTerms]\nu != u' of type Tm\nwhen checking that the expression e has type Γ ∣ [] ⊢ u' ⟶ᵉ _v'_11",
+    "ours": "ours-27 : ∀ {Γ u u'} → Γ prevalid → Γ ∣ [] ⊢ u ⟶ᵉ u' → Γ ⊢ u' ⊑wf[ sub-m ] u\nours-27 pv e = Ws-Rgh (Ws-Rfl pv) e",
+    "note": "Ws-Lf1 moves the left-hand side, so it wants the step to start at u′. Ws-Rgh moves the right, which is the side the conclusion actually moves."
+   }
+  },
+  "28": {
+   "account": "Proved for an arbitrary scoped substituend, not only for the annotation. Substitution never changes a domain, so scoping transfers by rewriting; the content is that <code>x</code> cannot survive its own substitution, which is what lets the middle entry be dropped from the domain — so <code>fv-subst</code> returns the disequality alongside the membership."
+  },
+  "29": {
+   "account": "Merged with Lemma 30 into one dichotomy, decided before the induction by <code>coPair?</code> rather than during it."
+  },
+  "30": {
+   "account": "The side condition is moved from the derivation to the term. Every promotion derivation runs down a covariant spine to its leaf, since the structural rules are exactly <code>Ms-App</code> into an operator and <code>Ms-Fun</code>/<code>Ms-FOp</code> into a body, so a term with no covariant spine ending at <code>x</code> admits no derivation promoting it. That matters because a condition on a derivation cannot be carried into a cofinite family, where different witnesses could take different rules."
+  },
+  "31": {
+   "account": "Induction over <code>⟶≡</code>, with <code>subst-open</code> commuting substitution past the cofinite openings at each binder."
+  },
+  "32": {
+   "account": "The promotion counterpart, plus the opening form <code>⟶ᵉ-open</code> proved without a scoping hypothesis."
+  },
+  "33": {
+   "account": "Direct induction on <code>⊲</code>, applying the matching reduction rule at each node — so it does not go through the common reduct, and does not depend on Lemmas 34 and 35 at all. The transitive form is stated over a relation carrying local closure at its transitivity nodes, which <code>Ast-Trans</code> does not record and which is an artefact of locally nameless encoding rather than a defect.",
+   "faults": [
+    {
+     "q": "Γ;v::s ⊢ u ⟶≡↠ t and Γ;v::s ⊢ u′ ⟶≤↠ t.",
+     "note": "Swapped. The paper's own definition of ≤ has the left side promote and the right equivalence-reduce, as do rules As-Left-1 and As-Right. Both congruences hold, so only the attribution is wrong."
+    }
+   ],
+   "agda": {
+    "quote": "Γ;v::s ⊢ u ⟶≡↠ t and Γ;v::s ⊢ u′ ⟶≤↠ t.",
+    "paper": "paper-33 : ∀ {Γ s v v' t} → Γ ∣ s ⊢ v ⟶ᵉ v' → Γ ∣ s ⊢ v' ⊲[ sub-m ] t\n         → Γ ∣ s ⊢ v ⊲[ sub-m ] t\npaper-33 e d = As-Left-2 e d",
+    "err": "error: [UnequalTerms]\neqv-m != sub-m of type Mode",
+    "ours": "ours-33 : ∀ {Γ s v v' t} → Γ ∣ s ⊢ v ⟶ˢ v' → Γ ∣ s ⊢ v' ⊲[ sub-m ] t\n        → Γ ∣ s ⊢ v ⊲[ sub-m ] t\nours-33 st d = As-Left-1 st d",
+    "note": "The mode index catches it: an equivalence step on the left is the equivalence reading, and in the subtyping reading the left side takes a promotion. Both congruences hold, so the lemma stands and only the attribution is wrong."
+   }
+  },
+  "34": {
+   "account": "A plain map over the chain. <code>MPSS.Wrap</code>'s single-step lemmas close the open term with <code>closeRec 0 x</code> on both sides, so consecutive steps line up with no further transport. <code>Ms-App</code> carries the operand through untouched."
+  },
+  "35": {
+   "account": "The same map, with one difference worth naming: <code>Me-App</code> reduces the operand too, so keeping it fixed needs <code>v ⟶≡ v</code>. That is the repaired Proposition 18, and it is available precisely here — the derivation's own prevalidity at <code>v::s</code> yields <code>LC v</code> and <code>fv v ⊆ dom Γ</code> through <code>Pv-Sta</code>."
+  },
+  "36": {
+   "account": "Induction on the context reduction. The stack rule contributes nothing to the context, so <code>Ct-Stk</code> is simply dropped."
+  }
+ },
+ "deps": {}
+}
