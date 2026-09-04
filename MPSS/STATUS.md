@@ -40,7 +40,14 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | --- | --- | --- |
 | 17 | `u ↦ v` implies `Γ;s ⊢ u ⟶≡ v` | `BetaScope`, `BetaScopeWf` |
 | 18 | reflexivity, as printed | `ReflFails` |
-| — | `⟶≡` preserves well-formedness (not a paper claim) | `EqvWf` |
+| — | `⟶≡` preserves well-formedness | `EqvWf` |
+| — | promotion is stack-monotone | `Diff` |
+| — | a stack typing obligation suffices for the `Ms-Fun`/`Ms-FOp` replay | `StackObligation` |
+| — | the `Reach` obligation, at arbitrary stacks | `ReachFails` |
+
+Only the first two rows are claims of the paper's. The last three are facts about MPSS, about a
+proposed repair, and about this development's own reduction of Conjecture 8; `AUDIT.md` says which
+is which, since only a refuted *paper* claim calls for a diagnosis and an assumed repair.
 
 ## Assumed
 

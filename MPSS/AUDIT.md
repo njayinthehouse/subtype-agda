@@ -185,6 +185,52 @@ where they would need a typing one. It is not evidence against Lemma 23.
 
 ---
 
+## Equivalence reduction does not preserve well-formedness
+
+`MPSS/EqvWf`. **Not a paper claim** — the paper never states it, and its Lemma 7 technique avoids
+needing it. There is therefore no reasoning to diagnose and nothing to assume. It is recorded here
+because it is a fact about MPSS worth knowing, and because it rules out the naive route to
+Lemma 23.
+
+`Γ₀ = x ≡ (Top Top)` is a legal context: prevalidity asks an annotation only to be locally closed
+and scoped, never well-formed. `Wf-PrE` then calls `x` well-formed on the strength of the
+annotation existing, `Me-Pro` unfolds it, and `Top Top` is not well-formed, since `Wf-App` would
+place `Top` below an abstraction. So well-formedness is not stable under the reduction its own
+subtyping relation is built from, and the cause is that contexts carry a scoping condition where
+they would need a typing one.
+
+Conditional on Lemmas 1 and 2, through Theorem 11.
+
+---
+
+## Negative results that are not refutations of the paper
+
+Three further machine-checked negations sit in their own modules. None contradicts anything the
+paper asserts, so none carries a diagnosis of a proof or an assumed repair; they are recorded here
+so that the audit's coverage is complete.
+
+**Promotion is not stack-monotone** (`MPSS/Diff`, `push-is-false`). Equivalence reduction is —
+that is `pushᵉ` in `MPSS/StackPush`, and `MPSS/CoNarrow` uses it. Promotion is not, and the reason
+is structural rather than incidental: pushing onto a non-empty stack turns `Ms-Fun` into `Ms-FOp`,
+which binds the parameter with an *equivalence* annotation instead of a subtype one, and `Ms-Pro`
+reads subtype annotations. A body that promotes its own parameter therefore has no counterpart.
+This is why `MPSS/CoPromote` builds a covariant promotion at an arbitrary stack from the start
+rather than building it at `nil` and pushing.
+
+**Recording a typing obligation on the stack does not suffice** (`MPSS/StackObligation`). This
+tests a *repair* of my own devising, not the paper: `Pv-Sta` demands only scoping of a stack
+entry, so one might add the obligation that it lies below the annotation it will meet. Replaying a
+body derivation under `x ≡ α` given `α ≤ t` fails in one step and succeeds in many, and that gap
+is the answer — the obligation alone is not enough.
+
+**The `Reach` obligation is false at arbitrary stacks** (`MPSS/ReachFails`). `Reach` is mine, not
+the paper's: `MPSS/Push` reduces Conjecture 8's structural content to it. The refutation shows the
+reduction is too strong as stated. It leaves the restricted form standing — the witness's applied
+term is not well-formed — and so establishes that well-formedness is load-bearing in the
+obligation rather than a convenience.
+
+---
+
 ## Lemma 2: the induction is not well-founded as written
 
 This is an analysis of the proof, not a refutation of the statement. No counterexample to the
@@ -248,7 +294,7 @@ specifically an accounting for the `Me-Pro`/`Me-FOp` interaction.
 
 ---
 
-## Lemma 24: the well-formedness conclusion is not established
+## Lemma 24: the well-formedness conclusion, whose printed proof does not establish it
 
 > **Lemma 24 (Narrowing of context in subtyping reductions).** […] Then there exists a term `v′`
 > such that `Γ, x≤t′, Γ′; nil ⊢ u ⟶≤ v′`, and `Γ, x≤t′, Γ′; nil ⊢ v ⟶≤ v′`, and
