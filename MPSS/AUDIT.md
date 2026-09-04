@@ -310,3 +310,54 @@ keeps `Ms-Fun`'s cofinite family uniform, the difficulty that a derivation-direc
 into. `MPSS/Lemma23` then proves Lemma 23 outright.
 
 So the defect is in the argument, not the claim.
+
+### A further measure candidate, and why the generality is forced
+
+The most promising measure not covered above unrolls the stack into the binders, so that the two
+rules in tension are reconciled by construction:
+
+> `D Γ s (app a b) = max (D Γ (b::s) a) (1 + D Γ [] b)`
+> `D Γ (α::s) (λw.b) = max (D Γ [] w) (D (Γ, z ≡ α) s (b ^ z))`
+> `D Γ [] (λw.b) = max (D Γ [] w) (D (Γ, z ≤ w) [] (b ^ z))`
+> `D Γ s x = 1 + D Γ s α` for `x ≡ α ∈ Γ`, and `0` for a subtype-annotated or unbound `x`
+
+Giving a subtype-annotated variable weight zero is sound and is what makes this candidate go
+further than the others: `Me-Pro` reads *equivalence* annotations only, so a variable bound by
+`Me-Fun` can never be promoted, and only `Me-FOp` — which binds the parameter to the stack head —
+introduces a variable that can. `Me-App` is then non-increasing because `(a b) · s = a · (b::s)`,
+`Me-FOp` because the stack head's weight is already charged to the binder it becomes, and
+`Me-Pro` strictly decreasing by construction.
+
+It fails at the definition rather than at a case. `D Γ s x = 1 + D Γ s α` recurses on the
+annotation at the *same stack*, and while an annotation's free variables are scoped strictly
+earlier in the context, the stack's are not, so no lexicographic combination of context position
+with term and stack size is decreasing. Bounding the variable's weight instead — computing it once
+at the empty stack — breaks `Me-Pro`, since a variable's weight must then dominate its
+annotation's weight *at whatever stack is current*, and the stack is unbounded relative to the
+context.
+
+That is the obstruction in its sharpest form, and it is the same one throughout: `Me-Pro` and
+`Me-FOp` pull in opposite directions on how a stack entry and the variable it becomes should be
+weighed.
+
+### The generality of Lemma 2's statement is forced
+
+Lemma 2 concludes at arbitrary `Γ₁;s₁` and `Γ₂;s₂` with `Γ₀;s₀ ↣ Γᵢ;sᵢ`, which invites the
+question of whether a fixed-context version would do — it would make the `Me-Pro`/`Me-Var` case
+trivial, since `t₃ = α₁` works there with reflexivity and no induction hypothesis at all.
+
+It would not. `Me-App` takes its operator premise at the *pushed* stack `v::s`, and joining two
+`Me-App` steps requires the operator's join at `v₁::s`, where `v₁` is the reduced operand. The
+induction hypothesis supplies it at `v::s`. Only a formulation that lets the stack reduce —
+which is exactly what `Ct-Stk` provides — closes that gap. So the extra generality is not
+incidental, and `Theorem 3`, which uses the lemma only at `Ct-Refl`, still cannot be proved from
+a fixed-context version.
+
+### Where the β-rule defect shows up again
+
+The `Me-App`/`Me-Bet` case of the diamond has to join the abstraction body's two reducts. `Me-FOp`
+takes that premise at `Γ, x ≡ v; s`; `Me-Bet` takes it at `Γ; s`, with the parameter unbound. The
+two are in different contexts, so the induction hypothesis does not apply to them as they stand.
+Under the repair — binding the parameter in `Me-Bet`'s body premise — both sit in the same
+extended context and the case goes through. That is independent evidence for the repair that
+`MPSS/Assumed` justifies on other grounds.
