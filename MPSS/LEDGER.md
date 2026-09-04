@@ -1,12 +1,14 @@
 # The proof ledger
 
-Derived from the sources, not hand-written:
+Derived from the sources, not hand-written. Paths are relative to `1/`; the tools live in
+`../skills/proof-ledger/`, which is symlinked into `~/.claude/skills/` so Claude Code finds it
+from any project.
 
-    python3 ~/.claude/skills/proof-ledger/assets/derive.py \
+    python3 ../skills/proof-ledger/assets/derive.py \
         --paper PSS/pasquale-garciaperez-2407.13882v2.txt --agda MPSS \
         --map MPSS/ledger-map.json --title "MPSS Proof Ledger" -o MPSS/ledger.json
 
-    python3 ~/.claude/skills/proof-ledger/assets/build.py build MPSS/ledger.json \
+    python3 ../skills/proof-ledger/assets/build.py build MPSS/ledger.json \
         --annotations MPSS/ledger-annotations.json -o ledger.html
 
 `ledger.json` is derived and disposable — re-run `derive.py` after any change to the development
