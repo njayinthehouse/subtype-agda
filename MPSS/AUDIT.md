@@ -95,12 +95,10 @@ well-formed (`R-wf`), steps operationally to `y T` (`R↦`), and has no equivale
 
 ### Where it breaks
 
-In the base case, and in two ways.
+In the base case, and in two ways. The independent one comes first, because it is the one that
+survives every repair to Proposition 18.
 
-**First**, it invokes Proposition 18, which is false. That alone sinks the step.
-
-**Second**, and independently of 18's status, the instance of `Me-Bet` the proof needs cannot be
-built. The rule is
+**First**, the instance of `Me-Bet` the proof needs cannot be built at all. The rule is
 
 > `Γ;s ⊢ u ⟶≡ u′    Γ;nil ⊢ v ⟶≡ v′  /  Γ;s ⊢ (λx≤t.u) v ⟶≡ u′[x\v′]`
 
@@ -110,8 +108,25 @@ not merely an instance of reflexivity; it is an instance of reflexivity *at a te
 does not scope*, which is exactly the false case. When the body places `x` in operand position —
 `u = y x` — the `Me-App` node inside needs `Γ; x::s` prevalid, and `Pv-Sta` refuses.
 
-So the two defects are one defect seen twice: `Me-Bet` reduces its body in a context that does not
-bind the parameter, while `Me-App` and `Pv-Sta` together demand that everything pushed be scoped.
+**Second**, it invokes Proposition 18, which is false as printed. This is the weaker of the two
+observations and is recorded only for completeness: the repaired Proposition 18 — reflexivity with
+the scoping premise, proved here as `⟶ᵉ-refl` — does not rescue the step either, because its
+hypothesis `fv u ⊆ dom Γ` fails at exactly the body `Me-Bet` hands it.
+
+So the two propositions share a root cause and not a repair. Proposition 18's repair is to the
+*statement*: add the scoping hypothesis and it becomes true. Proposition 17's repair is to the
+*system*: `Me-Bet` must bind the parameter in its body premise, as `Me-Fun` and `Me-FOp` do. No
+correction to 18 makes 17 true, because 17 is false outright.
+
+Neither refutation is derived from the other. Both are counterexamples — exhaustive case analyses
+showing that *no* derivation exists — and `MPSS/BetaScope` and `MPSS/BetaScopeWf` import nothing
+about reflexivity, or about Proposition 18, at all. A proof that a derivation does not exist
+cannot be parasitic on another statement being false.
+
+Nor is either postulated. Postulating a refuted statement would make the assumption set
+inconsistent with the system and let anything be derived from it, including the very propositions
+under audit; `MPSS/Assumed` therefore carries `Prop-17ʳ`, the repaired form, and carries no
+entry for Proposition 18 at all, its repair being proved rather than assumed.
 
 ### Consequence
 
