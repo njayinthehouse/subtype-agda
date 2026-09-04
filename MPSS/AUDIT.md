@@ -493,3 +493,36 @@ counterexample, and the complete development. Each fails at the same pair of rul
 evidence about the shape a proof must have, not evidence that the diamond is false — no
 counterexample has been found, and its counterpart in v1 is proved, differing exactly by the
 context and stack that create this tension.
+
+### The obstruction, from both sides
+
+`MPSS/Height` now states what a measure has to do — `Measure`, three constraints — and gives two
+candidates that each satisfy part of it, with the gap closed by counterexample rather than left as
+a failed attempt.
+
+| | `dec-pro` | `mono-app` | `mono-fop` |
+| --- | --- | --- | --- |
+| `M`, charging the stack | `ht-unfold` | **`ht-app-false`** | `ht-fop` |
+| `M₂`, charging the operand | same argument | `ht₂-app`, an *equality* | **`ht₂-fop-false`** |
+
+Charging the operand buys `Me-App` outright — moving an operand to the stack becomes the same `⊔`
+reassociated, so the measure is not merely non-increasing but unchanged. It loses `Me-FOp`, because
+the charge then compounds with nesting: with body `⊤ x`, bound `⊤` and `⊤` on the stack, the opened
+body costs 2 while the abstraction and the stack entry cost 1 each. Raising the stack charge only
+moves the failure to a body one application deeper, and the abstraction cannot absorb it — the
+depth is a property of the body, the charge is on the stack.
+
+`dec-pro` is not incidental, and it is worth saying why the diamond needs it at all. At the
+`Me-Var`/`Me-Pro` case the join has to be built from a derivation the *context reduction* supplies,
+which is a subderivation of neither input; no induction on derivation size reaches it, and only a
+measure that `Me-Pro` strictly decreases does. That is the precise sense in which the printed proof
+has no induction principle.
+
+**What is not established.** That no measure exists. The three constraints close no cycle: every
+use of `mono-fop` extends the context, so chaining them builds an ever-larger context rather than
+returning to a configuration already seen, and nothing contradictory follows. A measure reading the
+context's own unfolding depth — which neither candidate does — is not ruled out.
+
+**Position on Lemma 2.** Neither proved nor refuted, and no counterexample found; its v1 counterpart
+is proved, differing exactly by the stack and context that create this tension. Five approaches have
+failed at the same pair of rules, and the failure is now characterised rather than merely repeated.

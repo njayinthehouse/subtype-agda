@@ -20,9 +20,9 @@ Nothing existing is modified.
 
 module MPSS.Height where
 
-open import Data.Nat.Base using (ℕ; zero; suc; _⊔_; _≤_; z≤n; s≤s)
+open import Data.Nat.Base using (ℕ; zero; suc; _⊔_; _≤_; _<_; z≤n; s≤s)
 open import Data.Nat.Properties
-  using (_≟_; ⊔-mono-≤; m≤m⊔n; m≤n⊔m; ≤-refl; ≤-trans; ≤-reflexive; ⊔-lub; ⊔-identityʳ)
+  using (_≟_; ⊔-mono-≤; m≤m⊔n; m≤n⊔m; ≤-refl; ≤-trans; ≤-reflexive; ⊔-lub; ⊔-identityʳ; ⊔-assoc)
 open import Data.List.Base using (List; []; _∷_)
 open import Data.Product.Base using (_,_)
 open import Data.Empty using (⊥-elim)
@@ -30,7 +30,7 @@ open import Data.List.Membership.Propositional using (_∈_; _∉_)
 open import Data.List.Membership.Propositional.Properties using (∈-++⁺ˡ; ∈-++⁺ʳ)
 open import Data.List.Relation.Unary.Any using (here; there)
 open import Relation.Nullary using (Dec; yes; no; ¬_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong₂)
 
 open import MPSS.WellFormed
 ```
@@ -219,13 +219,106 @@ the operand cannot be charged in the term instead: `htm (app a b) = htm a ⊔ su
 charge compound with nesting depth, and the opening lemma above then fails in its own application
 case — which is how this version was arrived at.
 
+## What any measure has to satisfy
+
+Rather than leave the target implicit, here it is — the three constraints a well-founded measure
+for the diamond must meet. `Me-Pro` must strictly decrease it, because the derivation the context
+reduction hands back at that case is a subderivation of neither input and nothing else bounds it;
+and the two rules that move a term between the stack and a binder must not increase it.
+
+```agda
+record Measure : Set where
+  field
+    f        : Ctx → Stack → Tm → ℕ
+    dec-pro  : ∀ {Γ s x α} → Γ prevalid → x ≐ α ∈ Γ → f Γ s α < f Γ s (fvar x)
+    mono-app : ∀ Γ s a b → f Γ (b ∷ s) a ≤ f Γ s (app a b)
+    mono-fop : ∀ Γ {z w α} s b → z ∉ dom Γ → z ∉ fv b → z ∉ fvStack s
+             → f ((z , eqv , α) ∷ Γ) s (b ^ fvar z) ≤ f Γ (α ∷ s) (lam w b)
+```
+
+`M` supplies `dec-pro` and `mono-fop` and, by `ht-app-false`, cannot supply `mono-app`.
+
+## The other way of charging, and the other failure
+
+The obvious repair is to charge the operand where it sits, so that `Me-App` moves a term whose
+charge already travels with it.
+
+```agda
+mutual
+  hvar₂ : Ctx → Name → ℕ
+  hvar₂ []                  x = 0
+  hvar₂ ((y , sub , w) ∷ Γ) x = hvar₂ Γ x
+  hvar₂ ((y , eqv , α) ∷ Γ) x with x ≟ y
+  ... | yes _ = suc (htm₂ Γ α)
+  ... | no  _ = hvar₂ Γ x
+
+  htm₂ : Ctx → Tm → ℕ
+  htm₂ Γ (bvar _)  = 0
+  htm₂ Γ (fvar x)  = hvar₂ Γ x
+  htm₂ Γ Top       = 0
+  htm₂ Γ (lam w b) = htm₂ Γ w ⊔ htm₂ Γ b
+  htm₂ Γ (app a b) = htm₂ Γ a ⊔ suc (htm₂ Γ b)
+
+hstk₂ : Ctx → Stack → ℕ
+hstk₂ Γ []      = 0
+hstk₂ Γ (α ∷ s) = suc (htm₂ Γ α) ⊔ hstk₂ Γ s
+
+M₂ : Ctx → Stack → Tm → ℕ
+M₂ Γ s t = htm₂ Γ t ⊔ hstk₂ Γ s
+```
+
+It buys `mono-app` outright — not merely non-increasing but **exactly equal**, since moving the operand
+to the stack is now the same `⊔` reassociated.
+
+```agda
+ht₂-app : ∀ Γ s a b → M₂ Γ (b ∷ s) a ≡ M₂ Γ s (app a b)
+ht₂-app Γ s a b = sym (⊔-assoc (htm₂ Γ a) (suc (htm₂ Γ b)) (hstk₂ Γ s))
+```
+
+And it loses `mono-fop`, because the charge now compounds with nesting: a parameter sitting under one
+application inside the body costs one more than the stack entry it is bound to, and the enclosing
+abstraction was never charged for that depth. The abstraction cannot be, either — the depth is a
+property of the body and the charge is on the stack.
+
+```agda
+Me-FOp₂-nonincreasing : Set
+Me-FOp₂-nonincreasing = ∀ Γ {z w α} s b → z ∉ dom Γ → z ∉ fv b → z ∉ fvStack s
+                      → M₂ ((z , eqv , α) ∷ Γ) s (b ^ fvar z) ≤ M₂ Γ (α ∷ s) (lam w b)
+
+ht₂-fop-false : ¬ Me-FOp₂-nonincreasing
+ht₂-fop-false h
+  with h [] {z = 0} {w = Top} {α = Top} [] (app Top (bvar 0)) (λ ()) (λ ()) (λ ())
+... | s≤s ()
+```
+
+Take the body `⊤ x`, the bound `⊤`, and `⊤` on the stack. The opened body is `⊤ z` with `z` worth
+`1`, so it costs `2`; the abstraction costs `1` and the stack entry costs `1`. There is no room for
+the extra level, and adding one to the stack charge only moves the failure to a body one
+application deeper.
+
 ## What this establishes
 
-The measure is well defined, `Me-Pro` strictly decreases it, and `Me-Fun`, `Me-FOp` and `Me-Bet`
-leave it alone — so four of the five rules the diamond inducts over are accounted for, machine
-checked.
+`Measure` writes down what a well-founded measure for the diamond has to do, and the module gives
+two candidates that each do part of it, with the gap in each one closed by counterexample rather
+than left as a failed attempt.
 
-`Me-App` is not, and `ht-app-false` says so with a counterexample rather than a failed attempt.
-That turns the obstruction from something observed while searching into something proved: no
-measure of this shape can work, because the `suc` a stack entry must carry for `Me-FOp` is the
-same `suc` `Me-App` cannot pay.
+| | `dec-pro` | `mono-app` | `mono-fop` |
+| --- | --- | --- | --- |
+| `M`, charging the stack | `ht-unfold` | **`ht-app-false`** | `ht-fop` |
+| `M₂`, charging the operand | by the same argument | `ht₂-app`, an equality | **`ht₂-fop-false`** |
+
+`M` additionally survives `Me-Fun` and `Me-Bet` (`ht-fun`, `ht-bet`), so on the paper's own
+induction it accounts for four of the five rules.
+
+The two failures are the same fact seen from either side. `Me-FOp` binds a stack entry to a
+variable worth one more than the entry, so a stack entry has to carry that charge; `Me-App` puts an
+operand on the stack, so the operand has to carry it already. Charge the stack and `Me-App` invents
+a level; charge the operand and the charge compounds with nesting, so a parameter one application
+deep inside a body outgrows the entry it is bound to — and the abstraction cannot be made to cover
+it, because the depth is a property of the body while the charge is on the stack.
+
+What this does **not** establish is that no measure exists. The three constraints do not close a
+cycle: each use of `mono-fop` extends the context, so chaining them builds an ever-larger context
+rather than returning to a configuration already visited, and nothing contradictory follows. A
+measure that reads the context's own unfolding depth, which neither candidate does, is not ruled
+out here.
