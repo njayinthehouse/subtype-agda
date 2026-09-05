@@ -79,6 +79,7 @@ def lookup_eqv(G,x):
     return None
 
 _memo={}
+_stats=[0]          # total elements held in _memo, for a size-based cap
 def reducts(G,s,t):
     key=(G,s,t)
     if key in _memo: return _memo[key]
@@ -118,7 +119,7 @@ def reducts(G,s,t):
             for wp in reducts(G,(),w):
                 for r in reducts(((x,'e',al),)+G,rest,openRec(0,('f',x),b)):
                     out.add(('l',wp,closeRec(0,x,r)))
-    r=frozenset(out); _memo[key]=r; return r
+    r=frozenset(out); _memo[key]=r; _stats[0]+=len(r); return r
 
 def ctx_reducts(G,s):
     out={(G,s)}                                             # Ct-Refl
@@ -144,6 +145,8 @@ ap.add_argument('--ctx',type=int,default=2)      # context entries
 ap.add_argument('--stack',type=int,default=1)    # stack depth
 ap.add_argument('--cr',default='full',choices=['full','refl'])
 ap.add_argument('--shard',default='0/1')
+ap.add_argument('--rcap',type=int,default=1200)   # exhaustive only when |R| <= rcap
+ap.add_argument('--samples',type=int,default=40000)  # random pairs when |R| > rcap
 A=ap.parse_args()
 SH,NSH=map(int,A.shard.split('/'))
 NAMES=['x','y']
@@ -182,37 +185,52 @@ for n in range(1,A.stack+1):
 configs=[(G,s) for G in ctxs for s in stacks if prevalid(G,s)]
 configs=[c for i,c in enumerate(configs) if i%NSH==SH]
 
-checked=0; bad=[]; stuck=[]; ncfg=0
+import random
+rng=random.Random(12345+SH)
+
+def report(kind,item,store):
+    store.append(item); print(kind,item,flush=True)
+
+checked=0; bad=[]; stuck=[]; ncfg=0; nexh=0; nsamp=0; bigmax=0
+MEMO_ELEMS=250000   # cap the memo by terms held, not entries: one entry can hold 40k
 for (G,s) in configs:
     ncfg+=1
-    _memo.clear()
+    _memo.clear(); _stats[0]=0
     crs=[(G,s)] if A.cr=='refl' else list(ctx_reducts(G,s))
     for t in subjects:
+        if _stats[0]>MEMO_ELEMS: _memo.clear(); _stats[0]=0
         if not fv(t)<=dom(G): continue
         R=list(reducts(G,s,t))
         if len(R)<2: continue
-        tab={}; inter={}
-        for t1 in R:
-            ss=[]
-            for cr in crs:
-                x_=reducts(cr[0],cr[1],t1); tab[(t1,cr)]=x_; ss.append(x_)
-                # an empty reduct set is itself a diamond failure: no t3 exists
-                if not x_ and len(stuck)<3:
-                    stuck.append((G,s,t,t1,cr)); print("NO-REDUCT",stuck[-1],flush=True)
-            inter[t1]=frozenset.intersection(*ss) if ss else frozenset()
-        for t1 in R:
-            for t2 in R:
-                # fast path: one witness lies in every set, so every pair meets
-                if inter[t1] & inter[t2]:
-                    checked+=len(crs)*len(crs); continue
-                for c1 in crs:
-                    A1=tab[(t1,c1)]
-                    for c2 in crs:
-                        checked+=1
-                        if not (A1 & tab[(t2,c2)]):
-                            bad.append((G,s,t,t1,t2,c1,c2))
-                            print("COUNTEREXAMPLE",bad[-1],flush=True)
-                            if len(bad)>2: raise SystemExit(1)
-    if ncfg%20==0: print(f"[{SH}] {ncfg}/{len(configs)} {checked}",flush=True)
+        if len(R)<=A.rcap:
+            nexh+=1
+            inter={}
+            for t1 in R:
+                acc=None
+                for cr in crs:
+                    x_=reducts(cr[0],cr[1],t1)
+                    if not x_ and len(stuck)<3: report("NO-REDUCT",(G,s,t,t1,cr),stuck)
+                    acc = x_ if acc is None else (acc & x_)
+                inter[t1]=acc if acc else frozenset()
+            pairs=((a,b) for a in R for b in R)
+            fast=inter
+        else:
+            # |R| too large to square: sample pairs, check each directly.
+            nsamp+=1; bigmax=max(bigmax,len(R))
+            pairs=((rng.choice(R),rng.choice(R)) for _ in range(A.samples))
+            fast=None
+        for t1,t2 in pairs:
+            if fast is not None and fast[t1] & fast[t2]:
+                checked+=len(crs)*len(crs); continue
+            for c1 in crs:
+                A1=reducts(c1[0],c1[1],t1)
+                if not A1 and len(stuck)<3: report("NO-REDUCT",(G,s,t,t1,c1),stuck)
+                for c2 in crs:
+                    checked+=1
+                    if not (A1 & reducts(c2[0],c2[1],t2)):
+                        report("COUNTEREXAMPLE",(G,s,t,t1,t2,c1,c2),bad)
+                        if len(bad)>2: raise SystemExit(1)
+    if ncfg%20==0: print(f"[{SH}] {ncfg}/{len(configs)} {checked} exh={nexh} samp={nsamp}",flush=True)
 print(f"[{SH}] DONE tsz={A.tsz} asz={A.asz} ctx={A.ctx} stack={A.stack} cr={A.cr}: "
-      f"{len(configs)} cfgs, {checked} checks, {len(bad)} failures, {len(stuck)} no-reduct",flush=True)
+      f"{len(configs)} cfgs, {checked} checks, {len(bad)} failures, {len(stuck)} no-reduct, "
+      f"exhaustive-terms={nexh} sampled-terms={nsamp} largest-reduct-set={bigmax}",flush=True)
