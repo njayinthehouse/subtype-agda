@@ -145,6 +145,7 @@ ap.add_argument('--ctx',type=int,default=2)      # context entries
 ap.add_argument('--stack',type=int,default=1)    # stack depth
 ap.add_argument('--cr',default='full',choices=['full','refl'])
 ap.add_argument('--shard',default='0/1')
+ap.add_argument('--random',type=int,default=0)     # N random configurations, unbounded term size
 ap.add_argument('--rcap',type=int,default=1200)   # exhaustive only when |R| <= rcap
 ap.add_argument('--samples',type=int,default=40000)  # random pairs when |R| > rcap
 A=ap.parse_args()
@@ -163,11 +164,11 @@ def gen(size,k):
                 for v in gen(b,k+1): out.append(('l',u,v))
     out=list(dict.fromkeys(out)); MEMO[key]=out; return out
 
-subjects=[t for t in gen(A.tsz,0) if lc(t)]
-anns    =[t for t in gen(A.asz,0) if lc(t)]
+subjects=[] if A.random else [t for t in gen(A.tsz,0) if lc(t)]
+anns    =[] if A.random else [t for t in gen(A.asz,0) if lc(t)]
 
 ctxs=[()]; fr=[()]
-for _ in range(A.ctx):
+for _ in range(0 if A.random else A.ctx):
     nxt=[]
     for G in fr:
         for x in NAMES:
@@ -179,10 +180,10 @@ for _ in range(A.ctx):
 ctxs=[G for G in ctxs if ctx_prevalid(G)]
 
 stacks=[()]
-for n in range(1,A.stack+1):
+for n in range(1,(0 if A.random else A.stack)+1):
     stacks+=[tuple(p) for p in itertools.product(anns,repeat=n)]
 
-configs=[(G,s) for G in ctxs for s in stacks if prevalid(G,s)]
+configs=[] if A.random else [(G,s) for G in ctxs for s in stacks if prevalid(G,s)]
 configs=[c for i,c in enumerate(configs) if i%NSH==SH]
 
 import random
@@ -190,6 +191,63 @@ rng=random.Random(12345+SH)
 
 def report(kind,item,store):
     store.append(item); print(kind,item,flush=True)
+
+
+MEMO_ELEMS_R=250000
+if A.random:
+    # Broad random mode. Terms and contexts are GENERATED, not enumerated, so the
+    # bounds can be large: exhausting a tiny corner is worth less than shallow
+    # coverage of a big space when the question is whether a counterexample exists.
+    import random as _r
+    rr=_r.Random(999+SH)
+    def rterm(size,k,names):
+        opts=['T']+['f']*len(names)+(['b'] if k>0 else [])
+        if size>1: opts+=['a','a','l','l']
+        c=rr.choice(opts)
+        if c=='T': return TOP
+        if c=='f': return ('f',rr.choice(names))
+        if c=='b': return ('b',rr.randrange(k))
+        h=rr.randrange(1,size)
+        if c=='a': return ('a',rterm(h,k,names),rterm(size-h,k,names))
+        return ('l',rterm(h,k,names),rterm(size-h,k+1,names))
+    def rclosed(size,names):
+        for _ in range(40):
+            t=rterm(rr.randint(1,size),0,names)
+            if lc(t): return t
+        return TOP
+    checked=0; bad=[]; stuck=[]; built=0
+    for it in range(A.random):
+        names=[]; G=()
+        for nm in NAMES[:A.ctx]:
+            a=rclosed(A.asz,names)
+            if not fv(a)<=set(names): continue
+            G=((nm,rr.choice(['s','e']),a),)+G
+            names=names+[nm]
+        G=tuple(reversed(G)) if False else G
+        if not ctx_prevalid(G): continue
+        st=tuple(rclosed(A.asz,names) for _ in range(rr.randint(0,A.stack)))
+        if not prevalid(G,st): continue
+        t=rclosed(A.tsz,names)
+        if not fv(t)<=dom(G): continue
+        _memo.clear(); _stats[0]=0
+        R=list(reducts(G,st,t))
+        if len(R)<2: continue
+        built+=1
+        crs=[(G,st)] if A.cr=='refl' else list(ctx_reducts(G,st))
+        for _ in range(A.samples):
+            t1=rr.choice(R); t2=rr.choice(R); c1=rr.choice(crs); c2=rr.choice(crs)
+            A1=reducts(c1[0],c1[1],t1)
+            if not A1 and len(stuck)<3:
+                stuck.append((G,st,t,t1,c1)); print("NO-REDUCT",stuck[-1],flush=True)
+            checked+=1
+            if not (A1 & reducts(c2[0],c2[1],t2)):
+                bad.append((G,st,t,t1,t2,c1,c2)); print("COUNTEREXAMPLE",bad[-1],flush=True)
+                raise SystemExit(1)
+            if _stats[0]>MEMO_ELEMS_R: _memo.clear(); _stats[0]=0
+        if built%200==0: print(f"[{SH}] random {built} usable / {it+1} drawn, {checked} checks",flush=True)
+    print(f"[{SH}] DONE random tsz={A.tsz} asz={A.asz} ctx={A.ctx} stack={A.stack}: "
+          f"{built} usable configs, {checked} checks, {len(bad)} failures, {len(stuck)} no-reduct",flush=True)
+    raise SystemExit(0)
 
 checked=0; bad=[]; stuck=[]; ncfg=0; nexh=0; nsamp=0; bigmax=0
 MEMO_ELEMS=250000   # cap the memo by terms held, not entries: one entry can hold 40k
@@ -206,6 +264,7 @@ for (G,s) in configs:
             nexh+=1
             inter={}
             for t1 in R:
+                if _stats[0]>MEMO_ELEMS: _memo.clear(); _stats[0]=0
                 acc=None
                 for cr in crs:
                     x_=reducts(cr[0],cr[1],t1)
@@ -222,6 +281,7 @@ for (G,s) in configs:
         for t1,t2 in pairs:
             if fast is not None and fast[t1] & fast[t2]:
                 checked+=len(crs)*len(crs); continue
+            if _stats[0]>MEMO_ELEMS: _memo.clear(); _stats[0]=0
             for c1 in crs:
                 A1=reducts(c1[0],c1[1],t1)
                 if not A1 and len(stuck)<3: report("NO-REDUCT",(G,s,t,t1,c1),stuck)
