@@ -134,67 +134,85 @@ def ctx_reducts(G,s):
                 out.add((Gp,(ap,)+sp))                      # Ct-Stk
     return out
 
+
 # ---- enumeration ----
-def terms(size,names,k=0):
-    if size<=0: return
-    yield TOP
-    for x in names: yield ('f',x)
-    for i in range(k): yield ('b',i)
-    for a in range(1,size):
-        for bsz in range(1,size-a+1):
-            for u in terms(a,names,k):
-                for v in terms(bsz,names,k): yield ('a',u,v)
-            for u in terms(a,names,k):
-                for v in terms(bsz,names,k+1): yield ('l',u,v)
-
-def closed_terms(size,names,k=0):
-    seen=set()
-    for t in terms(size,names,k):
-        if t not in seen and lc(t,k): seen.add(t); yield t
-
+import argparse
+ap=argparse.ArgumentParser()
+ap.add_argument('--tsz',type=int,default=3)      # subject term size
+ap.add_argument('--asz',type=int,default=2)      # annotation / stack-entry size
+ap.add_argument('--ctx',type=int,default=2)      # context entries
+ap.add_argument('--stack',type=int,default=1)    # stack depth
+ap.add_argument('--cr',default='full',choices=['full','refl'])
+ap.add_argument('--shard',default='0/1')
+A=ap.parse_args()
+SH,NSH=map(int,A.shard.split('/'))
 NAMES=['x','y']
-TSZ=int(sys.argv[1]) if len(sys.argv)>1 else 3
-CSZ=int(sys.argv[2]) if len(sys.argv)>2 else 1
-SSZ=int(sys.argv[3]) if len(sys.argv)>3 else 1
 
-anns=[t for t in closed_terms(TSZ,NAMES)]
-ctxs=[()]
-for n in range(1,CSZ+1):
-    new=[]
-    for G in ctxs:
-        if len(G)!=n-1: continue
+MEMO={}
+def gen(size,k):
+    key=(size,k)
+    if key in MEMO: return MEMO[key]
+    out=[TOP]+[('f',x) for x in NAMES]+[('b',i) for i in range(k)]
+    for a in range(1,size):
+        for b in range(1,size-a+1):
+            for u in gen(a,k):
+                for v in gen(b,k):   out.append(('a',u,v))
+                for v in gen(b,k+1): out.append(('l',u,v))
+    out=list(dict.fromkeys(out)); MEMO[key]=out; return out
+
+subjects=[t for t in gen(A.tsz,0) if lc(t)]
+anns    =[t for t in gen(A.asz,0) if lc(t)]
+
+ctxs=[()]; fr=[()]
+for _ in range(A.ctx):
+    nxt=[]
+    for G in fr:
         for x in NAMES:
             if x in dom(G): continue
             for c in ('s','e'):
                 for a in anns:
-                    if fv(a)<=dom(G): new.append(((x,c,a),)+G)
-    ctxs+=new
+                    if fv(a)<=dom(G): nxt.append(((x,c,a),)+G)
+    ctxs+=nxt; fr=nxt
 ctxs=[G for G in ctxs if ctx_prevalid(G)]
 
 stacks=[()]
-for n in range(1,SSZ+1):
+for n in range(1,A.stack+1):
     stacks+=[tuple(p) for p in itertools.product(anns,repeat=n)]
 
-checked=0; bad=[]
-for G in ctxs:
-    for s in stacks:
-        if not prevalid(G,s): continue
-        crs=list(ctx_reducts(G,s))
-        for t in closed_terms(TSZ,NAMES):
-            if not fv(t)<=dom(G): continue
-            R=list(reducts(G,s,t))
-            if len(R)<2: continue
-            for t1 in R:
-                for t2 in R:
-                    for (G1,s1) in crs:
-                        A=reducts(G1,s1,t1)
-                        if not A: continue
-                        for (G2,s2) in crs:
-                            B=reducts(G2,s2,t2)
-                            checked+=1
-                            if not (A&B):
-                                bad.append((G,s,t,t1,t2,G1,s1,G2,s2))
-                                if len(bad)>3: raise SystemExit(
-                                    "COUNTEREXAMPLES:\n"+"\n".join(map(str,bad)))
-print(f"term size<={TSZ} ctx<={CSZ} stack<={SSZ}: {checked} diamond instances checked, {len(bad)} failures")
-for b in bad[:3]: print("  FAIL",b)
+configs=[(G,s) for G in ctxs for s in stacks if prevalid(G,s)]
+configs=[c for i,c in enumerate(configs) if i%NSH==SH]
+
+checked=0; bad=[]; stuck=[]; ncfg=0
+for (G,s) in configs:
+    ncfg+=1
+    _memo.clear()
+    crs=[(G,s)] if A.cr=='refl' else list(ctx_reducts(G,s))
+    for t in subjects:
+        if not fv(t)<=dom(G): continue
+        R=list(reducts(G,s,t))
+        if len(R)<2: continue
+        tab={}; inter={}
+        for t1 in R:
+            ss=[]
+            for cr in crs:
+                x_=reducts(cr[0],cr[1],t1); tab[(t1,cr)]=x_; ss.append(x_)
+                # an empty reduct set is itself a diamond failure: no t3 exists
+                if not x_ and len(stuck)<3:
+                    stuck.append((G,s,t,t1,cr)); print("NO-REDUCT",stuck[-1],flush=True)
+            inter[t1]=frozenset.intersection(*ss) if ss else frozenset()
+        for t1 in R:
+            for t2 in R:
+                # fast path: one witness lies in every set, so every pair meets
+                if inter[t1] & inter[t2]:
+                    checked+=len(crs)*len(crs); continue
+                for c1 in crs:
+                    A1=tab[(t1,c1)]
+                    for c2 in crs:
+                        checked+=1
+                        if not (A1 & tab[(t2,c2)]):
+                            bad.append((G,s,t,t1,t2,c1,c2))
+                            print("COUNTEREXAMPLE",bad[-1],flush=True)
+                            if len(bad)>2: raise SystemExit(1)
+    if ncfg%20==0: print(f"[{SH}] {ncfg}/{len(configs)} {checked}",flush=True)
+print(f"[{SH}] DONE tsz={A.tsz} asz={A.asz} ctx={A.ctx} stack={A.stack} cr={A.cr}: "
+      f"{len(configs)} cfgs, {checked} checks, {len(bad)} failures, {len(stuck)} no-reduct",flush=True)
