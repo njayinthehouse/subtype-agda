@@ -638,3 +638,36 @@ blow up.
 
 It does **not** refute Lemma 2. Infinite branching is compatible with the diamond. It removes one
 standard route to proving it, and explains the shape of the reduct sets that stopped the search.
+
+### The diamond holds at Ω, and the case analysis says where the difficulty is
+
+`MPSS/InfiniteBranching` identifies `Ω = (λ⊤. x x)(λ⊤. x x)` as the pathological term — the one the
+bounded searches could never reach, since it has size 11. Checking the diamond there directly: 68
+reducts found, **all 4,624 pairs join**. The diamond survives exactly where a counterexample would
+have been most likely.
+
+So the difficulty is the induction, and `MPSS/DiamondCases` pins down what kind. Taking the diamond
+as a hypothesis, each case is discharged against explicitly named sub-instances:
+
+| case | closes against |
+| --- | --- |
+| `case-top`, `case-var-var` | nothing |
+| `case-pro-pro`, `case-var-pro` | the annotation, at the same configuration |
+| `case-app-app` | the operator at the pushed stack, the operand at the empty stack |
+
+Two things came out of writing it.
+
+**The context reductions are manufactured by the induction, not supplied to it.** In
+`case-app-app` the operator's join must live at the stack carrying the *reduced* operand, and the
+reduction that gets it there is `Ct-Stk c p`, built from the rule's own operand premise; the
+abstraction cases do the same with `Ct-Ann` and the annotation premise. Drop the two context
+reductions from Lemma 2's statement and the application case cannot even state its induction
+hypothesis. **That is a point in the paper's favour** — the general form is forced, not decorative.
+
+**`Me-Var` against `Me-Pro` is the case with no induction principle, now explicitly.** The joining
+derivation is read off the context reduction by `↣-eqv` (added to `MPSS/CtxReduce`, and identical
+to `↣-sub` since neither proof inspects the annotation kind), so it is a subderivation of neither
+input and nothing in the case bounds it. Every other case recurses on premises of the rules being
+analysed; this one does not. That is precisely why a measure is needed and why it must be one
+`Me-Pro` strictly decreases — `ht-unfold` is that measure on the subject, and `MPSS/Height` shows
+what stops it from extending to the whole configuration.

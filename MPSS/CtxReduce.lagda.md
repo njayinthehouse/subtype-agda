@@ -85,9 +85,27 @@ than assume that restriction is harmless.
   with ↣-sub (tail-prevalid pv) d m
 ... | t' , m' , e' =
       t' , there m' , ⟶ᵉ-weaken [] ((y , c , t₀) ∷ []) (Pv-Nil pv) e'
+
+↣-empty : ∀ {Γ s Γ' s'} → Γ ∣ s ↣ Γ' ∣ s' → Γ ∣ [] ↣ Γ' ∣ []
+↣-empty Ct-Refl      = Ct-Refl
+↣-empty (Ct-Ann d e) = Ct-Ann (↣-empty d) e
+↣-empty (Ct-Stk d _) = ↣-empty d
+
+↣-eqv : ∀ {Γ s Γ' s' x α} → Γ prevalid → Γ ∣ s ↣ Γ' ∣ s' → x ≐ α ∈ Γ
+      → ∃[ α' ] ((x ≐ α' ∈ Γ') × (Γ ∣ [] ⊢ α ⟶ᵉ α'))
+↣-eqv {α = α} pv Ct-Refl m =
+  α , m , ⟶ᵉ-refl (Pv-Nil pv) (prevalid-bound-lc pv m) (prevalid-bound-fv pv m)
+↣-eqv pv (Ct-Stk d _) m = ↣-eqv pv d m
+↣-eqv pv (Ct-Ann {x = y} {c = c} {t = t₀} d e) (here refl) =
+  _ , here refl , ⟶ᵉ-weaken [] ((y , c , t₀) ∷ []) (Pv-Nil pv) e
+↣-eqv pv (Ct-Ann {x = y} {c = c} {t = t₀} d e) (there m)
+  with ↣-eqv (tail-prevalid pv) d m
+... | α' , m' , e' =
+      α' , there m' , ⟶ᵉ-weaken [] ((y , c , t₀) ∷ []) (Pv-Nil pv) e'
 ```
 
 ## What this establishes
 
-`↣-prevalid` and `↣-sub`, the two things a leaf of the commutation proof reads off a context
-reduction.
+`↣-prevalid`, `↣-sub` and `↣-eqv` — what a leaf of the commutation and diamond proofs reads off a
+context reduction. `↣-eqv` is `↣-sub` verbatim with the annotation kind changed; neither proof ever
+inspects the kind, which is why the same argument serves both.
