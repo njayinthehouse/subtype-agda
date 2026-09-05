@@ -1,5 +1,13 @@
 # MPSS: the measure for the diamond's recursion
 
+> **Superseded, 2026-09-03.** This measure did not survive the attempt to prove its opening lemma:
+> the variable clause charges the annotation at the *current* stack, so an opened name's weight
+> depends on its position in the term and no single number can be put in the weight assignment.
+> `../PLAN.md` ("Correcting the measure") records the failure; `MPSS/Multiplier` refutes the
+> repair, a multiplier on the stack, for every multiplier; `MPSS/Height` carries the surviving
+> idea, a subtype annotation costing nothing, to its own counterexample. Entry 4 of
+> `DEAD-ENDS.md`. What follows is the module as it stood.
+
 `../PLAN.md` records why no measure built from context position and term size can justify the
 recursion in v2's Lemma 2: promotion decreases the promoted variable's position while the binder
 rules increase it, and derivation size moves the other way. The measure that works is on the

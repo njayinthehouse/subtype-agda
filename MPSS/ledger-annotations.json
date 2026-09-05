@@ -6,7 +6,7 @@
   "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; an edge means <em>the proof above cites the result below</em>.",
   "prover": "Agda",
   "footer": [
-   "53 Agda modules",
+   "64 Agda modules",
    "--safe · 0 postulates · 0 holes",
    "Assumed: Lemma 1, Lemma 2, Conjecture 8, Proposition 17 (repaired)",
    "Lemma 1 is additionally reduced to Lemma 2 plus four named statements in MPSS.Commutation"

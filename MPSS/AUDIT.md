@@ -251,6 +251,10 @@ obligation rather than a convenience.
 This is an analysis of the proof, not a refutation of the statement. No counterexample to the
 diamond property is claimed.
 
+Every attempt on Lemma 2, from here to the end of this file, is indexed in **`DEAD-ENDS.md`** —
+one row per attempt, with the module that preserves it as Agda and the lemma that kills it. Read
+that first; this file carries the narratives.
+
 ### What the proof says
 
 > We now proceed by induction on the derivation tree of `Γ₀;s₀ ⊢ t₀ ⟶≡ t₁`.
@@ -306,6 +310,16 @@ under an operand bind its parameter to that operand — that creates it.
 None of this shows the diamond is false, and none of it rules out a measure of some other shape.
 What it shows is that the proof as printed does not carry one, and that the missing ingredient is
 specifically an accounting for the `Me-Pro`/`Me-FOp` interaction.
+
+Each of those four bullets is now also code. The first is `MPSS/DerivationSize`: one instance —
+`x ≡ ⊤ ⊤`, premise `⊤ ⊤ ⟶≡ ⊤`, context reduction rewriting the annotation by `⊤ ⊤ ⟶≡ ⊤ ⊤` — on
+which the recursive call is larger than the inputs in the sum (`sum-false`), in the maximum and so
+in the multiset order (`max-false`), and in the lexicographic order oriented for the mirror case
+(`lex-pro-var-false`). The second is the same instance, since the surviving orientation is the
+mirror of the refuted one. The third is `MPSS/Measure` and `MPSS/Multiplier`: the additive charge
+with a coefficient is the multiplier `K`, and `fop-false` refutes it for every `K` — see "The
+multiplier" below. The fourth is `MPSS/LexDepth`: `lex-fop-false`, at `λ⊤. x` with `⊤` on the
+stack, where the first component ties and the second goes up.
 
 ---
 
@@ -401,6 +415,12 @@ That is the obstruction in its sharpest form, and it is the same one throughout:
 `Me-FOp` pull in opposite directions on how a stack entry and the variable it becomes should be
 weighed.
 
+`MPSS/Unroll` carries both versions out. `D`, as written above, is given fuel and `D-Ω` proves that
+no amount of it returns a value at `Ω = (λ⊤. x x)(λ⊤. x x)`: "fails at the definition" is that
+the recursion is infinite, by the same `Unfolds` invariant as `MPSS/InfiniteBranching`. `D′`, the
+annotation charged at the empty stack, returns a value there and `D′-dec-pro-false` shows it is
+the wrong one — at the stack `ω :: nil` the variable `x ≡ ω` is worth 2 and `ω` itself 3.
+
 ### The generality of Lemma 2's statement is forced
 
 Lemma 2 concludes at arbitrary `Γ₁;s₁` and `Γ₂;s₂` with `Γ₀;s₀ ↣ Γᵢ;sᵢ`, which invites the
@@ -422,6 +442,31 @@ two are in different contexts, so the induction hypothesis does not apply to the
 Under the repair — binding the parameter in `Me-Bet`'s body premise — both sit in the same
 extended context and the case goes through. That is independent evidence for the repair that
 `MPSS/Assumed` justifies on other grounds.
+
+### The unfolding weight `Φ`, and the multiplier
+
+Before the height below there was `MPSS/Measure`, whose `Φ` charges every free variable for its
+annotation, weighs bound indices by an assignment that binders shift, and carries the stack as a
+list of weights. Agda accepts its termination, and the module proves that a fresh context entry
+leaves it alone. It stops there. `../PLAN.md` ("Correcting the measure", 2026-09-03) records why:
+the variable clause charges the annotation at the *current* stack, so an opened name's weight
+depends on where it sits, and the opening lemma cannot be stated. Charging at the empty stack
+instead breaks the promotion decrease — the same conflict `D′` exhibits.
+
+The plan's repair was to take the stack out of `Φ` and charge it in `Ψ` with a multiplier `K`,
+chosen to bound the number of occurrences of any bound variable. `Me-Pro`, `Me-App`, `Me-Fun` and
+`Me-Bet` then all decrease, and the plan argued in prose that `Me-FOp` needs a coefficient
+`bump b ≤ K` that grows with nesting. `MPSS/Multiplier` makes that a counterexample: `fop-false`,
+for **every** `K`, at the body `λx. x` — the outer parameter used as the inner annotation — with a
+stack entry of weight `6K + 4`. The opened body weighs `6K² + 12K + 7` against the abstraction's
+`6K² + 9K + 5`, the two polynomials read off by Agda and the gap certified by the ring solver. The
+parameter's weight feeds the inner binder's weight assignment and is paid again there.
+
+The plan then went further and claimed, under "Retraction: a measure does exist", that a
+*positional* measure on fixed trees terminates the recursion. That claim is **withdrawn** there,
+and the reason is the trace in `MPSS/Unroll`: `Me-FOp` binds the parameter to the stack head, not
+to the binder's annotation, and after two unfoldings the walk from `Ω` re-enters the root of the
+subtree it is inside. The walk the argument described is `D`, and `D` diverges.
 
 ### The measure, made precise — and refuted at one rule
 
