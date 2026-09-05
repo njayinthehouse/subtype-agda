@@ -559,3 +559,46 @@ that survives it.
 This is exactly what v1 lacks. `Srs-FunOp` records `x ≤ α`, which `Me-Pro` cannot cash in, so no
 v1 variable ever unfolds and the whole difficulty is absent. That is why v1's diamond proof does
 not transfer, and it locates the cost of v2's central design change precisely.
+
+### Searching for a counterexample, exhaustively
+
+`MPSS/diamond-search.py` enumerates every prevalid configuration and locally closed term within
+given bounds, computes the full set of one-step `⟶≡` reducts, and checks that every pair of reducts
+joins at every pair of `↣`-reduced configurations. All eight `⟶≡` rules and all three `↣` rules are
+implemented as printed — including `Me-Bet`'s unbound body premise, so the search is against the
+paper's system rather than a repaired one.
+
+| bound | instances | failures |
+| --- | --- | --- |
+| term ≤ 2, ctx ≤ 1, stack ≤ 1 | 2,020,902 | 0 |
+| term ≤ 2, ctx ≤ 1, stack ≤ 2 | 630,378,265 | 0 |
+
+Nothing here is a proof, and the bounds are small. But the shapes the characterisation points at —
+`Me-FOp` against `Me-FOp` with the stack head reduced differently on the two sides, and `Me-Bet`
+against `Me-App`+`Me-FOp` — are all inside these bounds, and every one of them joins. **The diamond
+is very likely true**, and the difficulty is the induction, not the statement.
+
+### The diamond cannot be weakened to confluence
+
+The obvious thing to ask for instead is that the two sides meet after several steps rather than one
+— ordinary confluence, the weaker and more usual statement. `MPSS/WeakDiamond` shows it will not do.
+
+What survives is the easy half: `As-Right` absorbs a chain on the right and `As-Left-2` absorbs one
+on the left, both by plain induction (`right*`, `left2*`). What fails is `push≡`, the diamond's only
+consumer. With chains instead of steps its `As-Left-2` case has to push a chain through the
+subtyping derivation, which means iterating `push≡` — and Agda rejects that, naming
+`push≡* c (push≡ e d)`, where the chain shrinks but the derivation `d` being descended is replaced
+by `push≡ e d`. The rejection is caused by the weakening: the single-step `push≡` in
+`MPSS/Transitivity` compiles.
+
+The reason is structural. `push≡` does not preserve the size of the derivation it transforms — at
+`As-Refl` it returns `As-Right (As-Refl pv) e`, and at `As-Left-2` it prefixes one node per step of
+the joining chain, so the count of left-steps, which the other three cases leave alone, grows by the
+chain's length. And Newman's lemma cannot recover the difference: it turns weak confluence into
+confluence for a *terminating* relation, and `⟶≡` is reflexive — `Me-Var` and `Me-Top` are steps —
+so it terminates nowhere.
+
+So Lemma 2's one-step form is not a convenience of presentation; the metatheory needs it as stated.
+That also explains the paper's arrangement: a diamond for a reflexive simultaneous reduction, rather
+than confluence for a small-step one, is the standard Tait–Martin-Löf setup, and the strength of the
+statement is doing real work downstream.
