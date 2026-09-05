@@ -602,3 +602,39 @@ So Lemma 2's one-step form is not a convenience of presentation; the metatheory 
 That also explains the paper's arrangement: a diamond for a reflexive simultaneous reduction, rather
 than confluence for a small-step one, is the standard Tait–Martin-Löf setup, and the strength of the
 statement is doing real work downstream.
+
+### The equivalence reduction is not finitely branching
+
+Chasing a `RecursionError` in the counterexample search turned up something better than the search
+was looking for. `MPSS/InfiniteBranching` proves it: with `ω = λ⊤. x x` and `Ω = ω ω`, at the empty
+context and the empty stack,
+
+> `Ω ⟶≡ Ω`,  `Ω ⟶≡ (λ⊤. Ω) ω`,  `Ω ⟶≡ (λ⊤. (λ⊤. Ω) ω) ω`,  …
+
+all in **one** step. `Ω-branching` gives both halves: `Ω-step`, that every member of the family is a
+one-step reduct, and `Ω-inj`, that the family is injective. So a single term has infinitely many
+one-step reducts, of unbounded size.
+
+The mechanism is the same three rules that defeated every attempt on Lemma 2, this time caught
+doing something visible. `Me-App` pushes the operand; `Me-FOp` pops it and records the fresh
+parameter as *equivalent* to it; `Me-Pro` unfolds that parameter back to `ω`, whose body is again a
+self-application. Each turn extends the context, so no configuration repeats. The invariant that
+survives is `Unfolds`: a parameter is not annotated by `ω` but reaches it in finitely many hops,
+because `Me-FOp` binds each parameter to the *previous* one, not to `ω`.
+
+**This settles the complete development.** `MPSS/Develop` recorded that Agda rejects `star` on
+termination and that the `Me-App` push causing it is forced — an obstruction. It is now a
+refutation: `t*` must be a single term every reduct reduces to, and for `Ω` the reducts are
+infinite and unbounded in size. `star` does not merely resist definition; for `Ω` there is no such
+object. Takahashi's method is not available here, and that is a fact about the system rather than
+about the formalisation.
+
+**It also bounds the search.** Enumerating one-step reducts is not effective in general, so no
+exhaustive search can run at bounds admitting self-application — `Ω` has size 11, comfortably
+outside every bound reported above, so those results stand, but the method cannot be pushed much
+further and its failure mode is non-termination, not a wrong answer. This is why the term-size-3
+run stalled: the configurations it wedged on were the ones whose reduct sets were beginning to
+blow up.
+
+It does **not** refute Lemma 2. Infinite branching is compatible with the diamond. It removes one
+standard route to proving it, and explains the shape of the reduct sets that stopped the search.
