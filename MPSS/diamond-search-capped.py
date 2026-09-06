@@ -219,6 +219,23 @@ def families():
     # subtype-bound variable feeding a self-application
     G=((x,'e',omega),(w,'s',TOP))
     cfgs += [(G,(),A(F(x),F(w))), (G,(F(w),),F(x))]
+    # compounding unfoldings: a redex annotation whose parameter is used in a self-application,
+    # with an operand whose unfolding is large
+    big = A(A(A(TOP,TOP),A(TOP,TOP)),A(A(TOP,TOP),A(TOP,TOP)))
+    dbl = A(L(TOP,A(L(TOP,B(0)),A(B(0),B(0)))),F(w))        # (λ⊤.(λ⊤.0)(0 0)) w
+    G=((x,'e',dbl),(w,'e',big))
+    cfgs += [(G,(),F(x)), (G,(),A(F(x),F(x))), (G,(F(x),),F(x)), (G,(F(w),),F(x)), (G,(),A(F(x),F(w)))]
+    # a redex operand whose piece binds a parameter to x: (λ⊤.0)((λ⊤.0) x)
+    G=((x,'e',A(TOP,TOP)),)
+    cfgs += [(G,(),A(L(TOP,B(0)),A(L(TOP,B(0)),F(x)))), (G,(),A(L(TOP,A(B(0),B(0))),A(L(TOP,B(0)),F(x))))]
+    G=((x,'e',omega),)
+    cfgs += [(G,(),A(L(TOP,B(0)),A(L(TOP,B(0)),F(x)))), (G,(),A(L(TOP,A(B(0),B(0))),A(L(TOP,B(0)),F(x))))]
+    # a stack entry whose piece compounds x: (λ⊤.0) ((λ⊤.(λ⊤.0)(0 0)) x) with a large x
+    dblx = A(L(TOP,A(L(TOP,B(0)),A(B(0),B(0)))),F(x))
+    G=((x,'e',big),)
+    cfgs += [(G,(),A(L(TOP,B(0)),dblx)), (G,(),A(L(TOP,A(B(0),B(0))),dblx)), (G,(dblx,),L(TOP,B(0))), (G,(dblx,),L(TOP,A(B(0),B(0))))]
+    G=((x,'e',omega),)
+    cfgs += [(G,(),A(L(TOP,B(0)),dblx)), (G,(dblx,),L(TOP,A(B(0),B(0))))]
     return cfgs
 
 def rand_term(size,names,rng,k=0):
