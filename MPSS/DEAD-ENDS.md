@@ -46,6 +46,8 @@ written" onward) and `../PLAN.md` (the sections dated 2026-09-03). This file is 
 | 20 | search with a cap on `Me-Pro` nesting, reaching self-application | `diamond-search-capped.py` | none found at cap 1 (29 configurations); further passes running | — |
 | 21 | run the recursion itself on explicit derivation trees | `diamond-recursion.py` | not a dead end: terminates on every input tried (family caps 1 and 2, random), in at most 65 calls | — |
 | 22 | the printed invariant ("no promotion of `x`") as the thing to carry through the induction | `Moreover`, `Strengthen` | false, and insufficient — the strengthening also needs `x` off every stack and binder annotation | the derivation at `Γ₁ ∖ B`, `DiamondStep` |
+| 23 | `Me-Pro` nodes weighted by (root original variable, size of the unfolding), multiset order, then size | `measure-probe.py` | survives 9.6 million calls, then fails at a stack entry `(λ⊤.(λ⊤.0)(0 0)) x` whose piece binds a parameter to `x x`: the copied piece's internal promotions outweigh the promotion consumed | — |
+| 24 | any weight on `Me-Pro` nodes that is a function of the variable and the context | prose, `../PLAN.md` "What the copies need" | the piece copied at a pull has promotions on parameters it binds itself, whose pieces are subtrees of the *other* side's current derivation — no static weight sees that | a measure on the pair, or the trigger-forest argument |
 
 ## The entries
 
