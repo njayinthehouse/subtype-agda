@@ -39,7 +39,11 @@ written" onward) and `../PLAN.md` (the sections dated 2026-09-03). This file is 
 | 13 | erase the configuration by substituting annotations away, inherit v1's diamond | `Unfold` | `sim-false` at `Me-FOp` | — |
 | 14 | weaken the statement to confluence | `WeakDiamond` | `push≡*` rejected; Newman's lemma needs termination and `⟶≡` is reflexive | — |
 | 15 | weaken the statement to a fixed configuration | `DiamondCases` (`case-app-app`), `../PLAN.md` "Why the diamond cannot be stated at a fixed context" | `Me-App` needs the operator's join at the *reduced* operand's stack, which only `Ct-Stk` supplies | — |
-| 16 | search for a counterexample | `diamond-search.py` | none found; the search cannot reach self-application because `⟶≡` is not finitely branching | — |
+| 16 | search for a counterexample | `diamond-search.py` | none found; the search cannot reach self-application because `⟶≡` is not finitely branching | 20 |
+| 17 | the paper's second conjunct, "no promotion of `x` on one edge ⇒ none on the other side's join" | `Moreover` | `moreover-false`: the context reduction forces the promotion | the clause with the context reduction's pieces also constrained |
+| 18 | any measure on configurations meeting `Height`'s `Measure` | `NoMeasure` | `no-measure`: the walk from `Ω` cycles through the three transitions with the strict one every round | a measure on the derivations |
+| 19 | `Me-Pro` nodes weighted by (`hvar`, annotation size), multiset order | prose, `../PLAN.md` "The diamond, resumed" | internal parameters `z₂ ≡ z z` outweigh the variable whose piece binds them | — |
+| 20 | search with a cap on `Me-Pro` nesting, reaching self-application | `diamond-search-capped.py` | none found at cap 1 (29 configurations); further passes running | — |
 
 ## The entries
 
@@ -174,6 +178,11 @@ reducts is not effective there (`InfiniteBranching`).
   `Me-Pro`; a measure that `Me-Pro` strictly decreases is the missing ingredient, and `ht-unfold`
   is that measure on the subject alone.
 - The general form of the statement is forced (15), and the one-step form is forced (14).
-- Not ruled out: a measure that reads the context's own unfolding depth rather than the term's, or
-  an induction that is not a measure at all. Nothing above closes a cycle; every use of `mono-fop`
-  extends the context.
+- Ruled out since (row 18): *any* measure on configurations — `NoMeasure`. The walk from `Ω`
+  closes the cycle that the earlier remark said nothing did: `mono-fop` extends the context, and
+  the round repeats one binding deeper with `dec-pro` strict every time.
+- Not ruled out: an induction on the derivations together with the context reductions, in which
+  the copied piece at `Me-Var`/`Me-Pro` is paid for by the other side's descent. Row 19 is the
+  first attempt at one.
+- The second conjunct of the lemma is false as printed (row 17); the diamond itself is unaffected
+  by that instance, but the `Me-App`/`Me-Bet` case of the printed proof needs the corrected clause.
