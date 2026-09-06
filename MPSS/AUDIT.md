@@ -323,6 +323,46 @@ stack, where the first component ties and the second goes up.
 
 ---
 
+## Lemma 2: the second conjunct, and the `Me-App`/`Me-Bet` case
+
+Two further defects in the printed proof of Lemma 2, both mechanized, both independent of the
+induction.
+
+**The second conjunct is false.** The lemma's "Moreover" says: if the derivation of one edge
+contains no `Me-Pro` on `x`, then the joining derivation on the other side contains none either.
+`MPSS/Moreover` refutes it at `Γ₀ = y ≡ ⊤, x′ ≡ y`, subject `x′`, with the reflexive edge against
+`x′ ⟶≡ y` and a context reduction rewriting `x′`'s annotation to `⊤`: every join is `⊤`, and the
+edge from `y` must promote `y`. The promotion is forced by the *context reduction*, which the
+clause never mentions.
+
+**The strengthening step is invalid even if the clause were true.** The `Me-App`/`Me-Bet` case
+obtains the body's join under `x ≡ v₁` and says "as a result we have `Γ₁;s₁ ⊢ u₁ ⟶≡ u₃`", on the
+grounds that `x` is not promoted. `MPSS/Strengthen` exhibits
+`(x ≡ ⊤);nil ⊢ (λ⊤.0) x ⟶≡ (λ⊤.0) x`, which promotes nothing and pushes `x` onto the stack, while
+at the empty context the redex's only reduct is `x`. Dropping a binding needs the variable off
+every stack and every binder annotation as well (`Avoids`, `⟶ᵉ-strengthen`).
+
+**What the case needs, and what carries it.** `MPSS/DiamondStep` states the diamond with the
+invariant that does survive the recursion: for every set of names `B` closed under the context's
+annotations, if one edge and its context reduction avoid `B`, the other side of the join is
+derivable at `Γ ∖ B`. At the `Me-App`/`Me-Bet` node the recursive call is made with the fresh
+parameter added to the set, so its conclusion is already at the context without that parameter;
+the `Me-Bet` side is reopened with Lemma 32 in its printed, `≡`-bound form (`MPSS/SubstEqv`). With
+this, every case of Lemma 2 closes against the induction hypothesis. The induction principle
+remains open (`DEAD-ENDS.md`).
+
+**Lemmas 31 and 32.** `MPSS/Subst` proves substitution for a name the context does not bind.
+Neither printed lemma is that statement: 31 binds the name by `≤`, 32 by `≡`. The unbound form is
+what the β-rule's body premise calls for, and it was recorded as "31, 32"; `MPSS/SubstEqv` now
+supplies 32 as printed.
+
+**`↣-Prevalid`.** `MPSS/Commutation` takes as a hypothesis that a reduced extended context is
+prevalid, and `MPSS/CtxReduce` explains why the obvious induction does not give it.
+`MPSS/CtxPrevalid` proves it: the scoping set is fixed in advance rather than tied to the reducing
+context.
+
+---
+
 ## Lemma 24: the well-formedness conclusion, whose printed proof does not establish it
 
 > **Lemma 24 (Narrowing of context in subtyping reductions).** […] Then there exists a term `v′`

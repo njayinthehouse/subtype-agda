@@ -308,15 +308,20 @@ def join(d1,d2,c1,c2,depth=0):
     raise ValueError("unexpected case %s/%s on %s"%(r1,r2,show(d1['src'])))
 
 # ---------------------------------------------------------------- driver
+MAXRUNS=[300000]
 def run(G,s,t,k,kc,label=''):
     _dmemo.clear()
     ds=derivs(G,s,t,k); cs=ctx_derivs(G,s,kc)
     worst=(0,None); budget_hits=[]
     n=0
-    for d1 in ds:
-        for d2 in ds:
-            for c1 in cs:
-                for c2 in cs:
+    total=len(ds)*len(ds)*len(cs)*len(cs)
+    if total<=MAXRUNS[0]:
+        quads=((d1,d2,c1,c2) for d1 in ds for d2 in ds for c1 in cs for c2 in cs)
+    else:
+        rng=random.Random(total)
+        quads=((rng.choice(ds),rng.choice(ds),rng.choice(cs),rng.choice(cs)) for _ in range(MAXRUNS[0]))
+        label+=f" (sampled {MAXRUNS[0]} of {total})"
+    for (d1,d2,c1,c2) in quads:
                     n+=1
                     stats.update(calls=0,depth=0,copies=0,trace=[])
                     try:
@@ -334,10 +339,13 @@ if __name__=='__main__':
     ap.add_argument('--budget',type=int,default=200000)
     ap.add_argument('--random',type=int,default=0); ap.add_argument('--seed',type=int,default=1)
     ap.add_argument('--trace',action='store_true')
-    a=ap.parse_args(); BUDGET[0]=a.budget
+    ap.add_argument('--maxruns',type=int,default=300000)
+    ap.add_argument('--only',type=int,default=-1)
+    a=ap.parse_args(); BUDGET[0]=a.budget; MAXRUNS[0]=a.maxruns
     rng=random.Random(a.seed)
     cfgs=S.families() if not a.random else [S.rand_cfg(rng) for _ in range(a.random)]
     cfgs=[c for c in cfgs if prevalid(c[0],c[1]) and lc(c[2]) and fv(c[2])<=dom(c[0])]
+    if a.only>=0: cfgs=[cfgs[a.only]]
     allhits=[]; overall=(0,None)
     for i,(G,s,t) in enumerate(cfgs):
         try:

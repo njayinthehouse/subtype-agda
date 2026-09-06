@@ -44,6 +44,8 @@ written" onward) and `../PLAN.md` (the sections dated 2026-09-03). This file is 
 | 18 | any measure on configurations meeting `Height`'s `Measure` | `NoMeasure` | `no-measure`: the walk from `Ω` cycles through the three transitions with the strict one every round | a measure on the derivations |
 | 19 | `Me-Pro` nodes weighted by (`hvar`, annotation size), multiset order | prose, `../PLAN.md` "The diamond, resumed" | internal parameters `z₂ ≡ z z` outweigh the variable whose piece binds them | — |
 | 20 | search with a cap on `Me-Pro` nesting, reaching self-application | `diamond-search-capped.py` | none found at cap 1 (29 configurations); further passes running | — |
+| 21 | run the recursion itself on explicit derivation trees | `diamond-recursion.py` | not a dead end: terminates on every input tried (family caps 1 and 2, random), in at most 65 calls | — |
+| 22 | the printed invariant ("no promotion of `x`") as the thing to carry through the induction | `Moreover`, `Strengthen` | false, and insufficient — the strengthening also needs `x` off every stack and binder annotation | the derivation at `Γ₁ ∖ B`, `DiamondStep` |
 
 ## The entries
 
@@ -183,6 +185,9 @@ reducts is not effective there (`InfiniteBranching`).
   the round repeats one binding deeper with `dec-pro` strict every time.
 - Not ruled out: an induction on the derivations together with the context reductions, in which
   the copied piece at `Me-Var`/`Me-Pro` is paid for by the other side's descent. Row 19 is the
-  first attempt at one.
+  first attempt at one; row 21 is the evidence that such an induction exists.
+- The case analysis is complete: `DiamondStep` joins every pair of rules against the diamond as a
+  hypothesis, with the invariant that actually survives the recursion (row 22). The induction
+  principle is now the only open item.
 - The second conjunct of the lemma is false as printed (row 17); the diamond itself is unaffected
   by that instance, but the `Me-App`/`Me-Bet` case of the printed proof needs the corrected clause.

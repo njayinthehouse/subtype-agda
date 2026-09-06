@@ -33,6 +33,9 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | 31, 32 | reduction under substitution | `Subst`, `Open` | — |
 | 33, 34, 35 | congruence | `Congruence` | — |
 | 36 | commutativity — context weakening | `Narrowing` | — |
+| 32 | reduction under substitution, in the printed `≡`-bound form | `SubstEqv` | — |
+| — | `↣-Prevalid`: a reduced extended context is prevalid (the hypothesis of `Commutation`) | `CtxPrevalid` | — |
+| 2, every case | the diamond's case analysis, complete, against the induction hypothesis, under the corrected invariant | `DiamondStep` | Lemma 2 itself, as `ih` |
 
 ## Refuted
 
@@ -44,10 +47,21 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | — | promotion is stack-monotone | `Diff` |
 | — | a stack typing obligation suffices for the `Ms-Fun`/`Ms-FOp` replay | `StackObligation` |
 | — | the `Reach` obligation, at arbitrary stacks | `ReachFails` |
+| 2, second conjunct | "no promotion of `x` on one edge ⇒ none on the other side's join" | `Moreover` |
+| — | the `Me-App`/`Me-Bet` step "no promotion of `x`, so the derivation holds without `x`" | `Strengthen` |
+| — | any configuration measure meeting `Height`'s three constraints | `NoMeasure` |
 
-Only the first two rows are claims of the paper's. The last three are facts about MPSS, about a
-proposed repair, and about this development's own reduction of Conjecture 8; `AUDIT.md` says which
-is which, since only a refuted *paper* claim calls for a diagnosis and an assumed repair.
+The first two rows and the row for Lemma 2's second conjunct are claims of the paper's; the
+`Strengthen` row is a step of the paper's proof of Lemma 2. The others are facts about MPSS, about
+a proposed repair, about this development's own reduction of Conjecture 8, and about the diamond's
+induction; `AUDIT.md` says which is which, since only a refuted *paper* claim calls for a diagnosis
+and an assumed repair.
+
+**A faithfulness note on Lemmas 31 and 32.** `Subst` proves reduction under substitution for a
+name the context does not bind, which is what the β-rule's unbound body premise needs; the printed
+Lemma 31 binds the name by `≤` and the printed Lemma 32 by `≡`. The row "31, 32" above records the
+unbound form. `SubstEqv` now proves 32 as printed; 31 as printed is not needed by the diamond and
+is not proved.
 
 ## Assumed
 
@@ -75,7 +89,10 @@ defers to does cover the case.
 
 ## What remains
 
-**Lemmas 1 and 2**, and nothing else in the appendix. Every other numbered result the two type
+**Lemmas 1 and 2**, and nothing else in the appendix. For Lemma 2 the case analysis is now
+complete (`DiamondStep`): every pair of rules is joined against the diamond taken as a hypothesis,
+under the invariant the proof needs in place of the printed second conjunct. What is missing is
+the induction principle alone. Every other numbered result the two type
 safety theorems depend on is proved above, and Conjecture 8 is the paper's own. They are the paper's main theorem. `AUDIT.md` records why the printed induction
 carries no well-founded measure and why four families of candidate measures fail, with the
 obstruction isolated: `Me-Pro` needs a variable lookup to cost strictly more than its annotation,
