@@ -118,7 +118,14 @@ def adversarial():
              ((('v','e',A(F('y'),q)),('y','e',om3)),(),F('v')),
              ((('v','e',A(F('y'),q)),('y','e',om)),(F('v'),),F('y')),
              ((('u','e',F('v')),('v','e',A(F('y'),q)),('y','e',om)),(),F('u')),
-             ((('v','e',A(F('y'),A(TOP,TOP))),('y','e',om)),(),A(F('v'),F('v'))) ]
+             ((('v','e',A(F('y'),A(TOP,TOP))),('y','e',om)),(),A(F('v'),F('v'))),
+             # a promotable variable inside the operand of a self-applying head: can the same
+             # promotion node be consumed twice along a path?
+             ((('x','e',om),('v','e',A(TOP,TOP))),(),A(F('x'),L(TOP,F('v')))),
+             ((('x','e',om),('v','e',A(TOP,TOP))),(),A(F('x'),L(TOP,A(B(0),F('v'))))),
+             ((('x','e',om),('v','e',A(TOP,TOP))),(),A(F('x'),L(TOP,A(A(B(0),B(0)),F('v'))))),
+             ((('x','e',om),('v','e',A(TOP,TOP))),(A(F('x'),F('v')),),F('x')),
+             ((('x','e',om),('v','e',A(TOP,TOP))),(),A(A(F('x'),F('x')),F('v'))) ]
 
 def run(k,kc,maxruns,sel=None):
     cfgs=S.families()+adversarial()
