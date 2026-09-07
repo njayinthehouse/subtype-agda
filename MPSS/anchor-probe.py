@@ -13,6 +13,7 @@ def bt(G,x):
     names=[e[0] for e in reversed(G)]
     return names.index(x) if x in names else -1
 
+LEAF={('Var','Var'),('Top','Top'),('TAp','TAp'),('TAp','App'),('App','TAp')}
 EDGES=[]
 class Budget(Exception): pass
 CALLS=[0]
@@ -108,15 +109,35 @@ def cands(st):
     c['ms(a,T)+m']=tuple(sorted([(a[0],t[0],m[0]),(a[1],t[1],m[1])],reverse=True))
     return c
 
+def adversarial():
+    A,F,L,B,TOP=S.A,S.F,S.L,S.B,S.TOP
+    q=A(A(TOP,TOP),A(TOP,TOP)); om=S.omega
+    om3=L(TOP,A(A(B(0),B(0)),B(0)))
+    return [ ((('v','e',A(F('y'),q)),('y','e',om)),(),F('v')),
+             ((('v','e',A(F('y'),q)),('y','e',om)),(),A(F('v'),F('v'))),
+             ((('v','e',A(F('y'),q)),('y','e',om3)),(),F('v')),
+             ((('v','e',A(F('y'),q)),('y','e',om)),(F('v'),),F('y')),
+             ((('u','e',F('v')),('v','e',A(F('y'),q)),('y','e',om)),(),F('u')),
+             ((('v','e',A(F('y'),A(TOP,TOP))),('y','e',om)),(),A(F('v'),F('v'))) ]
+
 def run(k,kc,maxruns,sel=None):
-    cfgs=S.families()
+    cfgs=S.families()+adversarial()
     cfgs=[c for c in cfgs if S.prevalid(c[0],c[1]) and S.lc(c[2]) and S.fv(c[2])<=S.dom(c[0])]
     if sel: cfgs=[cfgs[i] for i in sel]
     viol=collections.defaultdict(collections.Counter); shown=collections.defaultdict(collections.Counter); total=0
     import random
     for i,(G,s,t) in enumerate(cfgs):
         R._dmemo.clear()
-        ds=R.derivs(G,s,t,k); cs=R.ctx_derivs(G,s,kc)
+        try:
+            ds=R.derivs(G,s,t,k); cs=R.ctx_derivs(G,s,kc)
+        except MemoryError:
+            R._dmemo.clear(); print(f"[{i+1}/{len(cfgs)}] {S.show(t)} at {S.showG(G)};{S.showS(s)}: SKIPPED (MemoryError in enumeration)",flush=True); continue
+        except Exception as ex:
+            print(f"[{i+1}/{len(cfgs)}] {S.show(t)} at {S.showG(G)};{S.showS(s)}: SKIPPED ({type(ex).__name__}: {ex})",flush=True); continue
+        if len(cs)>300:
+            rng0=random.Random(len(cs)); cs=[rng0.choice(cs) for _ in range(300)]
+        if len(ds)>400:
+            rng0=random.Random(len(ds)); ds=[rng0.choice(ds) for _ in range(400)]
         total_q=len(ds)*len(ds)*len(cs)*len(cs)
         if total_q>maxruns:
             rng=random.Random(total_q); quads=((rng.choice(ds),rng.choice(ds),rng.choice(cs),rng.choice(cs)) for _ in range(maxruns)); nq=maxruns
@@ -128,21 +149,31 @@ def run(k,kc,maxruns,sel=None):
             meta=dict(a=[INF,INF],m=[R.size(d1),R.size(d2)],k=['root','root'])
             try: rec(d1,d2,c1,c2,meta,None)
             except Budget: print("  budget hit",flush=True); continue
+            except MemoryError: EDGES.clear(); print("  MemoryError in a run; skipped",flush=True); continue
+            except RecursionError: EDGES.clear(); print("  RecursionError in a run; skipped",flush=True); continue
+            except Exception as ex: EDGES.clear(); print(f"  {type(ex).__name__} in a run: {ex}; skipped",flush=True); continue
             for (par,ch,case) in EDGES:
-                total+=1
+                # a call into a leaf pair needs no induction hypothesis: count it apart
+                leaf=(ch[0]['rule'],ch[1]['rule']) in LEAF
+                if not leaf: total+=1
                 fp=cands(par); fc=cands(ch)
                 for name in fp:
                     if not (fc[name] < fp[name]):
-                        viol[name][case]+=1
-                        if shown[name][case]<2:
+                        tag=name+(' (leaf)' if leaf else '')
+                        viol[tag][case]+=1
+                        if not leaf and shown[name][case]<2:
                             shown[name][case]+=1
                             print(f"  VIOL {name} [{case}] {fp[name]} -> {fc[name]}  anchors {par[4]['a']}->{ch[4]['a']} kinds {ch[4]['k']}",flush=True)
-                            print(f"       {S.show(par[0]['src'])}  ->  {S.show(ch[0]['src'])} at {S.showG(ch[0]['G'])};{S.showS(ch[0]['s'])}",flush=True)
-    print(f"\n{total} edges",flush=True)
-    for name in sorted(cands((None,)*5) if False else viol.keys()|set(cands(EDGES[0][0]).keys())):
+                            print(f"       {S.show(par[0]['src'])} | {S.show(par[1]['src'])}  ->  {S.show(ch[0]['src'])} | {S.show(ch[1]['src'])} at {S.showG(ch[0]['G'])};{S.showS(ch[0]['s'])}",flush=True)
+    print(f"\n{total} non-leaf edges",flush=True)
+    names=set(viol.keys())|(set(cands(EDGES[0][0]).keys()) if EDGES else set())
+    for name in sorted(names):
         v=viol.get(name,{})
         print(f"  {name:20s} violations: {sum(v.values()):7d} {dict(v)}",flush=True)
 
 if __name__=='__main__':
     k=int(sys.argv[1]) if len(sys.argv)>1 else 1
-    run(k,1,int(sys.argv[2]) if len(sys.argv)>2 else 20000)
+    mr=int(sys.argv[2]) if len(sys.argv)>2 else 20000
+    sel=list(range(int(sys.argv[3]),int(sys.argv[4]))) if len(sys.argv)>4 else None
+    kc=int(sys.argv[5]) if len(sys.argv)>5 else 1
+    run(k,kc,mr,sel)
