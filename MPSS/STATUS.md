@@ -97,3 +97,8 @@ safety theorems depend on is proved above, and Conjecture 8 is the paper's own. 
 carries no well-founded measure and why four families of candidate measures fail, with the
 obstruction isolated: `Me-Pro` needs a variable lookup to cost strictly more than its annotation,
 while `Me-FOp` needs a stack entry to cost at least as much as the variable it becomes.
+`DEAD-ENDS.md` rows 19–29 record the attempts since then, on the derivations rather than the
+configuration: the recursion the proof describes terminates on every input tried and never revisits
+a pair of input positions along a path (row 29), so an induction on pairs of positions is possible
+in principle; no uniform order on them has been found (rows 23–28). `../PLAN.md`, "What the
+positions say", isolates the difficulty to `Me-Pro`'s premise being at the current stack.

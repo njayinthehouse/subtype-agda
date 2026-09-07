@@ -10,7 +10,9 @@ The statement, from `MPSS/Assumed`:
 > `→ Γ₀ ∣ s₀ ↣ Γ₁ ∣ s₁ → Γ₀ ∣ s₀ ↣ Γ₂ ∣ s₂ → ∃[ t₃ ] ((Γ₁ ∣ s₁ ⊢ t₁ ⟶ᵉ t₃) × (Γ₂ ∣ s₂ ⊢ t₂ ⟶ᵉ t₃))`
 
 **Status.** Neither proved nor refuted. No counterexample in 630 million checked joins at small
-bounds, none at `Ω`. Every failure below is a failure of an *induction*, and every one of them
+bounds, none at `Ω`, none in the capped self-application search (row 20). The recursion the
+printed proof describes terminates on every input tried, and never revisits a pair of input
+positions along a path (row 29). Every failure below is a failure of an *induction*, and every one of them
 fails at the same pair of rules: `Me-Pro`, which needs a variable to cost strictly more than its
 annotation, and `Me-FOp`, which binds a stack entry to a variable and so needs the entry to cost at
 least as much as the variable it becomes. `MPSS/Height`'s `Measure` record states the three
@@ -51,6 +53,8 @@ written" onward) and `../PLAN.md` (the sections dated 2026-09-03). This file is 
 | 25 | pair-aware weights: a promotion weighted by the size or promotion count of the piece the other side would copy for it, by binding position, and their combinations | `measure-probe.py` | all fail, at pulls and at structural steps; worse than the static weights | — |
 | 26 | an ordinal potential ranking each promotion by the piece it pulls paired with the partner's subtree | prose, `../PLAN.md` "What the copies need" | circular: computing the rank walks the pair exactly as the recursion does, so the potential is well-defined only if the recursion terminates | the trigger-forest argument, as a bound on chains rather than a state potential |
 | 27 | history-aware orders on the pair: each side carries the binding position of the variable whose pull created its material (its anchor) and the size of that material; lexicographic and multiset orders on (anchor, size), with promotion counts and sums as tie-breakers | `anchor-probe.py`, logs `.search-logs/anchor_k*_*.log` | two survive every call on the family configurations with context pieces capped at promotion depth 1 (7.6 million non-leaf calls), then fail at depth 2 on `y ≡ λ⊤.(0 0), v ≡ y ((⊤ ⊤)(⊤ ⊤))`, subject `v`: after both sides have pulled (anchors 0 and 1), a promotion of the parameter the pushed piece binds to the stack entry makes the puller fetch the operand premise it pushed before its own pull — anchored above both, and larger than what either side holds. The scenario predicted in `../PLAN.md` "Anchors" is realised; leaf calls (no induction hypothesis needed) are excluded from the count | the trigger-forest bound, or a decomposition of the diamond that never pulls a stack piece |
+| 28 | a lexicographic order on pairs of *input positions*, built from tree rank, depth, subtree size and promotion count of the two materials (18,279 keys of up to three components) | `order-search.py` | none survives one configuration at promotion depth 2 | the order on position pairs exists (row 29) but is not a function of these features |
+| 29 | the recursion revisiting a pair of input positions along a path | `position-probe.py`, `frame-probe.py`, `revisit-probe.py`, logs `.search-logs/pos_*.log` | **not a dead end**: in 264,000 runs at promotion depths 1–4 no pair of positions recurs along a path, and the union call graph of all runs of a configuration is acyclic. A well-founded order on pairs of positions exists for fixed inputs; a uniform definition of it, or a direct proof that no pair recurs, is the open item | the frames argument, `../PLAN.md` "What the positions say" |
 
 ## The entries
 
