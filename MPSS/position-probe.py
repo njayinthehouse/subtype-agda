@@ -72,7 +72,7 @@ def rec(d1,d2,c1,c2,path):
         rec(d1['p'],d2['p'],R.empty(c1),R.empty(c2),path); return
     if r1=='Bet' and r2=='App':
         # swap sides; positions are side-tagged so the pair is recorded swapped, which is harmless
-        rec(d2,d1,c2,c1,tuple(((e[1],e[0]) if len(e)==2 else (e[2],e[3],e[0],e[1])) for e in path[:-1])); return
+        rec(d2,d1,c2,c1,tuple((e if (not isinstance(e,tuple) or (e and e[0]=='TABLE')) else (e[1],e[0]) if len(e)==2 else (e[2],e[3],e[0],e[1])) for e in path[:-1])); return
     if r1=='Bet' and r2=='Bet':
         F1,F2=d1['F'],d2['F']; x,y=d1['x'],d2['x']
         if y!=x:
