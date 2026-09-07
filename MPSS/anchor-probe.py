@@ -117,10 +117,12 @@ def run(k,kc,maxruns,sel=None):
     for i,(G,s,t) in enumerate(cfgs):
         R._dmemo.clear()
         ds=R.derivs(G,s,t,k); cs=R.ctx_derivs(G,s,kc)
-        quads=[(d1,d2,c1,c2) for d1 in ds for d2 in ds for c1 in cs for c2 in cs]
-        if len(quads)>maxruns:
-            rng=random.Random(len(quads)); quads=[rng.choice(quads) for _ in range(maxruns)]
-        print(f"[{i+1}/{len(cfgs)}] {S.show(t)} at {S.showG(G)};{S.showS(s)}: {len(quads)} runs",flush=True)
+        total_q=len(ds)*len(ds)*len(cs)*len(cs)
+        if total_q>maxruns:
+            rng=random.Random(total_q); quads=((rng.choice(ds),rng.choice(ds),rng.choice(cs),rng.choice(cs)) for _ in range(maxruns)); nq=maxruns
+        else:
+            quads=((d1,d2,c1,c2) for d1 in ds for d2 in ds for c1 in cs for c2 in cs); nq=total_q
+        print(f"[{i+1}/{len(cfgs)}] {S.show(t)} at {S.showG(G)};{S.showS(s)}: {nq} runs",flush=True)
         for (d1,d2,c1,c2) in quads:
             EDGES.clear(); CALLS[0]=0
             meta=dict(a=[INF,INF],m=[R.size(d1),R.size(d2)],k=['root','root'])

@@ -192,9 +192,9 @@ def _weaken(d,Gt,sx):
         # becomes FOp binding x ≡ head; the body is relabelled sub -> eqv
         al,rest=sx[0],sx[1:]
         Fb=_relabel(d['F'],d['x'],'e',al)
-        return D('FOp',d['src'],d['tgt'],G,s,x=d['x'],alpha=al,a=_weaken(d['a'],Gt,()),F=_weaken(Fb,((d['x'],'e',al),)+Gt,rest))
+        return D('FOp',d['src'],d['tgt'],G,s,x=d['x'],alpha=al,a=_weaken(d['a'],Gt,()),F=_weaken(Fb,Gt,rest))
     if r=='FOp':
-        return D('FOp',d['src'],d['tgt'],G,s,x=d['x'],alpha=d['alpha'],a=_weaken(d['a'],Gt,()),F=_weaken(d['F'],((d['x'],'e',d['alpha']),)+Gt,rest_of(sx)))
+        return D('FOp',d['src'],d['tgt'],G,s,x=d['x'],alpha=d['alpha'],a=_weaken(d['a'],Gt,()),F=_weaken(d['F'],Gt,rest_of(sx)))
     raise ValueError(r)
 def rest_of(sx): return sx
 def _relabel(d,x,kind,t):
