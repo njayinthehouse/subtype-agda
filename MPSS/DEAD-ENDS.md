@@ -48,6 +48,8 @@ written" onward) and `../PLAN.md` (the sections dated 2026-09-03). This file is 
 | 22 | the printed invariant ("no promotion of `x`") as the thing to carry through the induction | `Moreover`, `Strengthen` | false, and insufficient — the strengthening also needs `x` off every stack and binder annotation | the derivation at `Γ₁ ∖ B`, `DiamondStep` |
 | 23 | `Me-Pro` nodes weighted by (root original variable, size of the unfolding), multiset order, then size | `measure-probe.py` | survives 9.6 million calls, then fails at a stack entry `(λ⊤.(λ⊤.0)(0 0)) x` whose piece binds a parameter to `x x`: the copied piece's internal promotions outweigh the promotion consumed | — |
 | 24 | any weight on `Me-Pro` nodes that is a function of the variable and the context | prose, `../PLAN.md` "What the copies need" | the piece copied at a pull has promotions on parameters it binds itself, whose pieces are subtrees of the *other* side's current derivation — no static weight sees that | a measure on the pair, or the trigger-forest argument |
+| 25 | pair-aware weights: a promotion weighted by the size or promotion count of the piece the other side would copy for it, by binding position, and their combinations | `measure-probe.py` | all fail, at pulls and at structural steps; worse than the static weights | — |
+| 26 | an ordinal potential ranking each promotion by the piece it pulls paired with the partner's subtree | prose, `../PLAN.md` "What the copies need" | circular: computing the rank walks the pair exactly as the recursion does, so the potential is well-defined only if the recursion terminates | the trigger-forest argument, as a bound on chains rather than a state potential |
 
 ## The entries
 

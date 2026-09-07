@@ -104,9 +104,26 @@ def usize(G,x,seen=None):
 def pro_nodes(d):
     return [n for n in nodes(d) if n['rule']=='Pro']
 
+def piece_of(c,x):
+    try: return R.extract(c,x)
+    except Exception: return None
+
+def bt(G,x):
+    """binding position of x in G, counted from the bottom (later = larger); -1 if unbound"""
+    names=[e[0] for e in reversed(G)]
+    return names.index(x) if x in names else -1
+
 def features(state,G0):
     d1,d2,c1,c2=state
     f={}
+    # pair-aware: weight a promotion by the piece the OTHER side would copy for it
+    def dyn(d,c_other):
+        out=[]
+        for n in pro_nodes(d):
+            pc=piece_of(c_other,n['x'])
+            out.append((R.size(pc) if pc is not None else 0, R.pros(pc) if pc is not None else 0, bt(n['G'],n['x'])))
+        return out
+    f['dyn1']=dyn(d1,c2); f['dyn2']=dyn(d2,c1)
     f['root']=([root(n['G'],G0,n['x'])+1 for n in pro_nodes(d1)],[root(n['G'],G0,n['x'])+1 for n in pro_nodes(d2)])
     f['rootlevel']=([(root(n['G'],G0,n['x'])+1,level(n['G'],G0,n['x'])) for n in pro_nodes(d1)],
                     [(root(n['G'],G0,n['x'])+1,level(n['G'],G0,n['x'])) for n in pro_nodes(d2)])
@@ -142,6 +159,13 @@ def candidates(f):
     c['ms-rootlevel,size']=(ms_key(f['rootlevel'][0]+f['rootlevel'][1]), f['size'][0]+f['size'][1])
     c['ms-rootU,size']=(ms_key(f['rootU'][0]+f['rootU'][1]), f['size'][0]+f['size'][1])
     c['ms-U,size']=(ms_key(f['U'][0]+f['U'][1]), f['size'][0]+f['size'][1])
+    dd=f['dyn1']+f['dyn2']
+    c['dyn-piecesize,size']=(ms_key([a for (a,b,t) in dd]), f['size'][0]+f['size'][1])
+    c['dyn-piecepro,size']=(ms_key([b for (a,b,t) in dd]), f['size'][0]+f['size'][1])
+    c['bt,size']=(ms_key([t for (a,b,t) in dd]), f['size'][0]+f['size'][1])
+    c['bt-piecesize,size']=(ms_key([(t,a) for (a,b,t) in dd]), f['size'][0]+f['size'][1])
+    c['piecesize-bt,size']=(ms_key([(a,t) for (a,b,t) in dd]), f['size'][0]+f['size'][1])
+    c['piecepro-bt,size']=(ms_key([(b,t) for (a,b,t) in dd]), f['size'][0]+f['size'][1])
     return c
 
 def run(k,kc,maxruns):
