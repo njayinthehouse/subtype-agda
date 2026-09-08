@@ -102,3 +102,9 @@ configuration: the recursion the proof describes terminates on every input tried
 a pair of input positions along a path (row 29), so an induction on pairs of positions is possible
 in principle; no uniform order on them has been found (rows 23–28). `../PLAN.md`, "What the
 positions say", isolates the difficulty to `Me-Pro`'s premise being at the current stack.
+
+The active line (2026-09-08) is the variant with that premise at the empty stack: its diamond has
+a plain measure (the state's total size), and `EmptyStackPro`, `Peel`, `VariantSub` and
+`VariantMachine` prove that on locally closed terms the machine relation `⊲` is the same whether
+built over the original reductions or the variant, so the variant's transitivity elimination is
+Theorem 3. The variant's diamond and Lemma 1 are the remaining work (`../PLAN.md`, "Decision").
