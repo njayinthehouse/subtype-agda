@@ -36,6 +36,7 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | 32 | reduction under substitution, in the printed `≡`-bound form | `SubstEqv` | — |
 | — | `↣-Prevalid`: a reduced extended context is prevalid (the hypothesis of `Commutation`) | `CtxPrevalid` | — |
 | 2, every case | the diamond's case analysis, complete, against the induction hypothesis, under the corrected invariant | `DiamondStep` | Lemma 2 itself, as `ih` |
+| 2, for the variant | the one-step diamond for `⟶ᵉ′`, on locally closed subjects, with two arbitrary context reductions | `VariantDiamond` | — |
 
 ## Refuted
 
@@ -103,8 +104,18 @@ a pair of input positions along a path (row 29), so an induction on pairs of pos
 in principle; no uniform order on them has been found (rows 23–28). `../PLAN.md`, "What the
 positions say", isolates the difficulty to `Me-Pro`'s premise being at the current stack.
 
-The active line (2026-09-08) is the variant with that premise at the empty stack: its diamond has
-a plain measure (the state's total size), and `EmptyStackPro`, `Peel`, `VariantSub` and
-`VariantMachine` prove that on locally closed terms the machine relation `⊲` is the same whether
-built over the original reductions or the variant, so the variant's transitivity elimination is
-Theorem 3. The variant's diamond and Lemma 1 are the remaining work (`../PLAN.md`, "Decision").
+The active line (2026-09-08) is the variant `⟶ᵉ′` with that premise at the empty stack.
+`EmptyStackPro`, `Peel`, `VariantSub` and `VariantMachine` prove that on locally closed terms the
+machine relation `⊲` is the same whether built over the original reductions or the variant, so the
+variant's transitivity elimination is Theorem 3.
+
+**The variant's diamond is proved** (`VariantDiamond`, 2026-09-08): `Lem-2′`, unconditional, by
+strong induction on `Φ` — the size of the configuration counting only the part of the context
+reachable from the free names of the term and the stack (`VariantMeasure`). Every recursive call
+of `DiamondStep`'s case analysis, transcribed, is at a strictly smaller `Φ`; the pull is where the
+variant pays off, since its premise lands at the empty stack. `NoMeasure` shows no such measure
+exists for the original.
+
+What is left on this line is Lemma 1 for the variant — `Commutation` transcribed, with its three
+open cases `Bet-App′`, `Fun-Fun′`, `FOp-FOp′` proved rather than assumed — then `Transitivity`
+transcribed and the transfer through `VariantMachine`. `../PLAN.md`, "Step 4 done", says how.
