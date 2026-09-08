@@ -20,7 +20,7 @@ Nothing existing is modified.
 module MPSS.VariantDiamond where
 
 open import Data.Nat.Base using (ℕ; zero; suc; _≤_; _<_; s≤s; z≤n)
-open import Data.Nat.Properties using (_≟_; ≤-trans)
+open import Data.Nat.Properties using (_≟_; ≤-trans; ≤-refl)
 open import Data.List.Base using (List; []; _∷_; _++_)
 open import Data.List.Membership.DecPropositional _≟_ using (_∈?_)
 open import Data.Product.Base using (_×_; _,_; ∃-syntax; Σ; proj₁; proj₂)
@@ -793,19 +793,21 @@ diamond′ (suc n) = step′ n (diamond′ n)
 
 ## The diamond
 
-The invariant at the empty set, for every configuration.
+The invariant at every configuration, then at the empty set.
 
 ```agda
+join′ : ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂} → LC t₀
+      → (d₁ : Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₁) (d₂ : Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₂)
+      → (c₁ : Γ₀ ∣ s₀ ↣′ Γ₁ ∣ s₁) (c₂ : Γ₀ ∣ s₀ ↣′ Γ₂ ∣ s₂)
+      → Join′ d₁ d₂ c₁ c₂
+join′ {Γ₀} {s₀} {t₀ = t₀} lc d₁ d₂ c₁ c₂ =
+  diamond′ (suc (Φ Γ₀ s₀ t₀)) (s≤s ≤-refl) lc d₁ d₂ c₁ c₂
+
 Lem-2′ : ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂} → LC t₀
        → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₁ → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₂
        → Γ₀ ∣ s₀ ↣′ Γ₁ ∣ s₁ → Γ₀ ∣ s₀ ↣′ Γ₂ ∣ s₂
        → ∃[ t₃ ] ((Γ₁ ∣ s₁ ⊢ t₁ ⟶ᵉ′ t₃) × (Γ₂ ∣ s₂ ⊢ t₂ ⟶ᵉ′ t₃))
-Lem-2′ {Γ₀} {s₀} {Γ₁} {s₁} {Γ₂} {s₂} {t₀} lc d₁ d₂ c₁ c₂
-  with diamond′ (suc (Φ Γ₀ s₀ t₀)) (s≤s (≤-refl′ (Φ Γ₀ s₀ t₀))) lc d₁ d₂ c₁ c₂
-  where
-    ≤-refl′ : ∀ m → m ≤ m
-    ≤-refl′ zero    = z≤n
-    ≤-refl′ (suc m) = s≤s (≤-refl′ m)
+Lem-2′ {Γ₁ = Γ₁} {Γ₂ = Γ₂} lc d₁ d₂ c₁ c₂ with join′ lc d₁ d₂ c₁ c₂
 ... | t₃ , f₁ , f₂ =
   t₃ , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ′ t₃) (∖-[] Γ₁) (f₁ [] (λ _ ()) (λ ()) (λ ()))
      , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ′ t₃) (∖-[] Γ₂) (f₂ [] (λ _ ()) (λ ()) (λ ()))
