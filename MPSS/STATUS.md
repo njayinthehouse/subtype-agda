@@ -37,6 +37,8 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | — | `↣-Prevalid`: a reduced extended context is prevalid (the hypothesis of `Commutation`) | `CtxPrevalid` | — |
 | 2, every case | the diamond's case analysis, complete, against the induction hypothesis, under the corrected invariant | `DiamondStep` | Lemma 2 itself, as `ih` |
 | 2, for the variant | the one-step diamond for `⟶ᵉ′`, on locally closed subjects, with two arbitrary context reductions | `VariantDiamond` | — |
+| 2, mixed | **the mixed diamond**: an original step against a variant step, at two reduced configurations, joined by one *original* step each (`Lem-2ᵐ`) | `MixedDiamond` (measure: `MixedMeasure`; sizes: `Sized`, `Uniform`) | — |
+| 2, strip | the strip property of `⟶ᵉ`: two one-step reducts are joined by one original step from one and a chain from the other; confluence of `⟶ᵉ*` at a fixed configuration | `Strip` | — |
 
 ## Refuted
 
@@ -51,6 +53,8 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | 2, second conjunct | "no promotion of `x` on one edge ⇒ none on the other side's join" | `Moreover` |
 | — | the `Me-App`/`Me-Bet` step "no promotion of `x`, so the derivation holds without `x`" | `Strengthen` |
 | — | any configuration measure meeting `Height`'s three constraints | `NoMeasure` |
+| — | "distinct consumption": no input promotion node triggers two pulls on one path of the diamond's recursion (`DEAD-ENDS` row 32) | `frame-visit-probe.py`, `cycle-sweep.py` (empirical: 4 violations in 533,894 runs) |
+| — | "per-frame single visit": within one copy of an input tree no position is visited twice on a path (`DEAD-ENDS` row 33) | `frame-visit-probe.py`, `cycle-sweep.py` (126 violations) |
 
 The first two rows and the row for Lemma 2's second conjunct are claims of the paper's; the
 `Strengthen` row is a step of the paper's proof of Lemma 2. The others are facts about MPSS, about
@@ -90,7 +94,7 @@ defers to does cover the case.
 
 ## What remains
 
-**Lemmas 1 and 2**, and nothing else in the appendix. For Lemma 2 the case analysis is now
+**Lemmas 1 and 2**, and nothing else in the appendix. (Lemma 2 now has its *mixed* form proved, `MixedDiamond`; see below.) For Lemma 2 the case analysis is now
 complete (`DiamondStep`): every pair of rules is joined against the diamond taken as a hypothesis,
 under the invariant the proof needs in place of the printed second conjunct. What is missing is
 the induction principle alone. Every other numbered result the two type
@@ -119,3 +123,32 @@ exists for the original.
 What is left on this line is Lemma 1 for the variant — `Commutation` transcribed, with its three
 open cases `Bet-App′`, `Fun-Fun′`, `FOp-FOp′` proved rather than assumed — then `Transitivity`
 transcribed and the transfer through `VariantMachine`. `../PLAN.md`, "Step 4 done", says how.
+
+## The mixed diamond — 2026-09-12
+
+The recursion the diamond's case analysis describes has an induction principle as soon as **one
+of the two edges is a variant step**. `MixedDiamond` proves `Lem-2ᵐ`: for `Γ₀;s₀ ⊢ t₀ ⟶ᵉ′ t₁`
+(variant) and `Γ₀;s₀ ⊢ t₀ ⟶ᵉ t₂` (original), with `Γ₀;s₀ ↣′ Γ₁;s₁` and `Γ₀;s₀ ↣ Γ₂;s₂`, there is
+`t₃` with `Γ₁;s₁ ⊢ t₁ ⟶ᵉ t₃` and `Γ₂;s₂ ⊢ t₂ ⟶ᵉ t₃` — both **original one-step** reductions. The
+measure (`MixedMeasure`) is on the original side alone: the size of its derivation plus the sizes
+of the live pieces of its context reduction. A variant promotion against an original variable —
+the one case where a symmetric statement pulls a piece and pushes it under the stack — recurses
+at the empty stack on the annotation with that piece as the new original derivation, and the
+stack pieces and the unreachable pieces are discarded. Derivation sizes are made well defined on
+cofinite families by `Sized` (a uniform-size relation, preserved by weakening, reflexivity and
+renaming) and `Uniform` (every derivation has a uniformly sized copy). `Strip` draws the
+consequences for `⟶ᵉ` alone.
+
+For the original `Lem-2` this narrows the open question to one sentence: the mixed statement is
+`Lem-2` with one edge's promotion premises at the empty stack, and everything else is identical.
+
+## Handoff note — 2026-09-11
+
+The active line is unchanged: **finish Step 5 (the variant)** to make `Lem-1`/`Lem-2` leave
+`Assumed`. `../PLAN.md`, section "Session 2026-09-11", records the plan in detail: build
+`VariantCommutation` (Lemma 1 for the variant, by well-founded recursion on `tsize t₀`; `Bet-App′`
+case analysis worked out — case B reduces to the proven `Lem-2′`, case C mirrors `app-bet′`), then
+`VariantTransitivity`, then the transfer. That section also records Phase-6 research for the
+*original* diamond (decreasing diagrams / Hindley–Rosen; Z-property and complete developments
+rejected because `InfiniteBranching` kills them), with the caveat that those give confluence, not
+the one-step diamond the downstream proofs consume. Nothing new was mechanized on 2026-09-11.
