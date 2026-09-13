@@ -98,3 +98,15 @@ also why the search finds nothing.
 4. The mutual induction of `AppCongr₁`, `FunStep`, Lemma 9 and Lemma 7 on the measure.
 
 Steps 1 and 2 are unconditional and mechanizable now; 3 and 4 are the conjecture.
+
+## 6. Reflection: machine chains between well-formed ends (2026-09-12, later)
+
+The obstacle in §5.2 disappears if a machine chain `u ⟶ˢ* a ⟵ᵉ* t` between well-formed `u` and
+`t` can always be replaced by a well-subtyping chain, one whose promotions are between
+well-formed terms. `reflect-search.py` tests this on the same contexts and terms as the
+conjecture search: at term size 3, **all 8,271 machine-related well-formed pairs are
+well-subtyping-related** (80 of them only at a deeper chain cap). If this reflection lemma
+holds, the conjecture can be proved in the machine relation — where Theorem 3, strong
+commutation and confluence are already available — with well-formedness added at the ends:
+`u ⊲ t`, `Co[u] wf`, `Co[t] wf` ⇒ `Co[u] ⊲ Co[t]`, then reflect. Size 5 is running
+(`reflect-size5.log`).
