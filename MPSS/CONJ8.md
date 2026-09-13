@@ -108,5 +108,14 @@ conjecture search: at term size 3, **all 8,271 machine-related well-formed pairs
 well-subtyping-related** (80 of them only at a deeper chain cap). If this reflection lemma
 holds, the conjecture can be proved in the machine relation — where Theorem 3, strong
 commutation and confluence are already available — with well-formedness added at the ends:
-`u ⊲ t`, `Co[u] wf`, `Co[t] wf` ⇒ `Co[u] ⊲ Co[t]`, then reflect. Size 5 is running
-(`reflect-size5.log`).
+`u ⊲ t`, `Co[u] wf`, `Co[t] wf` ⇒ `Co[u] ⊲ Co[t]`, then reflect.
+
+Size 5 (`reflect-size5-2026-09-12.log`): **569,295 machine-related well-formed pairs; all are
+well-subtyping-related** — 562,442 at the base caps, 6,837 at a deeper chain cap, and the last
+16 (all in the context `y ≡ λ⊤.λ⊤.1, z ≡ y ⊤`, pairs like `y (y y)` against `y (y z)`) at chain
+depth 10 and term size 30 (`reflect-deep.py`). Instructive: the *shortest* machine chain for
+`y (y y) ⊲ y (y z)` passes through `λ⊤.λ⊤.λ⊤.λ⊤.1`, which is not well-formed, and the
+well-subtyping chain is a longer detour. So reflection is not "the same chain with side
+conditions checked"; a proof would have to construct the detour, presumably by choosing the
+promotion points after the equivalence steps (well-formedness is preserved by evaluation and
+by promotion between well-formed ends, not by arbitrary equivalence steps).

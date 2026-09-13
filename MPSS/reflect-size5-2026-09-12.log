@@ -1,0 +1,150 @@
+ctx ε: {'machine': 56, 'also_wsub': 56}
+ctx y≤⊤: {'machine': 443, 'also_wsub': 443}
+ctx y≡⊤: {'machine': 1717, 'also_wsub': 1717}
+ctx y≤(λ⊤.⊤): {'machine': 2254, 'also_wsub': 2254}
+ctx y≡(λ⊤.⊤): {'machine': 4047, 'also_wsub': 4047}
+ctx y≤(λ⊤.0): {'machine': 4664, 'also_wsub': 4639, 'wsub_escalated': 25}
+ctx y≡(λ⊤.0): {'machine': 5942, 'also_wsub': 5902, 'wsub_escalated': 40}
+ctx y≤(λ⊤.(λ⊤.⊤)): {'machine': 6524, 'also_wsub': 6484, 'wsub_escalated': 40}
+ctx y≡(λ⊤.(λ⊤.⊤)): {'machine': 7935, 'also_wsub': 7895, 'wsub_escalated': 40}
+ctx y≤(λ(λ⊤.⊤).0): {'machine': 8354, 'also_wsub': 8314, 'wsub_escalated': 40}
+ctx y≡(λ(λ⊤.⊤).0): {'machine': 8798, 'also_wsub': 8758, 'wsub_escalated': 40}
+ctx y≤(λ⊤.(λ⊤.1)): {'machine': 9430, 'also_wsub': 9377, 'wsub_escalated': 53}
+ctx y≡(λ⊤.(λ⊤.1)): {'machine': 10427, 'also_wsub': 10357, 'wsub_escalated': 70}
+ctx y≤⊤, z≤⊤: {'machine': 11707, 'also_wsub': 11637, 'wsub_escalated': 70}
+ctx y≤⊤, z≡⊤: {'machine': 15655, 'also_wsub': 15585, 'wsub_escalated': 70}
+ctx y≤⊤, z≤y: {'machine': 17285, 'also_wsub': 17215, 'wsub_escalated': 70}
+ctx y≤⊤, z≡y: {'machine': 19831, 'also_wsub': 19761, 'wsub_escalated': 70}
+ctx y≤⊤, z≤(λy.0): {'machine': 21257, 'also_wsub': 21180, 'wsub_escalated': 77}
+ctx y≤⊤, z≡(λy.0): {'machine': 22870, 'also_wsub': 22793, 'wsub_escalated': 77}
+ctx y≤⊤, z≤(λ⊤.y): {'machine': 24688, 'also_wsub': 24611, 'wsub_escalated': 77}
+ctx y≤⊤, z≡(λ⊤.y): {'machine': 27374, 'also_wsub': 27297, 'wsub_escalated': 77}
+ctx y≤⊤, z≤(y ⊤): {'machine': 28654, 'also_wsub': 28577, 'wsub_escalated': 77}
+ctx y≤⊤, z≡(y ⊤): {'machine': 29934, 'also_wsub': 29857, 'wsub_escalated': 77}
+ctx y≡⊤, z≤⊤: {'machine': 33882, 'also_wsub': 33805, 'wsub_escalated': 77}
+ctx y≡⊤, z≡⊤: {'machine': 43290, 'also_wsub': 43213, 'wsub_escalated': 77}
+ctx y≡⊤, z≤y: {'machine': 47238, 'also_wsub': 47161, 'wsub_escalated': 77}
+ctx y≡⊤, z≡y: {'machine': 56646, 'also_wsub': 56569, 'wsub_escalated': 77}
+ctx y≡⊤, z≤(λy.0): {'machine': 62002, 'also_wsub': 61826, 'wsub_escalated': 176}
+ctx y≡⊤, z≡(λy.0): {'machine': 70525, 'also_wsub': 70305, 'wsub_escalated': 220}
+ctx y≡⊤, z≤(λ⊤.y): {'machine': 75595, 'also_wsub': 75375, 'wsub_escalated': 220}
+ctx y≡⊤, z≡(λ⊤.y): {'machine': 86763, 'also_wsub': 86543, 'wsub_escalated': 220}
+ctx y≡⊤, z≤(y ⊤): {'machine': 90711, 'also_wsub': 90491, 'wsub_escalated': 220}
+ctx y≡⊤, z≡(y ⊤): {'machine': 100119, 'also_wsub': 99899, 'wsub_escalated': 220}
+ctx y≤(λ⊤.⊤), z≤⊤: {'machine': 101762, 'also_wsub': 101542, 'wsub_escalated': 220}
+ctx y≤(λ⊤.⊤), z≡⊤: {'machine': 106832, 'also_wsub': 106612, 'wsub_escalated': 220}
+ctx y≤(λ⊤.⊤), z≤y: {'machine': 109374, 'also_wsub': 109154, 'wsub_escalated': 220}
+ctx y≤(λ⊤.⊤), z≡y: {'machine': 113388, 'also_wsub': 113168, 'wsub_escalated': 220}
+ctx y≤(λ⊤.⊤), z≤(λy.0): {'machine': 115223, 'also_wsub': 114986, 'wsub_escalated': 237}
+ctx y≤(λ⊤.⊤), z≡(λy.0): {'machine': 117271, 'also_wsub': 117031, 'wsub_escalated': 240}
+ctx y≤(λ⊤.⊤), z≤(λ⊤.y): {'machine': 119635, 'also_wsub': 119391, 'wsub_escalated': 244}
+ctx y≤(λ⊤.⊤), z≡(λ⊤.y): {'machine': 123105, 'also_wsub': 122854, 'wsub_escalated': 251}
+ctx y≤(λ⊤.⊤), z≤(y ⊤): {'machine': 124760, 'also_wsub': 124509, 'wsub_escalated': 251}
+ctx y≤(λ⊤.⊤), z≡(y ⊤): {'machine': 126474, 'also_wsub': 126223, 'wsub_escalated': 251}
+ctx y≡(λ⊤.⊤), z≤⊤: {'machine': 132521, 'also_wsub': 132270, 'wsub_escalated': 251}
+ctx y≡(λ⊤.⊤), z≡⊤: {'machine': 143689, 'also_wsub': 143438, 'wsub_escalated': 251}
+ctx y≡(λ⊤.⊤), z≤y: {'machine': 152603, 'also_wsub': 152352, 'wsub_escalated': 251}
+ctx y≡(λ⊤.⊤), z≡y: {'machine': 170579, 'also_wsub': 170328, 'wsub_escalated': 251}
+ctx y≡(λ⊤.⊤), z≤(λy.0): {'machine': 177596, 'also_wsub': 177316, 'wsub_escalated': 280}
+ctx y≡(λ⊤.⊤), z≡(λy.0): {'machine': 185688, 'also_wsub': 185408, 'wsub_escalated': 280}
+ctx y≡(λ⊤.⊤), z≤(λ⊤.y): {'machine': 195329, 'also_wsub': 195036, 'wsub_escalated': 293}
+ctx y≡(λ⊤.⊤), z≡(λ⊤.y): {'machine': 209872, 'also_wsub': 209578, 'wsub_escalated': 294}
+ctx y≡(λ⊤.⊤), z≤(y ⊤): {'machine': 215919, 'also_wsub': 215625, 'wsub_escalated': 294}
+ctx y≡(λ⊤.⊤), z≡(y ⊤): {'machine': 227087, 'also_wsub': 226789, 'wsub_escalated': 298}
+ctx y≤(λ⊤.0), z≤⊤: {'machine': 228880, 'also_wsub': 228537, 'wsub_escalated': 343}
+ctx y≤(λ⊤.0), z≡⊤: {'machine': 234245, 'also_wsub': 233815, 'wsub_escalated': 430}
+ctx y≤(λ⊤.0), z≤y: {'machine': 237175, 'also_wsub': 236540, 'wsub_escalated': 635}
+ctx y≤(λ⊤.0), z≡y: {'machine': 242071, 'also_wsub': 241009, 'wsub_escalated': 1062}
+ctx y≤(λ⊤.0), z≤(λy.0): {'machine': 244165, 'also_wsub': 242961, 'wsub_escalated': 1204}
+ctx y≤(λ⊤.0), z≡(λy.0): {'machine': 246600, 'also_wsub': 245272, 'wsub_escalated': 1328}
+ctx y≤(λ⊤.0), z≤(λ⊤.y): {'machine': 249318, 'also_wsub': 247792, 'wsub_escalated': 1526}
+ctx y≤(λ⊤.0), z≡(λ⊤.y): {'machine': 253577, 'also_wsub': 251766, 'wsub_escalated': 1811}
+ctx y≤(λ⊤.0), z≤(y ⊤): {'machine': 255394, 'also_wsub': 253533, 'wsub_escalated': 1861}
+ctx y≤(λ⊤.0), z≡(y ⊤): {'machine': 257301, 'also_wsub': 255393, 'wsub_escalated': 1908}
+ctx y≡(λ⊤.0), z≤⊤: {'machine': 260404, 'also_wsub': 258481, 'wsub_escalated': 1923}
+ctx y≡(λ⊤.0), z≡⊤: {'machine': 268927, 'also_wsub': 266960, 'wsub_escalated': 1967}
+ctx y≡(λ⊤.0), z≤y: {'machine': 274070, 'also_wsub': 271685, 'wsub_escalated': 2385}
+ctx y≡(λ⊤.0), z≡y: {'machine': 286422, 'also_wsub': 283881, 'wsub_escalated': 2541}
+ctx y≡(λ⊤.0), z≤(λy.0): {'machine': 290190, 'also_wsub': 287488, 'wsub_escalated': 2702}
+ctx y≡(λ⊤.0), z≡(λy.0): {'machine': 294730, 'also_wsub': 291960, 'wsub_escalated': 2770}
+ctx y≡(λ⊤.0), z≤(λ⊤.y): {'machine': 299480, 'also_wsub': 296548, 'wsub_escalated': 2932}
+ctx y≡(λ⊤.0), z≡(λ⊤.y): {'machine': 307210, 'also_wsub': 304202, 'wsub_escalated': 3008}
+ctx y≡(λ⊤.0), z≤(y ⊤): {'machine': 310313, 'also_wsub': 307290, 'wsub_escalated': 3023}
+ctx y≡(λ⊤.0), z≡(y ⊤): {'machine': 318836, 'also_wsub': 315765, 'wsub_escalated': 3071}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≤⊤: {'machine': 320584, 'also_wsub': 317513, 'wsub_escalated': 3071}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≡⊤: {'machine': 326106, 'also_wsub': 323035, 'wsub_escalated': 3071}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≤y: {'machine': 328894, 'also_wsub': 325809, 'wsub_escalated': 3085}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≡y: {'machine': 333272, 'also_wsub': 330177, 'wsub_escalated': 3095}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≤(λy.0): {'machine': 335217, 'also_wsub': 332097, 'wsub_escalated': 3120}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≡(λy.0): {'machine': 337376, 'also_wsub': 334236, 'wsub_escalated': 3140}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≤(λ⊤.y): {'machine': 339878, 'also_wsub': 336685, 'wsub_escalated': 3193}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≡(λ⊤.y): {'machine': 343486, 'also_wsub': 340241, 'wsub_escalated': 3245}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≤(y ⊤): {'machine': 345621, 'also_wsub': 342373, 'wsub_escalated': 3248}
+ctx y≤(λ⊤.(λ⊤.⊤)), z≡(y ⊤): {'machine': 347828, 'also_wsub': 344579, 'wsub_escalated': 3249}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≤⊤: {'machine': 352628, 'also_wsub': 349379, 'wsub_escalated': 3249}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≡⊤: {'machine': 362467, 'also_wsub': 359218, 'wsub_escalated': 3249}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≤y: {'machine': 370032, 'also_wsub': 366694, 'wsub_escalated': 3338}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≡y: {'machine': 384314, 'also_wsub': 380976, 'wsub_escalated': 3338}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≤(λy.0): {'machine': 389748, 'also_wsub': 386328, 'wsub_escalated': 3420}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≡(λy.0): {'machine': 395614, 'also_wsub': 392179, 'wsub_escalated': 3435}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≤(λ⊤.y): {'machine': 403704, 'also_wsub': 400189, 'wsub_escalated': 3515}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≡(λ⊤.y): {'machine': 414480, 'also_wsub': 410933, 'wsub_escalated': 3547}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≤(y ⊤): {'machine': 420599, 'also_wsub': 417004, 'wsub_escalated': 3595}
+ctx y≡(λ⊤.(λ⊤.⊤)), z≡(y ⊤): {'machine': 435142, 'also_wsub': 431153, 'wsub_escalated': 3989}
+ctx y≤(λ(λ⊤.⊤).0), z≤⊤: {'machine': 436473, 'also_wsub': 432484, 'wsub_escalated': 3989}
+ctx y≤(λ(λ⊤.⊤).0), z≡⊤: {'machine': 440769, 'also_wsub': 436780, 'wsub_escalated': 3989}
+ctx y≤(λ(λ⊤.⊤).0), z≤y: {'machine': 442521, 'also_wsub': 438519, 'wsub_escalated': 4002}
+ctx y≤(λ(λ⊤.⊤).0), z≡y: {'machine': 445217, 'also_wsub': 441212, 'wsub_escalated': 4005}
+ctx y≤(λ(λ⊤.⊤).0), z≤(λy.0): {'machine': 446700, 'also_wsub': 442684, 'wsub_escalated': 4016}
+ctx y≤(λ(λ⊤.⊤).0), z≡(λy.0): {'machine': 448372, 'also_wsub': 444354, 'wsub_escalated': 4018}
+ctx y≤(λ(λ⊤.⊤).0), z≤(λ⊤.y): {'machine': 450504, 'also_wsub': 446408, 'wsub_escalated': 4096}
+ctx y≤(λ(λ⊤.⊤).0), z≡(λ⊤.y): {'machine': 453696, 'also_wsub': 449517, 'wsub_escalated': 4179}
+ctx y≤(λ(λ⊤.⊤).0), z≤(y ⊤): {'machine': 455027, 'also_wsub': 450848, 'wsub_escalated': 4179}
+ctx y≤(λ(λ⊤.⊤).0), z≡(y ⊤): {'machine': 456358, 'also_wsub': 452179, 'wsub_escalated': 4179}
+ctx y≡(λ(λ⊤.⊤).0), z≤⊤: {'machine': 457727, 'also_wsub': 453548, 'wsub_escalated': 4179}
+ctx y≡(λ(λ⊤.⊤).0), z≡⊤: {'machine': 462283, 'also_wsub': 458104, 'wsub_escalated': 4179}
+ctx y≡(λ(λ⊤.⊤).0), z≤y: {'machine': 464080, 'also_wsub': 459890, 'wsub_escalated': 4190}
+ctx y≡(λ(λ⊤.⊤).0), z≡y: {'machine': 466868, 'also_wsub': 462678, 'wsub_escalated': 4190}
+ctx y≡(λ(λ⊤.⊤).0), z≤(λy.0): {'machine': 468392, 'also_wsub': 464191, 'wsub_escalated': 4201}
+ctx y≡(λ(λ⊤.⊤).0), z≡(λy.0): {'machine': 470107, 'also_wsub': 465906, 'wsub_escalated': 4201}
+ctx y≡(λ(λ⊤.⊤).0), z≤(λ⊤.y): {'machine': 472403, 'also_wsub': 468151, 'wsub_escalated': 4252}
+ctx y≡(λ(λ⊤.⊤).0), z≡(λ⊤.y): {'machine': 475946, 'also_wsub': 471682, 'wsub_escalated': 4264}
+ctx y≡(λ(λ⊤.⊤).0), z≤(y ⊤): {'machine': 477315, 'also_wsub': 473051, 'wsub_escalated': 4264}
+ctx y≡(λ(λ⊤.⊤).0), z≡(y ⊤): {'machine': 481871, 'also_wsub': 477577, 'wsub_escalated': 4294}
+ctx y≤(λ⊤.(λ⊤.1)), z≤⊤: {'machine': 483733, 'also_wsub': 479420, 'wsub_escalated': 4313}
+ctx y≤(λ⊤.(λ⊤.1)), z≡⊤: {'machine': 489558, 'also_wsub': 485151, 'wsub_escalated': 4407}
+ctx y≤(λ⊤.(λ⊤.1)), z≤y: {'machine': 492681, 'also_wsub': 488056, 'wsub_escalated': 4625}
+ctx y≤(λ⊤.(λ⊤.1)), z≡y: {'machine': 497645, 'also_wsub': 492764, 'wsub_escalated': 4881}
+ctx y≤(λ⊤.(λ⊤.1)), z≤(λy.0): {'machine': 499722, 'also_wsub': 494781, 'wsub_escalated': 4941}
+ctx y≤(λ⊤.(λ⊤.1)), z≡(λy.0): {'machine': 502041, 'also_wsub': 497037, 'wsub_escalated': 5004}
+ctx y≤(λ⊤.(λ⊤.1)), z≤(λ⊤.y): {'machine': 504701, 'also_wsub': 499585, 'wsub_escalated': 5116}
+ctx y≤(λ⊤.(λ⊤.1)), z≡(λ⊤.y): {'machine': 508654, 'also_wsub': 503387, 'wsub_escalated': 5267}
+ctx y≤(λ⊤.(λ⊤.1)), z≤(y ⊤): {'machine': 510914, 'also_wsub': 505618, 'wsub_escalated': 5296}
+ctx y≤(λ⊤.(λ⊤.1)), z≡(y ⊤): {'machine': 513247, 'also_wsub': 507927, 'wsub_escalated': 5320}
+ctx y≡(λ⊤.(λ⊤.1)), z≤⊤: {'machine': 516053, 'also_wsub': 510708, 'wsub_escalated': 5345}
+ctx y≡(λ⊤.(λ⊤.1)), z≡⊤: {'machine': 524254, 'also_wsub': 518826, 'wsub_escalated': 5428}
+ctx y≡(λ⊤.(λ⊤.1)), z≤y: {'machine': 528891, 'also_wsub': 523045, 'wsub_escalated': 5846}
+ctx y≡(λ⊤.(λ⊤.1)), z≡y: {'machine': 537483, 'also_wsub': 531441, 'wsub_escalated': 6042}
+ctx y≡(λ⊤.(λ⊤.1)), z≤(λy.0): {'machine': 540608, 'also_wsub': 534472, 'wsub_escalated': 6136}
+ctx y≡(λ⊤.(λ⊤.1)), z≡(λy.0): {'machine': 544057, 'also_wsub': 537853, 'wsub_escalated': 6204}
+ctx y≡(λ⊤.(λ⊤.1)), z≤(λ⊤.y): {'machine': 548186, 'also_wsub': 541854, 'wsub_escalated': 6332}
+ctx y≡(λ⊤.(λ⊤.1)), z≡(λ⊤.y): {'machine': 554166, 'also_wsub': 547707, 'wsub_escalated': 6459}
+ctx y≡(λ⊤.(λ⊤.1)), z≤(y ⊤): {'machine': 557531, 'also_wsub': 551036, 'wsub_escalated': 6495}
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (y y)) | t = (y (y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (y y)) | t = (y (λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (y y)) | t = (λ⊤.(y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (y y)) | t = (λ⊤.(λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (λ⊤.y)) | t = (y (y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (λ⊤.y)) | t = (y (λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (λ⊤.y)) | t = (λ⊤.(y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (y (λ⊤.y)) | t = (λ⊤.(λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(y y)) | t = (y (y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(y y)) | t = (y (λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(y y)) | t = (λ⊤.(y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(y y)) | t = (λ⊤.(λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(λ⊤.y)) | t = (y (y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(λ⊤.y)) | t = (y (λ⊤.z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(λ⊤.y)) | t = (λ⊤.(y z))
+GAP: y≡(λ⊤.(λ⊤.1)), z≡(y ⊤) | u = (λ⊤.(λ⊤.y)) | t = (λ⊤.(λ⊤.z))
+ctx y≡(λ⊤.(λ⊤.1)), z≡(y ⊤): {'machine': 569295, 'also_wsub': 562442, 'wsub_escalated': 6837, 'GAP': 16}
+{'machine': 569295, 'also_wsub': 562442, 'wsub_escalated': 6837, 'GAP': 16}
