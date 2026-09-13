@@ -1,0 +1,33 @@
+133 contexts 342 terms
+ctx ε: wf 15 pairs 56 instances so far 1029 fail 0
+ctx y≤⊤: wf 59 pairs 387 instances so far 25587 fail 0
+ctx y≡⊤: wf 62 pairs 1274 instances so far 126095 fail 0
+ctx y≤(λ⊤.⊤): wf 84 pairs 537 instances so far 177013 fail 0
+ctx y≡(λ⊤.⊤): wf 84 pairs 1793 instances so far 364647 fail 0
+ctx y≤(λ⊤.0): wf 86 pairs 592 instances so far 423654 fail 0
+ctx y≡(λ⊤.0): wf 86 pairs 1263 instances so far 562865 fail 0
+ctx y≤(λ⊤.(λ⊤.⊤)): wf 88 pairs 582 instances so far 621879 fail 0
+ctx y≡(λ⊤.(λ⊤.⊤)): wf 88 pairs 1411 instances so far 792613 fail 0
+ctx y≤(λ(λ⊤.⊤).0): wf 62 pairs 419 instances so far 821458 fail 0
+ctx y≡(λ(λ⊤.⊤).0): wf 62 pairs 444 instances so far 853168 fail 0
+ctx y≤(λ⊤.(λ⊤.1)): wf 88 pairs 619 instances so far 917469 fail 0
+ctx y≡(λ⊤.(λ⊤.1)): wf 88 pairs 980 instances so far 1028909 fail 0
+ctx y≤⊤, z≤⊤: wf 143 pairs 1280 instances so far 1218972 fail 0
+ctx y≤⊤, z≡⊤: wf 151 pairs 3948 instances so far 1895472 fail 0
+ctx y≤⊤, z≤y: wf 147 pairs 1630 instances so far 2144112 fail 0
+ctx y≤⊤, z≡y: wf 151 pairs 2546 instances so far 2552491 fail 0
+ctx y≤⊤, z≤(λy.0): wf 154 pairs 1419 instances so far 2780313 fail 0
+ctx y≤⊤, z≡(λy.0): wf 154 pairs 1613 instances so far 3040452 fail 0
+ctx y≤⊤, z≤(λ⊤.y): wf 189 pairs 1818 instances so far 3409979 fail 0
+ctx y≤⊤, z≡(λ⊤.y): wf 189 pairs 2686 instances so far 3968518 fail 0
+ctx y≤⊤, z≤(y ⊤): wf 143 pairs 1280 instances so far 4158581 fail 0
+ctx y≤⊤, z≡(y ⊤): wf 143 pairs 1280 instances so far 4348644 fail 0
+ctx y≡⊤, z≤⊤: wf 151 pairs 3948 instances so far 5025144 fail 0
+ctx y≡⊤, z≡⊤: wf 159 pairs 9408 instances so far 6932271 fail 0
+ctx y≡⊤, z≤y: wf 151 pairs 3948 instances so far 7608771 fail 0
+ctx y≡⊤, z≡y: skipped (MemoryError)
+ctx y≡⊤, z≤(λy.0): wf 200 pairs 5257 instances so far 9489830 fail 0
+ctx y≡⊤, z≡(λy.0): skipped (MemoryError)
+ctx y≡⊤, z≤(λ⊤.y): wf 197 pairs 5070 instances so far 10648061 fail 0
+ctx y≡⊤, z≡(λ⊤.y): skipped (MemoryError)
+ctx y≡⊤, z≤(y ⊤): wf 151 pairs 3948 instances so far 11698280 fail 0

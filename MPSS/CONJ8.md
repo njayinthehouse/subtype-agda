@@ -22,6 +22,10 @@ join is through the body, `x ↦ z z ↦ y z ↦ (λ⊤.0) z ↦ z ↦ y`, five 
 the next level is size 5, run separately with single-layer contexts.) So on everything tried the conjecture holds, and the joins it needs are
 exactly the "operand reaches the bound" chains the structural analysis below predicts.
 
+Term size 5 (`conj8-size5-2026-09-12.log`, single-layer contexts, `CO2=0`): the run stopped
+after **32 of 133 contexts, 11,698,280 instances, 0 failures** (one context, `y ≡ ⊤, z ≡ λ⊤.y`,
+skipped on memory). The remaining 101 contexts have not been searched.
+
 ## 2. What a `⟶ˢ` step is
 
 A promotion derivation is a path of `Ms-App` (pushing operands), `Ms-Fun` (entering a body
