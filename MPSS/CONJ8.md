@@ -18,8 +18,8 @@ and term size.
 
 Term size 3: **561,145 instances, 3 failures at chain depth 4, all three joining at depth 6**
 (`conj8-deep.py`), e.g. `Γ = y ≤ λ⊤.0, z ≤ y`, `u = λx≤z.x`, `t = λx≤z.y`, `Co = □ (z z)`: the
-join is through the body, `x ↦ z z ↦ y z ↦ (λ⊤.0) z ↦ z ↦ y`, five steps. Term size 4 is running
-(`conj8-size4.log`). So on everything tried the conjecture holds, and the joins it needs are
+join is through the body, `x ↦ z z ↦ y z ↦ (λ⊤.0) z ↦ z ↦ y`, five steps. (The generator's term sizes are odd — a compound is one plus two smaller terms — so
+the next level is size 5, run separately with single-layer contexts.) So on everything tried the conjecture holds, and the joins it needs are
 exactly the "operand reaches the bound" chains the structural analysis below predicts.
 
 ## 2. What a `⟶ˢ` step is
