@@ -152,3 +152,15 @@ case analysis worked out — case B reduces to the proven `Lem-2′`, case C mir
 *original* diamond (decreasing diagrams / Hindley–Rosen; Z-property and complete developments
 rejected because `InfiniteBranching` kills them), with the caveat that those give confluence, not
 the one-step diamond the downstream proofs consume. Nothing new was mechanized on 2026-09-11.
+
+## Step 5 of the variant line, done — 2026-09-12
+
+`VariantDrop`, `VariantCommutation` (`Lem-1′`, unconditional, by induction on the subject's
+size; `Bet-App′`, `Fun-Fun′`, `FOp-FOp′` proved), `VariantTransitivity` (`push≡′`, `⊲′-trans`,
+`Thm-3′`), `VariantTransfer` (`Thm-3ᴸ`: transitivity elimination for `⊲` on chains with local
+closure recorded, nothing assumed), `Unconditional` (`Thm-3wf` on well-formed chains; Theorem
+11, Lemma 10, Theorem 4 with nothing assumed; Lemma 6, Theorem 5 and type safety from exactly
+Conjecture 8 and the repaired Proposition 17). **Lemmas 1 and 2 of `Assumed` are no longer on the
+path to any of the paper's theorems.** The one-step diamond `Lem-2` for the original relation
+remains open as a statement about `⟶ᵉ` (see the mixed diamond above); the paper's metatheory no
+longer depends on it.
