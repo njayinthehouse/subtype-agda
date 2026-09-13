@@ -1,0 +1,105 @@
+[0] ((λ⊤.(0 0)) (λ⊤.(0 0))) @ ε;[]
+  compressed@1=13 compressed@2=12 maxlen=14 needs_compression=25 nontriv<=1=75 strips=100
+[1] (x x) @ x≡(λ⊤.(0 0));[]
+  compressed@1=13 compressed@2=12 maxlen=10 needs_compression=25 nontriv<=1=75 strips=100
+[2] x @ x≡(λ⊤.(0 0));[x]
+  compressed@1=1 compressed@2=3 len<=1=5 maxlen=6 needs_compression=4 nontriv<=1=16 strips=25
+[3] (λ⊤.(0 0)) @ x≡(λ⊤.(0 0));[x]
+  compressed@1=4 compressed@2=17 maxlen=11 needs_compression=21 nontriv<=1=60 strips=81
+[4] (x (λ⊤.(0 0))) @ x≡(λ⊤.(0 0));[]
+  compressed@1=1 compressed@2=3 maxlen=13 needs_compression=4 nontriv<=1=21 strips=25
+[5] (x x) @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w));[]
+  compressed@1=83 compressed@2=95 maxlen=16 needs_compression=178 nontriv<=1=122 strips=300
+[6] ((x x) w) @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w));[]
+  compressed@1=112 compressed@2=104 maxlen=19 needs_compression=216 nontriv<=1=84 strips=300
+[7] x @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w));[x]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=9 needs_compression=47 nontriv<=1=109 strips=169
+[8] (x x) @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w));[w]
+  compressed@1=74 compressed@2=98 maxlen=16 needs_compression=172 nontriv<=1=128 strips=300
+[9] x @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w));[x, w]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=9 needs_compression=47 nontriv<=1=109 strips=169
+[10] (x x) @ w≡(⊤ ⊤), x≡(λ⊤.(0 (0 w)));[]
+  compressed@1=76 compressed@2=109 maxlen=16 needs_compression=185 nontriv<=1=115 strips=300
+[11] x @ w≡(⊤ ⊤), x≡(λ⊤.(0 (0 w)));[x]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=9 needs_compression=47 nontriv<=1=109 strips=169
+[12] (y y) @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w)), y≡x;[]
+  compressed@1=4 compressed@2=17 maxlen=12 needs_compression=21 nontriv<=1=60 strips=81
+[13] (y x) @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w)), y≡x;[]
+  compressed@1=14 compressed@2=32 maxlen=13 needs_compression=46 nontriv<=1=98 strips=144
+[14] x @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w)), y≡x;[y]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=9 needs_compression=47 nontriv<=1=109 strips=169
+[15] y @ w≡(⊤ ⊤), x≡(λ⊤.((0 0) w)), y≡x;[x]
+  compressed@2=1 len<=1=3 maxlen=6 needs_compression=1 nontriv<=1=5 strips=9
+[16] (x x) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w));[]
+  compressed@1=85 compressed@2=101 maxlen=18 needs_compression=186 nontriv<=1=114 strips=300
+[17] ((x x) w) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w));[]
+  compressed@1=95 compressed@2=128 maxlen=23 needs_compression=223 nontriv<=1=77 strips=300
+[18] x @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w));[x]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=10 needs_compression=47 nontriv<=1=109 strips=169
+[19] (x x) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w));[w]
+  compressed@1=73 compressed@2=102 maxlen=18 needs_compression=175 nontriv<=1=125 strips=300
+[20] x @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w));[x, w]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=10 needs_compression=47 nontriv<=1=109 strips=169
+[21] (x x) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.(0 (0 w)));[]
+  compressed@1=79 compressed@2=110 maxlen=18 needs_compression=189 nontriv<=1=111 strips=300
+[22] x @ w≡((λ⊤.0) ⊤), x≡(λ⊤.(0 (0 w)));[x]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=10 needs_compression=47 nontriv<=1=109 strips=169
+[23] (y y) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w)), y≡x;[]
+  compressed@1=4 compressed@2=17 maxlen=12 needs_compression=21 nontriv<=1=60 strips=81
+[24] (y x) @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w)), y≡x;[]
+  compressed@1=14 compressed@2=32 maxlen=14 needs_compression=46 nontriv<=1=98 strips=144
+[25] x @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w)), y≡x;[y]
+  compressed@1=36 compressed@2=11 len<=1=13 maxlen=10 needs_compression=47 nontriv<=1=109 strips=169
+[26] y @ w≡((λ⊤.0) ⊤), x≡(λ⊤.((0 0) w)), y≡x;[x]
+  compressed@2=1 len<=1=3 maxlen=6 needs_compression=1 nontriv<=1=5 strips=9
+[27] (x w) @ w≤⊤, x≡(λ⊤.(0 0));[]
+  compressed@1=1 compressed@2=3 maxlen=7 needs_compression=4 nontriv<=1=21 strips=25
+[28] x @ w≤⊤, x≡(λ⊤.(0 0));[w]
+  compressed@1=1 compressed@2=3 len<=1=5 maxlen=6 needs_compression=4 nontriv<=1=16 strips=25
+[29] x @ w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w);[]
+  compressed@1=199 compressed@2=31 len<=1=1 maxlen=19 needs_compression=230 nontriv<=1=69 strips=300
+[30] (x x) @ w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w);[]
+  
+[31] x @ w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w);[x]
+  compressed@1=211 compressed@2=25 len<=1=1 maxlen=19 needs_compression=236 nontriv<=1=63 strips=300
+[32] x @ w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w);[w]
+  compressed@1=215 compressed@2=18 len<=1=4 maxlen=19 needs_compression=233 nontriv<=1=63 strips=300
+[33] (x w) @ w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w);[]
+  NOT_compressed@cap3=2 compressed@1=245 compressed@2=22 maxlen=27 memerr=2 needs_compression=269 nontriv<=1=31 strips=300
+[34] ((λ⊤.0) ((λ⊤.0) x)) @ x≡(⊤ ⊤);[]
+  compressed@1=129 compressed@2=13 len<=1=1 maxlen=16 needs_compression=142 nontriv<=1=157 strips=300
+[35] ((λ⊤.(0 0)) ((λ⊤.0) x)) @ x≡(⊤ ⊤);[]
+  compressed@1=206 compressed@2=25 maxlen=23 needs_compression=231 nontriv<=1=69 strips=300
+[36] ((λ⊤.0) ((λ⊤.0) x)) @ x≡(λ⊤.(0 0));[]
+  compressed@1=79 compressed@2=18 len<=1=8 maxlen=19 needs_compression=97 nontriv<=1=195 strips=300
+[37] ((λ⊤.(0 0)) ((λ⊤.0) x)) @ x≡(λ⊤.(0 0));[]
+  compressed@1=134 compressed@2=36 maxlen=26 needs_compression=170 nontriv<=1=130 strips=300
+[38] ((λ⊤.0) ((λ⊤.((λ⊤.0) (0 0))) x)) @ x≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)));[]
+  
+[39] ((λ⊤.(0 0)) ((λ⊤.((λ⊤.0) (0 0))) x)) @ x≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)));[]
+  no result (timeout/crash)
+[40] (λ⊤.0) @ x≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)));[((λ⊤.((λ⊤.0) (0 0))) x)]
+  no result (timeout/crash)
+[41] (λ⊤.(0 0)) @ x≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)));[((λ⊤.((λ⊤.0) (0 0))) x)]
+  
+[42] ((λ⊤.0) ((λ⊤.((λ⊤.0) (0 0))) x)) @ x≡(λ⊤.(0 0));[]
+  compressed@1=185 compressed@2=65 maxlen=35 needs_compression=250 nontriv<=1=50 strips=300
+[43] (λ⊤.(0 0)) @ x≡(λ⊤.(0 0));[((λ⊤.((λ⊤.0) (0 0))) x)]
+  compressed@1=175 compressed@2=50 maxlen=29 needs_compression=225 nontriv<=1=75 strips=300
+[44] v @ y≡(λ⊤.(0 0)), v≡(y ((⊤ ⊤) (⊤ ⊤)));[]
+  compressed@1=13 compressed@2=4 len<=1=9 maxlen=9 needs_compression=17 nontriv<=1=55 strips=81
+[45] (u u) @ w≡(λ⊤.0), u≡(λ⊤.(w 0));[]
+  compressed@1=23 compressed@2=61 maxlen=13 needs_compression=84 nontriv<=1=141 strips=225
+[46] ((λ⊤.(0 0)) (λ⊤.0)) @ ε;[]
+  compressed@1=2 compressed@2=4 maxlen=10 needs_compression=6 nontriv<=1=30 strips=36
+NOT_compressed@cap3 2
+compressed@1 2851
+compressed@2 1460
+len<=1 144
+maxlen 35
+memerr 2
+needs_compression 4313
+no_result 2
+nontriv<=1 3486
+strips 7943
+EXAMPLE nocompress (33, ['(x w)', 'w≡(((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))), x≡((λ⊤.((λ⊤.0) (0 0))) w)', '[]', '(((λ⊤.((λ⊤.(1 1)) (w 0))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) (((⊤ ⊤) ⊤) (⊤ ⊤)))', '(((λ⊤.((λ⊤.0) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', ['(((λ⊤.((λ⊤.0) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.0) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(w w)) (w w))) w) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.((((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))) (((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))) (w (((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)))))) (((⊤ ⊤) (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ (⊤ ⊤)) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ ⊤) (⊤ (⊤ ⊤))))', '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ ⊤) (⊤ ⊤)))'], '(((λ⊤.((λ⊤.(((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤))))) (w ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))))) ((⊤ ⊤) ((⊤ ⊤) (⊤ ⊤)))) ((⊤ ⊤) (⊤ ⊤)))'])
