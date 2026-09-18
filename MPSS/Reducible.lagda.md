@@ -153,9 +153,33 @@ good-trans {Γ} {T} {T′} {m} (acc rs) (acc rs′) (wm , m≤T , h) (wT , T≤T
      , good-trans (rs (▷-app Δ w)) (rs′ (▷-app Δ w′)) (proj₂ r) (proj₂ r′)
 ```
 
+## A well-formed reduct of the target is good at it
+
+The case of `Ws-Rgh`: if `T ⟶ᵉ T′` with both well-formed, then `T′` is good at `T`, and with
+`good-trans` whatever is good at `T′` is good at `T`.
+
+```agda
+reduct-≤ : ∀ {Γ T T′} → Γ ⊢ T′ wf → Γ ∣ [] ⊢ T ⟶ᵉ T′ → Γ ⊢ T wf → Γ ⊢ T′ ≤*wf T
+reduct-≤ wT′ e wT = Ws-Sub wT′ (Ws-Rgh (Ws-Rfl (wf⇒prevalid wT)) e) wT
+
+good-reduct : ∀ {Γ T T′} (a : Ranked Γ T)
+            → Γ ⊢ T wf → Γ ∣ [] ⊢ T ⟶ᵉ T′ → Γ ⊢ T′ wf → Good a T′
+good-reduct {Γ} {T} {T′} (acc rs) wT e wT′ =
+  wT′ , T′≤T , λ Δ {v} w e′ gv →
+    let pvΔ   = wf⇒prevalid w
+        T′≤TΔ = ⊑*wf-weaken [] Δ pvΔ T′≤T
+        wT′v  = app-wf-mid T′≤TΔ (⊑*wf⇒wfˡ T′≤TΔ) w
+        ev    = app-e (arg-wf′ w) (⟶ᵉ-weaken [] Δ (Pv-Nil pvΔ) e)
+    in reduct-≤ wT′v ev w , good-reduct (rs (▷-app Δ w)) w ev wT′v
+  where
+    T′≤T = reduct-≤ wT′ e wT
+```
+
 ## What this establishes
 
-The definition, its two projections, its independence of the accessibility proof, and the base
-case: a term that promotes to the target at every stack — a variable and its bound — is good at it.
+The definition, its two projections, its independence of the accessibility proof, the base
+case (a term that promotes to the target at every stack — a variable and its bound — is good at
+it), and three closure properties: equivalence expansion on the left, composition, and a
+well-formed reduct of the target.
 The fundamental lemma — every well-formed term below a ranked target is good at it, under good
 substitutions — is owed.
