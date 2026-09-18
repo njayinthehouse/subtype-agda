@@ -1,7 +1,124 @@
 {
-  "18": ["prop-18ᵉ-lc-false"],
-  "19": ["wf-weaken"], "20": ["∈-weaken"], "21": ["⟶ˢ-weaken"], "22": ["⟶ᵉ-weaken"],
-  "28": ["Lem-28-ctx"], "29": ["Lem-29-30"], "30": ["⟶ˢ-drop′"],
-  "31": ["⟶ᵉ-subst"], "32": ["⟶ˢ-subst"],
-  "33": ["⊲-app", "⊲-fun"], "34": ["⟶ˢ*-app", "⟶ˢ*-fun"], "35": ["⟶ᵉ*-app", "⟶ᵉ*-fun"]
+ "18": [
+  "prop-18ᵉ-lc-false"
+ ],
+ "19": [
+  "wf-weaken"
+ ],
+ "20": [
+  "∈-weaken"
+ ],
+ "21": [
+  "⟶ˢ-weaken"
+ ],
+ "22": [
+  "⟶ᵉ-weaken"
+ ],
+ "28": [
+  "Lem-28-ctx"
+ ],
+ "29": [
+  "Lem-29-30"
+ ],
+ "30": [
+  "⟶ˢ-drop′"
+ ],
+ "31": [
+  "⟶ᵉ-subst",
+  "⟶ˢ-subst"
+ ],
+ "32": [
+  "⟶ᵉ-subst≡"
+ ],
+ "33": [
+  "⊲-app",
+  "⊲-fun"
+ ],
+ "34": [
+  "⟶ˢ*-app",
+  "⟶ˢ*-fun"
+ ],
+ "35": [
+  "⟶ᵉ*-app",
+  "⟶ᵉ*-fun"
+ ],
+ "3": [
+  "Thm-3wf"
+ ],
+ "5": [
+  "Thm-5ʷ"
+ ],
+ "6": [
+  "Lem-6ʷ"
+ ],
+ "27": [
+  "Prop-27ʷ"
+ ],
+ "1′": [
+  "Lem-1′"
+ ],
+ "2′": [
+  "Lem-2′"
+ ],
+ "17′": [
+  "Prop-17ʷ"
+ ],
+ "18′": [
+  "⟶ᵉ-refl",
+  "⟶ˢ-refl"
+ ],
+ "31′": [
+  "⟶ᵉ-subst",
+  "⟶ˢ-subst"
+ ],
+ "development": [
+  {
+   "id": "1a",
+   "ref": "Lemma 1a",
+   "names": [
+    "↣-prevalid"
+   ],
+   "supports": [
+    "1"
+   ]
+  },
+  {
+   "id": "2a",
+   "ref": "Lemma 2a",
+   "names": [
+    "Lem-2ᵐ"
+   ],
+   "supports": []
+  },
+  {
+   "id": "8a",
+   "ref": "Lemma 8a",
+   "names": [
+    "FunCongr"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8b",
+   "ref": "Lemma 8b",
+   "names": [
+    "conj8"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8c",
+   "ref": "Lemma 8c",
+   "names": [
+    "steplift"
+   ],
+   "supports": [
+    "8"
+   ]
+  }
+ ]
 }

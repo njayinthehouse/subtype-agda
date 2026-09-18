@@ -13,10 +13,14 @@ from any project.
 
 `ledger.json` is derived and disposable — re-run `derive.py` after any change to the development
 and it refreshes. `ledger-map.json` names the definitions whose names do not follow the convention.
+Its `development` list names the lemmas
+the paper does not have — 1a, 2a, 8a, 8b, 8c — which are nodes of their own rather than steps in
+the log of the result they support.
 `ledger-annotations.json` holds everything that is a judgement rather than a fact: the short names,
 the prose accounts, the fault sentences, the transcribed steps, and the one pinned verdict
 (Lemma 1, which has a proof but rests on the diamond).
 
 The build refuses to proceed on a dependency to an unknown result, a highlighted sentence that
-does not occur in the extracted proof, a result marked refuted with no invalid step named, or a
-result with no short name.
+does not occur in the extracted proof, a result marked refuted with no invalid step named, a
+result with no short name, or a log that says `proved` twice with no `invalidated` step between
+(a log is the history of one statement).
