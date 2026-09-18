@@ -175,6 +175,46 @@ good-reduct {Γ} {T} {T′} (acc rs) wT e wT′ =
     T′≤T = reduct-≤ wT′ e wT
 ```
 
+## Two well-formed terms that join by equivalence steps
+
+Inside a layer only the ends and the promotion points are well-formed; the equivalence steps
+between them pass through terms that need not be. So the closure that a layer needs is for
+*chains*: if `p` and `t` are well-formed and `p ⟶ᵉ* c ⟵ᵉ* t`, then `p` is good at `t`. Under an
+operand both chains go to `c v` by `app-e*`, and `p v`, `t v` join again.
+
+```agda
+open import MPSS.Conj8Reduction using (_∣_⊢_⟶ᵉ*_; εᵉ; _◅ᵉ_; app-e*)
+
+lf1* : ∀ {Γ a a′ b} → Γ ∣ [] ⊢ a ⟶ᵉ* a′ → Γ ⊢ a′ ⊑wf[ sub-m ] b → Γ ⊢ a ⊑wf[ sub-m ] b
+lf1* εᵉ       d = d
+lf1* (e ◅ᵉ p) d = Ws-Lf1 e (lf1* p d)
+
+rgh* : ∀ {Γ v b c} → Γ ∣ [] ⊢ b ⟶ᵉ* c → Γ ⊢ v ⊑wf[ sub-m ] c → Γ ⊢ v ⊑wf[ sub-m ] b
+rgh* εᵉ       d = d
+rgh* (e ◅ᵉ p) d = Ws-Rgh (rgh* p d) e
+
+weaken* : ∀ (Δ : Ctx) {Γ a b} → (Δ ++ Γ) prevalid → Γ ∣ [] ⊢ a ⟶ᵉ* b → (Δ ++ Γ) ∣ [] ⊢ a ⟶ᵉ* b
+weaken* Δ pv εᵉ       = εᵉ
+weaken* Δ pv (e ◅ᵉ p) = ⟶ᵉ-weaken [] Δ (Pv-Nil pv) e ◅ᵉ weaken* Δ pv p
+
+join-≤ : ∀ {Γ p c t} → Γ ⊢ p wf → Γ ∣ [] ⊢ p ⟶ᵉ* c → Γ ∣ [] ⊢ t ⟶ᵉ* c → Γ ⊢ t wf → Γ ⊢ p ≤*wf t
+join-≤ wp L R wt = Ws-Sub wp (lf1* L (rgh* R (Ws-Rfl (wf⇒prevalid wp)))) wt
+
+good-join : ∀ {Γ p c t} (a : Ranked Γ t)
+          → Γ ⊢ p wf → Γ ∣ [] ⊢ p ⟶ᵉ* c → Γ ∣ [] ⊢ t ⟶ᵉ* c → Γ ⊢ t wf → Good a p
+good-join {Γ} {p} {c} {t} (acc rs) wp L R wt =
+  wp , p≤t , λ Δ {v} w e′ gv →
+    let pvΔ  = wf⇒prevalid w
+        p≤tΔ = ⊑*wf-weaken [] Δ pvΔ p≤t
+        wpv  = app-wf-mid p≤tΔ (⊑*wf⇒wfˡ p≤tΔ) w
+        wv   = arg-wf′ w
+        Lv   = app-e* wv (weaken* Δ pvΔ L)
+        Rv   = app-e* wv (weaken* Δ pvΔ R)
+    in join-≤ wpv Lv Rv w , good-join (rs (▷-app Δ w)) wpv Lv Rv w
+  where
+    p≤t = join-≤ wp L R wt
+```
+
 ## What this establishes
 
 The definition, its two projections, its independence of the accessibility proof, the base
