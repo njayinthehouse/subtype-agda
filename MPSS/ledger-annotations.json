@@ -6,7 +6,7 @@
   "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. Whether they hold once context annotations must be well-formed is open. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "114 Agda modules",
+   "116 Agda modules",
    "--safe · 0 postulates · 0 holes",
    "Conjecture 8, Lemmas 6 and 7, Theorem 5: refuted as stated, in a prevalid context with an ill-formed annotation (MPSS.Conj8Refuted)",
    "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
@@ -485,6 +485,15 @@
      "why": "¬ Conj-8, under --safe. Every hypothesis is derived: R, λx≤R.R and λx≤R.⊤ are well-formed, R ≤*wf λx≤R.R because both reduce to λx≤W.W, so x x is well-formed under x ≤ R, δ ≤*wf R, and δ δ and t′ δ are well-formed. The conclusion is refuted through Theorem 3 (a machine chain), confluence of ⟶ᵉ* (MPSS.Strip), the reduction of t′ δ to λx≤W.W, and a class of terms containing δ δ, closed under ⟶ᵉ and ⟶ˢ, with no abstraction in it: under an operand every abstraction on the head path is entered by Ms-FOp, so Ms-Pro never fires, and R occurs only in annotations.",
      "def": "¬Conj-8 : ¬ Conj-8\n¬Conj-8 c8 =\n  no-chain Bd-δδ (lc-app lct′ lcδ) (_ , _ , right)\n           (Thm-3wf (c8 (co-app ∙ δ) lcδ lct′ H₀.δ≤t′ H₀.wf-δδ H₀.wf-t′δ))",
      "change": "conj8-refuted"
+    },
+    {
+     "what": "The repaired statement — the logical context has well-formed annotations — and a provable variant of it: targets accessible in the domain order, by reducibility (a predicate defined by recursion on the rank, so that it can be used at any rank).",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS.WfCtx (Conj-8ʷᶜ, ¬WfCtx-Γ₀), MPSS.Reducible (Good, good-irr, neutral-good, good-expand); MPSS/CONJ8.md §15–16",
+     "because": "The refutation needs an ill-formed annotation, and the conjecture is what preservation rests on, so the question is which variant is both true and enough.",
+     "why": "Conj-8ʷᶜ is open: the refuting context is excluded and the substitution route is valid on all 3.2 million size-5 instances over the 125 probe contexts with well-formed annotations. For ranked targets the reducibility proof is begun — definition, independence of the accessibility proof, the base case, closure under equivalence expansion — and its fundamental lemma is owed. Which syntactic stratification makes every well-formed term ranked is a choice about the calculus.",
+     "change": "conj8-repaired"
     }
    ],
    "status": "refuted",
@@ -2045,6 +2054,12 @@
    "when": "2026-09-18",
    "title": "Conjecture 8 refuted as stated, with Lemmas 6 and 7 and Theorem 5",
    "summary": "Contexts are only required to be prevalid. In Γ₀ = R ≡ ω ω, ω = λs≤⊤. λx≤(s s). (s s), the name R is well-formed (Wf-PrE) and R ≡ λx≤R.R. With δ = λx≤R. x x and t′ = λx≤R. R x: δ ≤*wf t′ and both δ δ and t′ δ are well-formed, but δ δ ≤*wf t′ δ fails — Theorem 3 gives a machine chain, t′ δ reduces to an abstraction, confluence makes δ δ reach one, and the class Bd of MPSS.AppClass, closed under both reductions, contains none. The same context refutes Lemma 6 (g = λx≤R. (x δ) δ: g δ ↦ (δ δ) δ, ill-formed), Lemma 7 and preservation. Machine-checked, --safe."
+  },
+  {
+   "id": "conj8-repaired",
+   "when": "2026-09-18",
+   "title": "Conjecture 8 over contexts with well-formed annotations, and the ranked variant",
+   "summary": "MPSS.WfCtx restates Conjecture 8, Lemma 6 and preservation with well-formed context annotations (the counterexample's context is excluded); MPSS.Reducible begins a reducibility proof for targets accessible in the domain order: hereditary liftability, the base case, closure under equivalence expansion. The fundamental lemma is owed."
   }
  ]
 }
