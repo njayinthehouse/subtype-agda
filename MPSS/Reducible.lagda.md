@@ -130,6 +130,29 @@ good-expand {Γ} {T} {m} {m′} (acc rs) wm e (wm′ , d′ , h) =
     m≤T = expand-≤ wm e wm′ d′
 ```
 
+## Goodness composes
+
+If `m` is good at `T` and `T` is good at `T′`, then `m` is good at `T′`: the case of `Ws-Trs`. An
+operand good at the domain of `T′` is good at the domain of `T` — the same domain, reached through
+`T ≤*wf T′` — up to the accessibility proof, which does not matter.
+
+```agda
+good-trans : ∀ {Γ T T′ m} (a : Ranked Γ T) (b : Ranked Γ T′)
+           → Good a m → Good b T → Good b m
+good-trans {Γ} {T} {T′} {m} (acc rs) (acc rs′) (wm , m≤T , h) (wT , T≤T′ , h′) =
+  wm , Ws-Trs m≤T wT T≤T′ , λ Δ {v} w′ e′ gv →
+    let pvΔ   = wf⇒prevalid w′
+        T≤T′Δ = ⊑*wf-weaken [] Δ pvΔ T≤T′
+        wTΔ   = ⊑*wf⇒wfˡ T≤T′Δ
+        w     = app-wf-mid T≤T′Δ wTΔ w′
+        e     = Ws-Trs T≤T′Δ (⊑*wf⇒wfˡ e′) e′
+        gv₀   = good-irr (rs′ (▷-dom Δ w′ e′)) (rs (▷-dom Δ w e)) gv
+        r     = h Δ w e gv₀
+        r′    = h′ Δ w′ e′ gv
+    in Ws-Trs (proj₁ r) w (proj₁ r′)
+     , good-trans (rs (▷-app Δ w)) (rs′ (▷-app Δ w′)) (proj₂ r) (proj₂ r′)
+```
+
 ## What this establishes
 
 The definition, its two projections, its independence of the accessibility proof, and the base
