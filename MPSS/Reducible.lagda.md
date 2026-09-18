@@ -99,6 +99,37 @@ neutral-good Q Q-ext {Γ} {T} {m} (acc rs) q st wm wT =
     m≤T = one {Q} q st wm wT
 ```
 
+## Goodness is closed under equivalence expansion on the left
+
+If `m ⟶ᵉ m′` with `m` well-formed and `m′` good at `T`, then `m` is good at `T`: the step goes
+under the operand by `app-e`, and a layer absorbs it. This is what lets the abstraction case of
+the fundamental lemma go through a β-step.
+
+```agda
+open import MPSS.Weakening using (⟶ᵉ-weaken)
+open import MPSS.Conj8Reduction using (app-e)
+
+expand-≤ : ∀ {Γ m m′ T} → Γ ⊢ m wf → Γ ∣ [] ⊢ m ⟶ᵉ m′ → Γ ⊢ m′ wf → Γ ⊢ m′ ≤*wf T → Γ ⊢ m ≤*wf T
+expand-≤ wm e wm′ d =
+  Ws-Trs (Ws-Sub wm (Ws-Lf1 e (Ws-Rfl (wf⇒prevalid wm))) wm′) wm′ d
+
+good-expand : ∀ {Γ T m m′} (a : Ranked Γ T)
+            → Γ ⊢ m wf → Γ ∣ [] ⊢ m ⟶ᵉ m′ → Good a m′ → Good a m
+good-expand {Γ} {T} {m} {m′} (acc rs) wm e (wm′ , d′ , h) =
+  wm , m≤T , λ Δ {v} w e′ gv →
+    let r    = h Δ w e′ gv
+        pvΔ  = wf⇒prevalid w
+        eΔ   = ⟶ᵉ-weaken [] Δ (Pv-Nil pvΔ) e
+        m≤TΔ = ⊑*wf-weaken [] Δ pvΔ m≤T
+        wmv  = app-wf-mid m≤TΔ (⊑*wf⇒wfˡ m≤TΔ) w
+        ev   = app-e (arg-wf′ w) eΔ
+        gm′v = proj₂ r
+        am   = rs (▷-app Δ w)
+    in expand-≤ wmv ev (good-wf am gm′v) (proj₁ r) , good-expand am wmv ev gm′v
+  where
+    m≤T = expand-≤ wm e wm′ d′
+```
+
 ## What this establishes
 
 The definition, its two projections, its independence of the accessibility proof, and the base
