@@ -2,23 +2,22 @@
  "meta": {
   "title": "MPSS Proof Ledger",
   "eyebrow": "Pasquale &amp; García-Pérez · CSL 2026 · arXiv:2407.13882v2",
-  "headline": "What holds up type safety in MPSS",
-  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed, and preservation with exactly one assumption: the paper's own Conjecture 8. Two of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
+  "headline": "Type safety in MPSS, as stated, is false",
+  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. Whether they hold once context annotations must be well-formed is open. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "103 Agda modules",
+   "114 Agda modules",
    "--safe · 0 postulates · 0 holes",
-   "Type safety from exactly Conjecture 8 (MPSS.Preservation17)",
+   "Conjecture 8, Lemmas 6 and 7, Theorem 5: refuted as stated, in a prevalid context with an ill-formed annotation (MPSS.Conj8Refuted)",
    "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
-   "Lemmas 1, 2 and 31: open as printed, a variant proved (↻)",
-   "Conjecture 8: open, reduced in Agda to the two binding rules (FunLift, FOpLift)"
+   "Lemmas 1, 2 and 31: open as printed, a variant proved (↻)"
   ],
   "notes": {
    "title": "Open threads",
    "items": [
     {
-     "anchor": "Conjecture 8 · context independence",
-     "html": "<p>The paper's own open question, and the <em>only</em> assumption under type safety: Lemma 9 is the single place it enters, and from there it reaches Lemma 7, Lemma 6 and preservation. Not settled. Searched with no counterexample at term sizes 3 and 5. Its recursion is the machine's: an abstraction that meets an operand binds <code>x ≡ v</code>, and a promotion of <code>x</code> becomes its unfolding and the lifted chain <code>v ≤*wf t</code>; run as an algorithm it is valid on 4.7 million instances, and each round's bound is the domain of the previous round's. Machine-checked: Conjecture 8 from one obligation, the chain at an abstraction that meets an operand (Lemma 8g). Owed: that obligation, by induction on the domain rank of the annotation.</p><p>In MPSS extended by one recursive function type, <code>R ≡ λx≤R.R</code>, the conjecture fails and evaluation stops preserving well-formedness (<code>MPSS/CONJ8.md</code> §11). So it stands or falls with the existence of well-formed bounds of infinite domain rank — which the looping combinators of the paper's §6 would supply.</p><p>Restated here without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so requiring every term in the context to be locally closed would assume something strictly weaker than the paper does.</p>"
+     "anchor": "Conjecture 8 and type safety · what is left",
+     "html": "<p>Refuted as stated (<code>MPSS.Conj8Refuted</code>), with Lemmas 6 and 7 and preservation: a prevalid context may define a recursive type, <code>R ≡ ω ω</code>, because prevalidity does not ask annotations to be well-formed.</p><p>The obvious repair is to ask that — <code>Pv-Ctx</code> and <code>Pv-EqA</code> with a well-formedness premise on the annotation. Whether the conjecture and type safety hold then is open. The same instance fails as soon as <em>any</em> well-formed term behaves as <code>R</code> does, which needs a type-level looping combinator (the paper's §6 expects term-level ones); and a proof cannot be a rank induction, since the domain order already cycles at the type of the polymorphic identity, <code>T = λy≤⊤. λx≤y. y</code>: <code>T T</code> is well-formed and its domain is <code>T</code>.</p><p>Recorded on the way, each with where it breaks: the nesting-depth measure, the narrowing route (its intermediate points are ill-formed at dependent bounds), the substitution route run as an algorithm (valid on every instance tried, measure not found).</p>"
     },
     {
      "anchor": "Lemma 2 and Lemma 1 · the diamond and commutation, as printed",
@@ -222,8 +221,8 @@
   },
   "5": {
    "name": "preservation",
-   "defect": "depends on Prop 17 at its Ws-Rgh step without citing it",
-   "status": "proved",
+   "defect": "rests on Conjecture 8, which is false; the statement itself fails in the prevalid context R ≡ ω ω — and, independently: depends on Prop 17 at its Ws-Rgh step without citing it",
+   "status": "refuted",
    "attempts": [
     {
      "what": "The paper's proof, which moves from t ↦ t′ to Ws-Rgh without citing Proposition 17.",
@@ -262,13 +261,32 @@
      "kind": "repair",
      "because": "The chain form re-establishes both inputs of the route.",
      "change": "prop17-chain"
+    },
+    {
+     "what": "The proof stood on Conjecture 8 as a hypothesis, and Conjecture 8 is false as stated.",
+     "outcome": "invalidated",
+     "kind": "repair",
+     "where": "MPSS.Conj8Refuted",
+     "because": "A proof from a false hypothesis proves nothing about the statement.",
+     "why": "¬ Conj-8: the hypothesis the proof took is uninhabited.",
+     "change": "conj8-refuted"
+    },
+    {
+     "what": "Theorem 5 in the context R ≡ ω ω: g = λx≤R. (x δ) δ is well-formed, so is g δ, and g δ ↦ (δ δ) δ.",
+     "outcome": "refuted",
+     "kind": "original",
+     "where": "MPSS.Conj8Refuted (¬Thm-5)",
+     "because": "The context that refutes Conjecture 8 makes δ δ a well-formed divergent term that is below no abstraction.",
+     "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
+     "def": "¬Thm-5 : ¬ Preservation\n¬Thm-5 thm-5 = ¬wf-δδδ (⊑*wf⇒wfˡ (thm-5 (Ws-Sub w (Ws-Rfl pvΓ₀) w) (E-App lcg lcδ)))",
+     "change": "conj8-refuted"
     }
    ]
   },
   "6": {
    "name": "evaluation preserves wf",
-   "defect": "",
-   "status": "proved",
+   "defect": "rests on Conjecture 8, which is false; the statement itself fails in the prevalid context R ≡ ω ω",
+   "status": "refuted",
    "attempts": [
     {
      "what": "Induction on t ↦ t′, with the β case through inversion, Lemmas 15 and 16 and Lemma 7, and the congruence cases through the assumed Prop-17ʳ.",
@@ -298,12 +316,31 @@
      "kind": "repair",
      "because": "The chain form supplies what the two cases need.",
      "change": "prop17-chain"
+    },
+    {
+     "what": "The proof stood on Conjecture 8 as a hypothesis, and Conjecture 8 is false as stated.",
+     "outcome": "invalidated",
+     "kind": "repair",
+     "where": "MPSS.Conj8Refuted",
+     "because": "A proof from a false hypothesis proves nothing about the statement.",
+     "why": "¬ Conj-8: the hypothesis the proof took is uninhabited.",
+     "change": "conj8-refuted"
+    },
+    {
+     "what": "Lemma 6 in the context R ≡ ω ω: g = λx≤R. (x δ) δ is well-formed, so is g δ, and g δ ↦ (δ δ) δ.",
+     "outcome": "refuted",
+     "kind": "original",
+     "where": "MPSS.Conj8Refuted (¬Lem-6)",
+     "because": "The context that refutes Conjecture 8 makes δ δ a well-formed divergent term that is below no abstraction.",
+     "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
+     "def": "¬Lem-6 : ¬ Lem-6\n¬Lem-6 lem-6 = ¬wf-δδδ (lem-6 (G.wf-gδ pvΓ₀ (here refl)) (E-App lcg lcδ))",
+     "change": "conj8-refuted"
     }
    ]
   },
   "7": {
    "name": "substitution preserves wf",
-   "defect": "cites Lemma 28 for a substituend Lemma 28 does not cover",
+   "defect": "rests on Conjecture 8, which is false; the statement itself fails in the prevalid context R ≡ ω ω — and, independently: cites Lemma 28 for a substituend Lemma 28 does not cover",
    "attempts": [
     {
      "what": "The paper's citation of Lemma 28 for the substituend.",
@@ -322,12 +359,32 @@
      "kind": "repair",
      "because": "The general substitution lemma has the hypotheses the citation lacks, and the case supplies them.",
      "change": "defect-repairs"
+    },
+    {
+     "what": "The proof stood on Conjecture 8 as a hypothesis, and Conjecture 8 is false as stated.",
+     "outcome": "invalidated",
+     "kind": "repair",
+     "where": "MPSS.Conj8Refuted",
+     "because": "A proof from a false hypothesis proves nothing about the statement.",
+     "why": "¬ Conj-8: the hypothesis the proof took is uninhabited.",
+     "change": "conj8-refuted"
+    },
+    {
+     "what": "Lemma 7 in the context R ≡ ω ω: g = λx≤R. (x δ) δ is well-formed, so is g δ, and g δ ↦ (δ δ) δ.",
+     "outcome": "refuted",
+     "kind": "original",
+     "where": "MPSS.Conj8Refuted (¬Lem-7)",
+     "because": "The context that refutes Conjecture 8 makes δ δ a well-formed divergent term that is below no abstraction.",
+     "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
+     "def": "¬Lem-7 : ¬ Lem-7₀\n¬Lem-7 lem-7 = ¬Lem-6 (Lem-6ʷ lem-7)",
+     "change": "conj8-refuted"
     }
-   ]
+   ],
+   "status": "refuted"
   },
   "8": {
    "name": "context independence",
-   "defect": "",
+   "defect": "quantified over every logical context, and a prevalid context may define a recursive type: in R ≡ ω ω the instance δ ≤*wf λx≤R. R x under □ δ fails",
    "attempts": [
     {
      "what": "Search at term size 3: contexts of one or two entries over six annotation shapes, every locally closed term, every well-subtyping pair with the side conditions, four covariant contexts, the conclusion tested through the machine relation under caps.",
@@ -418,8 +475,20 @@
      "because": "Working out the side condition at the points of a lifted chain showed that an operand's domain can depend on a parameter the abstract binders leave uninstantiated.",
      "why": "The conjecture holds at the instance — both sides β-reduce to α a and (λz≤A.⊤) a — but the narrowing algorithm promotes at (λy≤⊤. λo≤y. λx≤(λz≤y.⊤). α o) A a α, which is not well-formed: α o sits under the abstract y, where o is below y only. So the Obligation of Lemma 8g is false, step 5 of the plan is wrong, and the route that works contracts the consumed redexes first — the substitution route. The implication of Lemma 8g stands; its hypothesis does not hold.",
      "change": "conj8-narrowing-refuted"
+    },
+    {
+     "what": "The instance of the recursive-type experiment inside MPSS itself: the prevalid context R ≡ ω ω, whose annotation is ill-formed, with δ = λx≤R. x x, the promotion δ ⟶ˢ λx≤R. R x, and the context □ δ.",
+     "outcome": "refuted",
+     "kind": "original",
+     "where": "MPSS.Conj8Refuted (¬Conj-8), MPSS.AppClass; MPSS/CONJ8.md §14; MPSS/conj8-illformed-ctx-probe.py",
+     "because": "The extension by R ≡ λx≤R.R refuted the conjecture, and MPSS/EqvWf had already used that prevalidity does not ask an annotation to be well-formed — so a context can define a name by a term with no normal form, and ω ω reduces to λx≤(ω ω).(ω ω).",
+     "why": "¬ Conj-8, under --safe. Every hypothesis is derived: R, λx≤R.R and λx≤R.⊤ are well-formed, R ≤*wf λx≤R.R because both reduce to λx≤W.W, so x x is well-formed under x ≤ R, δ ≤*wf R, and δ δ and t′ δ are well-formed. The conclusion is refuted through Theorem 3 (a machine chain), confluence of ⟶ᵉ* (MPSS.Strip), the reduction of t′ δ to λx≤W.W, and a class of terms containing δ δ, closed under ⟶ᵉ and ⟶ˢ, with no abstraction in it: under an operand every abstraction on the head path is entered by Ms-FOp, so Ms-Pro never fires, and R occurs only in annotations.",
+     "def": "¬Conj-8 : ¬ Conj-8\n¬Conj-8 c8 =\n  no-chain Bd-δδ (lc-app lct′ lcδ) (_ , _ , right)\n           (Thm-3wf (c8 (co-app ∙ δ) lcδ lct′ H₀.δ≤t′ H₀.wf-δδ H₀.wf-t′δ))",
+     "change": "conj8-refuted"
     }
-   ]
+   ],
+   "status": "refuted",
+   "module": "MPSS.Conj8Refuted"
   },
   "9": {
    "name": "promotion under substitution",
@@ -969,7 +1038,7 @@
    "hyps": []
   },
   "5": {
-   "account": "<strong>Proved, from Conjecture 8 alone</strong> (<code>Thm-5ʷ</code>, <code>MPSS.Preservation17</code>). Proposition 27 with Lemma 6 supplying the reduct's well-formedness, both now derived from the repaired Proposition 17 in its chain form; Conjecture 8 enters through Lemma 7 in Lemma 6's β case. The step the paper leaves uncited, from <code>t ↦ t′</code> to well-subtyping, is <code>push-chain</code>: <code>push≡*wf</code> folded along the chain of well-formed equivalence steps that <code>Prop-17ʷ</code> supplies. An earlier proof from the assumed <code>Prop-17ʳ</code> (<code>MPSS.Preservation</code>) established nothing, that assumption being refuted.",
+   "account": "<strong>Refuted as stated</strong> (¬Thm-5, <code>MPSS.Conj8Refuted</code>), in the prevalid context <code>R ≡ ω ω</code>: <code>g = λx≤R. (x δ) δ</code> and <code>g δ</code> are well-formed, <code>g δ ↦ (δ δ) δ</code>, and <code>(δ δ) δ</code> is not well-formed. The earlier proof took Conjecture 8 as a hypothesis, which is false. Open once context annotations are required to be well-formed.<br><br><strong>Proved, from Conjecture 8 alone</strong> (<code>Thm-5ʷ</code>, <code>MPSS.Preservation17</code>). Proposition 27 with Lemma 6 supplying the reduct's well-formedness, both now derived from the repaired Proposition 17 in its chain form; Conjecture 8 enters through Lemma 7 in Lemma 6's β case. The step the paper leaves uncited, from <code>t ↦ t′</code> to well-subtyping, is <code>push-chain</code>: <code>push≡*wf</code> folded along the chain of well-formed equivalence steps that <code>Prop-17ʷ</code> supplies. An earlier proof from the assumed <code>Prop-17ʳ</code> (<code>MPSS.Preservation</code>) established nothing, that assumption being refuted.",
    "faults": [
     {
      "q": "hence Γ ⊢ t′ ≤*wf t by rule Ws-Rgh.",
@@ -988,13 +1057,13 @@
    ]
   },
   "6": {
-   "account": "<strong>Proved, from Conjecture 8 alone</strong> (<code>Lem-6ʷ</code>, <code>MPSS.Preservation17</code>). Induction on <code>t ↦ t′</code>. The β case is the content: <code>Wf-App</code> records the operand below the domain <code>z</code> while <code>Wf-Fun</code> binds the body under the operator's own annotation <code>u</code>; inversion plus Lemmas 15 and 16 relate the two, and Lemma 7 substitutes — which is where Conjecture 8 enters. The annotation case narrows the body's well-formedness along the chain the repaired Proposition 17 gives for <code>t ↦ t′</code>, one Lemma 23 per step (<code>narrow-chain</code>); the application cases are Proposition 27. The earlier proof in <code>MPSS.Evaluation</code> called the refuted <code>Prop-17ʳ</code> in those cases.",
+   "account": "<strong>Refuted as stated</strong> (¬Lem-6, <code>MPSS.Conj8Refuted</code>), in the prevalid context <code>R ≡ ω ω</code>: <code>g = λx≤R. (x δ) δ</code> and <code>g δ</code> are well-formed, <code>g δ ↦ (δ δ) δ</code>, and <code>(δ δ) δ</code> is not well-formed. The earlier proof took Conjecture 8 as a hypothesis, which is false. Open once context annotations are required to be well-formed.<br><br><strong>Proved, from Conjecture 8 alone</strong> (<code>Lem-6ʷ</code>, <code>MPSS.Preservation17</code>). Induction on <code>t ↦ t′</code>. The β case is the content: <code>Wf-App</code> records the operand below the domain <code>z</code> while <code>Wf-Fun</code> binds the body under the operator's own annotation <code>u</code>; inversion plus Lemmas 15 and 16 relate the two, and Lemma 7 substitutes — which is where Conjecture 8 enters. The annotation case narrows the body's well-formedness along the chain the repaired Proposition 17 gives for <code>t ↦ t′</code>, one Lemma 23 per step (<code>narrow-chain</code>); the application cases are Proposition 27. The earlier proof in <code>MPSS.Evaluation</code> called the refuted <code>Prop-17ʳ</code> in those cases.",
    "hyps": [
     "Conj-8"
    ]
   },
   "7": {
-   "account": "Three mutually recursive functions over the three mutually inductive judgements. The sub-induction returns a diagram — <code>a ⟶≡↠ a′</code>, <code>b ⟶≡↠ c</code>, <code>b′ ⟶≡↠ c</code>, and <code>a′ ≤*wf b′</code> unless <code>a′ = b′</code> — so equivalence steps accumulate as reduction sequences rather than as <code>⊑wf</code> steps needing to be starred. Well-formedness is then needed only at the chain's endpoints, where <code>Ws-Sub</code> supplies it, and at the <code>Ws-Lf2</code> nodes, where it is a premise.",
+   "account": "<strong>Refuted as stated</strong> (¬Lem-7, <code>MPSS.Conj8Refuted</code>), in the prevalid context <code>R ≡ ω ω</code>: <code>g = λx≤R. (x δ) δ</code> and <code>g δ</code> are well-formed, <code>g δ ↦ (δ δ) δ</code>, and <code>(δ δ) δ</code> is not well-formed. The earlier proof took Conjecture 8 as a hypothesis, which is false. Open once context annotations are required to be well-formed.<br><br>Three mutually recursive functions over the three mutually inductive judgements. The sub-induction returns a diagram — <code>a ⟶≡↠ a′</code>, <code>b ⟶≡↠ c</code>, <code>b′ ⟶≡↠ c</code>, and <code>a′ ≤*wf b′</code> unless <code>a′ = b′</code> — so equivalence steps accumulate as reduction sequences rather than as <code>⊑wf</code> steps needing to be starred. Well-formedness is then needed only at the chain's endpoints, where <code>Ws-Sub</code> supplies it, and at the <code>Ws-Lf2</code> nodes, where it is a premise.",
    "faults": [
     {
      "q": "First, we establish that Γ,Γ′[x\\α] is prevalid by",
@@ -1010,7 +1079,8 @@
    }
   },
   "8": {
-   "account": "Neither proved nor refuted. Assumed, and restated without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so demanding every term in the context be locally closed would assume something strictly weaker than the paper conjectures.<br><br>Searched with no counterexample: 561,145 instances at term size 3, and 11.7 million at size 5 on 32 of 133 contexts (<code>MPSS/conj8-search.py</code>, <code>MPSS/CONJ8.md</code>). <code>MPSS.Conjecture8Star</code> reduces it to one congruence, <code>AppCongr₁</code>, whose only hard case is a promotion of the outermost parameter — the conjecture again, on a pair of well-formedness derivations of strictly smaller nesting depth, which is the candidate measure."
+   "account": "<strong>Refuted as stated</strong> (<code>¬Conj-8</code>, <code>MPSS.Conj8Refuted</code>). The paper quantifies over every logical context, and a logical context need only be prevalid: its annotations are scoped, not well-formed. In <code>Γ₀ = R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, the name <code>R</code> is well-formed by <code>Wf-PrE</code>, and <code>ω ω</code> reduces to <code>λx≤(ω ω).(ω ω)</code>, which is also a reduct of the well-formed <code>λx≤R.R</code>: <code>R</code> is a recursive function type. With <code>δ = λx≤R. x x</code> and <code>t′ = λx≤R. R x</code>, every hypothesis holds — <code>δ ≤*wf t′</code>, <code>δ δ</code> and <code>t′ δ</code> well-formed — and <code>δ δ ≤*wf t′ δ</code> does not: <code>t′ δ</code> reduces to an abstraction, and <code>δ δ</code>, which reduces only to itself, reaches none by promotions either (<code>MPSS.AppClass</code>).<br><br>What is <em>not</em> settled: the conjecture restricted to contexts whose annotations are well-formed, or to closed terms. There the same instance fails as soon as any well-formed term behaves as <code>R</code> does (<code>MPSS/CONJ8.md</code> §11), which needs a type-level looping combinator; and the routes tried for a proof — the nesting-depth measure, narrowing, the domain rank — are recorded in the log below, each with where it breaks. Restated here without the <code>CoLC</code> premise, deliberately.",
+   "module": "MPSS.Conj8Refuted"
   },
   "9": {
    "account": "Case split on whether the source and target form a covariant pair, decided on the <em>terms</em> by <code>coPair?</code>. The covariant branch hands Conjecture 8 its context; the other hands <code>Ws-Lf2</code> a promotion. The <code>Ms-Pro</code> case is the whole content of the split: promoting the removed variable yields its own annotation, which is exactly <code>CoPair</code> at the empty context.",
@@ -1969,6 +2039,12 @@
    "when": "2026-09-18",
    "title": "The narrowing route fails on dependent bounds",
    "summary": "An instance with a bound that mentions a parameter instantiated by an earlier operand: the conjecture holds, by β-reducing first, but the narrowing algorithm's intermediate point is ill-formed and the Obligation of Lemma 8g is false there."
+  },
+  {
+   "id": "conj8-refuted",
+   "when": "2026-09-18",
+   "title": "Conjecture 8 refuted as stated, with Lemmas 6 and 7 and Theorem 5",
+   "summary": "Contexts are only required to be prevalid. In Γ₀ = R ≡ ω ω, ω = λs≤⊤. λx≤(s s). (s s), the name R is well-formed (Wf-PrE) and R ≡ λx≤R.R. With δ = λx≤R. x x and t′ = λx≤R. R x: δ ≤*wf t′ and both δ δ and t′ δ are well-formed, but δ δ ≤*wf t′ δ fails — Theorem 3 gives a machine chain, t′ δ reduces to an abstraction, confluence makes δ δ reach one, and the class Bd of MPSS.AppClass, closed under both reductions, contains none. The same context refutes Lemma 6 (g = λx≤R. (x δ) δ: g δ ↦ (δ δ) δ, ill-formed), Lemma 7 and preservation. Machine-checked, --safe."
   }
  ]
 }

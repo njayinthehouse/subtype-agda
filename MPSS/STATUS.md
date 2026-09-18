@@ -235,3 +235,18 @@ Full account in `CONJ8.md` §8–10. In short:
   `Wrapper` typecheck and lead nowhere. The route that survives every instance, dependent bounds
   included, is the paper's own — β first, then Lemmas 7 and 9 (`conj8-subst-probe.py`,
   `conj8-dep-gen.py`; `FunLift0`, `Conj8Pair`, `BelowWf`, `RankedWalk`). Its measure is open.
+
+## Conjecture 8 refuted as stated — 2026-09-18
+
+**`MPSS/Conj8Refuted`: `¬ Conj-8`, `¬ Lem-6`, `¬ Lem-7₀`, `¬ Preservation`**, under `--safe`.
+Contexts need only be prevalid, so `Γ₀ = R ≡ ω ω` (`ω = λs≤⊤. λx≤(s s). (s s)`) is a legal context
+in which `R` is well-formed and `R ≡ λx≤R.R`. With `δ = λx≤R. x x`: `δ ≤*wf λx≤R. R x`, both
+plugs under `□ δ` are well-formed, and `δ δ ≤*wf (λx≤R. R x) δ` fails — Theorem 3, confluence, and
+the class `Bd` of `MPSS/AppClass` (closed under both reductions, no abstraction in it). And
+`(λx≤R. (x δ) δ) δ ↦ (δ δ) δ` leaves well-formedness. `type-safety` in `Preservation17` is proved
+from `Conj-8`, a false hypothesis.
+
+**Open:** the same statements once `Pv-Ctx`/`Pv-EqA` ask the annotation to be well-formed.
+`CONJ8.md` §8–14 record what a proof there cannot be (depth measure, narrowing, rank induction —
+the domain order cycles at the type of the polymorphic identity) and what a counterexample there
+needs (a well-formed term behaving as `R`).

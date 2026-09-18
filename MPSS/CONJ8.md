@@ -514,3 +514,64 @@ domain order (`domain-step`), `Conj8Pair`, `FunLift0`, `BelowWf`, `RankedWalk`, 
 has to be redone: the measure for the substitution route, where §9 found calls to the conjecture
 at pairs `(o, A)` from redexes the body already contains — to be looked at again with the freedom
 to contract those redexes first.
+
+## 14. Conjecture 8 is false as stated — machine-checked, 2026-09-18
+
+`MPSS/Conj8Refuted`: **`¬Conj-8 : ¬ Conj-8`**, under `--safe`, no postulates. With it
+`¬Lem-6`, `¬Lem-7` and `¬Thm-5`: Lemma 6 (evaluation preserves well-formedness), Lemma 7
+(substitution preserves it) and Theorem 5 (preservation) are false as stated too.
+
+**The observation.** §11 refuted the conjecture in MPSS *extended* by a recursive type. No
+extension is needed. A logical context only has to be **prevalid** — `Pv-EqA` asks that the
+annotation's free variables be in the domain, nothing about well-formedness — and `Wf-PrE` makes
+a variable well-formed as soon as it occurs in a prevalid context (`MPSS/EqvWf` had used this
+already). So a context may define a name by a term with no normal form:
+
+    ω = λs≤⊤. λx≤(s s). (s s)        W = ω ω        Γ₀ = R ≡ W
+
+`W` is ill-formed (`s s` under `s ≤ ⊤`), closed and locally closed; `Γ₀` is prevalid. `W` reduces
+to `λx≤W.W` — two steps, the first binding and unfolding the parameter as in `Prop17Chain` — and
+so does the **well-formed** `λx≤R.R`, in one. So `R ≤*wf λx≤R.R`: in `Γ₀`, `R` is the recursive
+function type of §11, with `λx≤R.R` as its well-formed representative.
+
+**The instance.** `δ = λx≤R. x x`, `δ ⟶ˢ t′ = λx≤R. R x` at the empty stack, context `□ δ`.
+Derived in Agda: `R`, `λx≤R.R`, `λx≤R.⊤` well-formed; `R ≤*wf λx≤R.⊤`; `x x` and `R x` well-formed
+under `x ≤ R`; `δ`, `t′` well-formed; `δ ≤*wf t′`; `t′ ≤*wf R` (the body `R x` unfolds `R` under the
+operand `x` and contracts to `W`); `δ ≤*wf R`; `δ δ` and `t′ δ` well-formed. Those are all the
+hypotheses of `Conj-8`.
+
+**The conclusion fails.** From `δ δ ≤*wf t′ δ`, Theorem 3 (`Thm-3wf`) gives a machine chain: a
+list of promotions from `δ δ` and of equivalence steps from `t′ δ`, meeting. `t′ δ` reduces to the
+abstraction `λx≤W.W` in seven steps. `no-chain`, by induction on the chain: the right side keeps
+reaching an abstraction (`strip*`, confluence of `⟶ᵉ*` from `MPSS/Strip`, and a reduct of an
+abstraction at the empty stack is one); the left side stays in the class `Bd` of `MPSS/AppClass`
+
+    Cl ::= bound variable | free variable other than R | ⊤ | λx≤(anything). Bd | Cl Cl
+    Bd ::= Cl Cl | ⊤
+
+which both reductions preserve at a configuration with no subtype entry, `Cl` on the stack and
+`Cl` for the `≡`-annotations other than `R`'s; when the two sides meet, a term of `Bd` reaches an
+abstraction by equivalence steps, and `Bd` has none. The reason is the one of §11: under an
+operand every abstraction on the head path is entered by `Ms-FOp`, so its parameter is `≡`-bound
+and `Ms-Pro` never fires; `R` occurs only in annotations, which never come to a head position.
+
+**Lemma 6, Lemma 7, Theorem 5.** `g = λx≤R. (x δ) δ` is well-formed (`x δ` promotes to `R δ`, which
+reduces to `W`, as `R` does), so is `g δ`, and `g δ ↦ (δ δ) δ`, which is not: `Wf-App` would put
+`δ δ` below an abstraction. Lemma 7 goes with Lemma 6 (`Lem-6ʷ`), and preservation with
+`g δ ≤*wf g δ`. The development's `type-safety` in `MPSS/Preservation17` is proved *from*
+`Conj-8`: from a false hypothesis, as the earlier `Prop-17ʳ` was.
+
+**What this does and does not say.**
+
+- The paper's Conjecture 8, Lemmas 6 and 7 and Theorem 5 are stated for "a logical context", and
+  the paper's prevalidity (Figure 1) and `Wf-PrE` are as transcribed. As stated they are false.
+- The repair that suggests itself is a well-formedness premise on the annotations in `Pv-Ctx` and
+  `Pv-EqA`. **Under it everything is open again**: the counterexample needs an ill-formed
+  annotation. §11 then says what a counterexample would need — a well-formed term behaving as `R`
+  — and §8, §9, §13 say what a proof cannot be.
+- A proof cannot be an induction on the domain rank of §9 either: the domain order is not
+  well-founded on well-formed terms. With `T = λy≤⊤. λx≤y. y`, the type of the polymorphic
+  identity, `T T` is well-formed and `T T ≤*wf λx≤T.⊤`: `T` steps to `T T`, whose domain is `T`
+  (`MPSS.DomainOrder.Ranked` is uninhabited at `T`). A proof under the repaired prevalidity would
+  have to be by reducibility, with the instantiations of a parameter bounded by `⊤` interpreted by
+  candidates — and that is exactly what type-level computation without a normal form would break.
