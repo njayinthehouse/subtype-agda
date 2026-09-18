@@ -222,3 +222,9 @@ Full account in `CONJ8.md` §8–10. In short:
   obviously give. A refutation needs an instance with infinite domain descent, that is a
   well-formed type-level looping combinator, and then an argument that *no* chain exists; nothing
   small can be one (`CONJ8.md` §10).
+- **With one recursive function type the conjecture is false** (`CONJ8.md` §11,
+  `conj8-rectype-probe.py`): in MPSS + `R ≡ λx≤R.R`, `f δ ≤*wf f′ δ` fails for `f = λx≤R. x δ`,
+  `f′ = λx≤R. R δ`, `δ = λx≤R. x x`, with every hypothesis of Conjecture 8 satisfied, and
+  `(λx≤R. (x δ) δ) δ ↦ (δ δ) δ` leaves well-formedness. Not MPSS — prevalidity forbids the entry —
+  but it ties the conjecture to the absence of bounds of infinite domain rank, which a type-level
+  looping combinator (the paper's §6) would supply.

@@ -18,7 +18,7 @@
    "items": [
     {
      "anchor": "Conjecture 8 · context independence",
-     "html": "<p>The paper's own open question, and now the <em>only</em> assumption under type safety: Lemma 9 is the single place it enters, and from there it reaches Lemma 7, Lemma 6 and preservation. Searched with no counterexample at term sizes 3 and 5; reduced in <code>MPSS.Conjecture8Star</code> to one congruence whose hard case is the conjecture again on a pair of well-formedness derivations of smaller nesting depth, which is the candidate measure.</p><p>Restated here without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so requiring every term in the context to be locally closed would assume something strictly weaker than the paper does.</p>"
+     "html": "<p>The paper's own open question, and the <em>only</em> assumption under type safety: Lemma 9 is the single place it enters, and from there it reaches Lemma 7, Lemma 6 and preservation. Not settled. Searched with no counterexample at term sizes 3 and 5. Its recursion is the machine's: an abstraction that meets an operand binds <code>x ≡ v</code>, and a promotion of <code>x</code> becomes its unfolding and the lifted chain <code>v ≤*wf t</code>; run as an algorithm it is valid on 4.7 million instances, and each round's bound is the domain of the previous round's. Machine-checked: Conjecture 8 from one obligation, the chain at an abstraction that meets an operand (Lemma 8g). Owed: that obligation, by induction on the domain rank of the annotation.</p><p>In MPSS extended by one recursive function type, <code>R ≡ λx≤R.R</code>, the conjecture fails and evaluation stops preserving well-formedness (<code>MPSS/CONJ8.md</code> §11). So it stands or falls with the existence of well-formed bounds of infinite domain rank — which the looping combinators of the paper's §6 would supply.</p><p>Restated here without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so requiring every term in the context to be locally closed would assume something strictly weaker than the paper does.</p>"
     },
     {
      "anchor": "Lemma 2 and Lemma 1 · the diamond and commutation, as printed",
@@ -400,6 +400,15 @@
      "because": "The probe showed each round's bound is the domain of the previous round's, and that the substitution route does not descend in that order.",
      "why": "A plan, not a proof. Machine-checked: Conjecture 8 from one obligation (Lemma 8g) — the chain from the operand to the annotation when an abstraction meets an operand, in stack form under the generated side conditions; and the descent step (MPSS.DomainOrder: that annotation is the domain of the target). Owed: the obligation itself, by induction on the rank of the annotation, which needs the rank lemmas and the side condition at the points of a lifted chain proved together with the lifting. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
      "change": "conj8-narrowing-agda"
+    },
+    {
+     "what": "The converse of the rank hypothesis: MPSS plus one recursive function type, R ≡ λx≤R.R. With δ = λx≤R. x x, is f δ ≤*wf f′ δ for f = λx≤R. x δ and f′ = λx≤R. R δ?",
+     "outcome": "experiment",
+     "kind": "variant",
+     "where": "MPSS/conj8-rectype-probe.py; MPSS/CONJ8.md §11",
+     "because": "The narrowing recursion descends in the domain order on bounds, and a bound whose domain is itself is the first thing that order does not handle.",
+     "why": "No. Every hypothesis of the instance holds (fourteen machine steps, checked), and no chain exists: under the operand every abstraction on the head path is entered by Ms-FOp, so Ms-Pro never applies and the only promotion is Ms-Top, whose ⊤ stays; f′ δ reduces to R, an abstraction, and f δ to δ δ, which reduces to itself. 5,772 terms from f δ and 13,281 from f′ δ within length 6, none in common. Lemma 6 fails with it: (δ δ) δ is the contractum of a well-formed redex and is not well-formed. This is an extension of MPSS, not MPSS: it says the conjecture holds or fails with the existence of well-formed bounds of infinite domain rank — which the paper's §6 expects, through looping combinators.",
+     "change": "conj8-rectype"
     }
    ]
   },
@@ -1939,6 +1948,12 @@
    "when": "2026-09-18",
    "title": "The narrowing route, mechanized as far as its structural half",
    "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter, the annotation of a plain derivation for it, and Conjecture 8 from the one obligation that is left — the chain at an abstraction that meets an operand; the domain order and its descent step. Owed: that obligation, by induction on the domain rank of the annotation (CONJ8.md §10)."
+  },
+  {
+   "id": "conj8-rectype",
+   "when": "2026-09-18",
+   "title": "Conjecture 8 against a recursive function type",
+   "summary": "In MPSS extended by the one definition R ≡ λx≤R.R, which prevalidity forbids, the conjecture fails at f = λx≤R. x δ, f′ = λx≤R. R δ, δ = λx≤R. x x under the operand δ, and evaluation stops preserving well-formedness. So the conjecture is tied to the absence of bounds of infinite domain rank, which a type-level looping combinator would supply."
   }
  ]
 }

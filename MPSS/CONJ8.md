@@ -387,3 +387,62 @@ the annotation's rank — and nothing small builds one: self-application at a bo
 whose targets have finite domain rank — the structural half mechanized (`⇛-push`), the recursion
 validated by execution on 4.7 million instances, steps 1 and 5 above owed — and any
 counterexample has infinite domain rank.
+
+## 11. The other direction: with one recursive function type the conjecture is false — 2026-09-18
+
+§9–10 say the conjecture holds where the domain order is well-founded. This section is the
+converse in the simplest case, and it is what makes the domain order the right thing to look at.
+
+**The extension.** MPSS plus one definition that prevalidity forbids, `R ≡ λx≤R.R` — a bound
+whose domain and codomain are itself. Everything else is unchanged. This is *not* MPSS; it is what
+MPSS would contain if a type-level fixed point were well-formed in it.
+
+**The instance.** `δ = λx≤R. x x`, `f = λx≤R. x δ`, `f′ = λx≤R. R δ`, context `□ δ`.
+
+- `x x` is well-formed under `x ≤ R`: `x ⟶ˢ R ⟶ᵉ λx≤R.R ⟶ˢ λx≤R.⊤`, and the operand `x ≤*wf R`.
+  So `δ` is well-formed, and `δ ≤*wf R` (`δ ⟶ˢ λx≤R. R x ⟶ᵉ λx≤R.R ⟵ᵉ R`), so `δ δ` is too.
+- `f ⟶ˢ f′` at the empty stack (`Ms-Fun`, `Ms-App`, `Ms-Pro`), between well-formed terms:
+  `f ≤*wf f′`. And `f δ`, `f′ δ` are well-formed. The conjecture says `f δ ≤*wf f′ δ`.
+- It does not hold. `f′ δ` reduces to `R δ`, to `R`, to `λx≤R.R`; none of its `⟶ᵉ` reducts contains
+  `⊤`, and `⟶ᵉ` never deletes a `⊤` on the head path nor creates one. `f δ` reduces to `δ δ`, which
+  reduces to itself. Under the operand every abstraction on the head path is entered by `Ms-FOp`,
+  so its parameter is `≡`-bound and `Ms-Pro` never applies; the only promotion available anywhere
+  on the head path is `Ms-Top`, whose `⊤` then stays in every later term of the chain, forward or
+  backward. So a chain from `f δ` to `f′ δ` would consist of equivalence steps alone, and `δ δ` and
+  `R` have no common reduct: one has no head normal form, the other is an abstraction.
+- Lemma 6 fails with it: `g = λx≤R. (x δ) δ` is well-formed, so is `g δ`, and `g δ ↦ (δ δ) δ`,
+  which is not — `δ δ` is below no abstraction. So in MPSS + `R` evaluation does not preserve
+  well-formedness, and type safety as sketched fails.
+
+The recursion of §9 shows why: narrowing `x ≡ δ` asks for `δ` to reach `R` *under the operand*,
+which asks for the body `x′ x′` to reach `R`'s body under `x′ ≡ x`, which is the same question;
+with codomain `⊤` in place of `R` the question is answered at once by `Ms-Top` (§9's `T ≡ λx≤T.⊤`),
+with codomain `R` it never is.
+
+**What this says about MPSS.** Conjecture 8 holds on the instances of finite domain rank (plan of
+§10, structural half mechanized) and fails in the presence of a recursive function type with a
+non-trivial codomain. So the conjecture is, in substance, the statement that well-formed MPSS has
+no such type — not the exact fixed point used here, which would need a fixed-point combinator,
+but the infinite domain descent a type-level *looping* combinator gives (`T_n ≡ λx≤T_{n+1}.T_{n+1}`
+from `L_n F ⟶ F (L_{n+1} F)` with `F = λr≤⊤.λx≤r.r`). The paper's §6 takes such combinators to
+exist in PSS through the encoding of System λ*. Whether the encoding survives MPSS's
+well-formedness, and whether the descending family (no exact fixed point, so no `δ`) still yields
+a failing instance, is what is left between this and a refutation. If it does, it refutes type
+safety of the sketched system too, since the conjecture is what preservation rests on.
+
+`conj8-rectype-probe.py` runs the instance in the extended system: the fourteen steps the
+well-formedness of `δ`, `δ δ`, `f`, `f′`, `f δ`, `f′ δ` and `f ≤*wf f′` rest on are all machine
+steps; within chains of length 6, the 5,772 terms reached from `f δ` by `⟶ˢ` and the 13,281
+reached from `f′ δ` by `⟶ᵉ` have none in common, no reduct of `f′ δ` contains `⊤`, the only
+`⊤`-free terms reached from `f δ` are `δ δ` and its expansions, and of 5,917 terms reached from
+`δ δ` none is an abstraction. The non-existence of the chain is argued above, not mechanized —
+the development's relations cannot hold the entry `R ≡ λx≤R.R`.
+
+**A tension in the paper.** §6 of the paper argues for Turing-completeness from a *well-formed
+looping combinator*, and §4 conjectures context independence on the way to type safety. A
+looping combinator at the type level gives bounds of infinite domain rank, and with a term-level
+one alongside it (`c_n = λz≤T_{n+1}. z c_{n+2}` at `T_n ≡ λx≤T_{n+1}.K`, `K` not `⊤`) the instance
+above has an analogue: `c_n c_{n+1}` diverges, is expected below `K`, and can reach nothing but
+`⊤`. If MPSS's well-formedness admits those combinators, Conjecture 8 and preservation of
+well-formedness fail there; if Conjecture 8 holds, it does not admit them. Both are open; they
+are not independent.
