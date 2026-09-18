@@ -123,3 +123,190 @@ well-subtyping chain is a longer detour. So reflection is not "the same chain wi
 conditions checked"; a proof would have to construct the detour, presumably by choosing the
 promotion points after the equivalence steps (well-formedness is preserved by evaluation and
 by promotion between well-formed ends, not by arbitrary equivalence steps).
+
+## 7. Mechanized reduction to the two binding rules — 2026-09-13
+
+Three new `--safe` modules take §5's steps 1–2 as far as they go without the conjecture's own
+content:
+
+- `MPSS/CoFun` — **`FunCongr`**, the abstraction congruence of `≤*wf` from a cofinite family of
+  body chains, by closing one name's chain step by step and recovering each family by renaming
+  (`MPSS/Wrap` for the steps, `MPSS/WfRename` for the well-formedness premises). Unconditional.
+- `MPSS/Conj8Reduction` — the layer walk of §5.2, mechanized: a `≤wf` layer is split into its
+  left chain (equivalence steps, and promotions with well-formedness at both ends) and its right
+  chain (equivalence steps), every equivalence step lifts to the applied terms by `pushᵉ` and
+  `Me-App`, every promotion point's application is well-formed because the point is below the
+  target (`app-wf-mid`), and the promotions are lifted by one obligation, **`StepLift`**: a
+  single promotion at the empty stack between well-formed terms, under one well-formed
+  application. With `MPSS/Conjecture8Star`'s reduction over the transitive layer, and the context
+  induction redone on the context's depth so that no `CoLC` premise is needed,
+  **`conj8 : StepLift → Conj-8`** for `MPSS/Assumed`'s statement exactly.
+- `MPSS/Conj8Push` — `StepLift` generalised over spines, `a ⋅ s₀ ⋅ s`: `Ms-Pro`, `Ms-Top` and
+  `Ms-Equ` hold at every stack and lift as one layer; `Ms-App` is the statement one operand
+  deeper; `Ms-Fun` and `Ms-FOp` with no extra stack are the step itself. What remains are the two
+  rules that bind a parameter, with a non-empty extra stack: **`FunLift`** (`Ms-Fun` at the empty
+  stack, whose parameter the first extra operand is about to be bound to) and **`FOpLift`**
+  (`Ms-FOp`, whose parameter is already bound to an operand, replayed with more stack).
+  **`conj8-from-lifts : FunLift → FOpLift → Conj-8`.**
+
+So Conjecture 8, and with it type safety, rests on `FunLift` and `FOpLift`, and nothing else.
+
+**What the two obligations need, and why the measure is the whole difficulty.** Take `FunLift`
+at `s = []`: `(λx≤t.u) v ≤*wf (λx≤t.u′) v` from a body promotion `u ⟶≤ u′` under `x ≤ t`. Both
+sides β-reduce by equivalence steps — two each, as in `MPSS/Prop17Chain` — to `u[x\v]` and
+`u′[x\v]`, and the layer can absorb those as `Ws-Lf1`/`Ws-Rgh` without any well-formedness. What
+is then needed is `u[x\v] ≤*wf u′[x\v]`, which is Lemma 9's statement (promotion under
+substitution): off the covariant pattern it is Lemmas 29–30, on it — the promotion *is* of `x`,
+`u = Co″[x]`, `u′ = Co″[t]` — it is Conjecture 8 for the pair `(v, t)` in the context
+`Co″[x\v]`. And the first `Ws-Lf2` inside that instance needs `u[x\v]` well-formed, which is
+Lemma 7, which needs Lemma 9, which needs the conjecture. The recursion is genuine; the paper's
+own §5 remark that the four are proved by one mutual induction is right, and the measure is the
+open point.
+
+A measure by structural recursion on the *target's* well-formedness derivation was tried on
+paper and fails at exactly this point: the recursive instance's well-formedness hypotheses are
+those of the *substituted* terms `Co″[x\v][v]` and `Co″[x\v][t]`, which are outputs of Lemma 7,
+not subderivations of anything given. A numeric nesting depth (§4) survives that objection only
+if Lemma 7 and Conjecture 8 can be shown to return derivations no deeper than their inputs, and
+the layer walk above adds one `Wf-App` per promotion point it passes; whether the additions are
+bounded across rounds is what a proof would have to settle. That is the next thing to probe —
+numerically, on the recursion the three modules now define, before any more Agda.
+
+## 8. The nesting-depth measure, probed — 2026-09-18
+
+`conj8-depth-probe.py` does what §7 left as the next step. The depth of a well-formedness
+derivation is 0 at `Wf-PrS`, `Wf-PrE`, `Wf-Top`, the maximum over the premises at `Wf-Fun`, and one
+more than its two chains at `Wf-App`; the depth of a `≤wf`/`≤*wf` chain is the maximum over the
+well-formedness premises of `Ws-Lf2`, `Ws-Sub` and `Ws-Trs`. `Ws-Trs`, weakening and the
+equivalence steps of a layer leave it unchanged, which is what §4 wanted of it. The probe computes,
+level by level, the terms well-formed at depth ≤ d and the chains whose ends and promotion points
+are, and so the *minimal* depth `md` of every term and chain it can resolve (chain length 4,
+promotion cap 2, term size 18; 133 contexts, terms to size 5, three contexts skipped on memory).
+Minimal depths are the right thing to test: if the minimal depth of an output exceeds the depths of
+the inputs, no proof can return a derivation no deeper than what it was given.
+
+**The measure fails, on the recursion itself.** With `y ≡ λ⊤.0`, take `f = λx≤y. x (y x)` and the
+operand `v = y (y y)` (so `v ≡ y`, and `v ≤*wf y`). The promotion of the parameter in head
+position gives `f′ = λx≤y. y (y x)`. The instance `(f v, f′ v)` has depth 3 — `f` and `v` have
+depth 2 — and the recursive instance `(Co″σ[v], Co″σ[w]) = (v (y v), y (y v))` has depth 4, because
+`y v = y (y (y y))` has depth 3 and sits in operand position. This is independent of the caps: an
+application is one deeper than its operand (`Wf-App`'s second premise has the operand well-formed
+under `Ws-Sub`), so `yⁿ ⊤` has depth n, and substitution copies the operand under the body's
+applications. Counts at size 5:
+
+| test | instances | result |
+| --- | --- | --- |
+| T6, a round of the recursion: `max md` of the recursive instance against the instance | 59,531 | lower 53,167 · equal 6,205 · **higher 60** · unresolved 99 |
+| T4, a β-contractum against its redex | 150,941 | lower 131,580 · equal 19,117 · **higher 244** |
+| T2, Lemma 7: `md(b[x\v]) ≤ max(md b, md(v ≤ w))` | 151,090 | holds 131,580 · **only ≤ the sum 19,361** · never over the sum · unresolved 149 |
+
+So Lemma 7 cannot return a derivation no deeper than its inputs — the first of §7's two
+conditions — and neither "each round strictly lowers the depth" (§4) nor even "no round raises
+it" is true. The 149 unresolved substitutions are the caps: at chain length 8 the worst context
+(`y≤λ⊤.0, z≤y`, 122 of them) leaves 6, all with head spines that need longer chains still, and the
+other two contexts leave none.
+
+**What does hold.** Everything *except* substitution is depth-neutral, on every resolved instance:
+
+| test | instances | result |
+| --- | --- | --- |
+| T0, a chain needs no more depth than its ends and the context's annotations | 568,694 | 0 excess (5 at chain length 4, in `y≡λ⊤.λ⊤.1, z≤y ⊤`, all gone at chain length 6) |
+| T1, Conjecture 8: `Co[u] ≤ Co[t]` at the depth of `Co[u]`, `Co[t]` (size 3, one-layer contexts) | 212,592 | 212,584 at that depth · 0 excess · 8 unresolved |
+| T3, Lemma 9 on a single promotion | 365,408 | 365,010 at the bound · 0 excess · 395 unresolved |
+
+The context's own depth has to be counted (a promotion `x ⟶ˢ bound x` lands on the annotation,
+which `Ws-Lf2` wants well-formed): without it T0 and T1 show spurious excesses in every context
+whose annotation is an application. T0 and T1 answer §7's second worry: the `Wf-App` the layer walk
+adds at each promotion point never needs more depth than the two end applications have.
+
+**Keeping the operand in the context** (T5: `x ≡ v` in place of `x ≤ w`, as `Ms-FOp` does, instead
+of `b[x\v]`): 162,052 instances, 161,440 within `max(md b, md(v ≤ w))`, 330 over it, 282
+unresolved. Every excess is by exactly one and has `x` at the head of an application with `v` deeper
+than its bound `w` — where it is forced, since `x a` then needs `x ⟶ᵉ v ≤*wf λt.⊤` through
+well-formed points as deep as `v`. An operand occurrence of `x` costs nothing (`Wf-PrE` has depth
+0), which is where substitution pays `md v` per enclosing application.
+
+**What this leaves.** A measure that is a function of the terms' minimal depth is dead; this
+retires §4's proposal and the second half of §7. What the numbers still allow is a measure on the
+two *given* derivations `(D_e, D_v)` in which Lemma 7's output is accounted as `D_e` with copies of
+`D_v` plugged at the occurrences of `x` — the additive bound T2 never exceeds — or a formulation of
+`FunLift`/`FOpLift` that never substitutes and keeps `x ≡ v` in the context, where the only growth
+left is the head-position `+1`. Neither has been tried.
+
+Logs: `.search-logs/depth5_*.log` (T0, T2, T3, T4), `depth5r_*.log` (T5, T6), `depth5esc_*.log`
+(the escalations); size 3 runs in 80 seconds (`python3 conj8-depth-probe.py 3 0 1 012356`).
+
+## 9. The two binding rules without substitution, run as an algorithm — 2026-09-18
+
+`conj8-lift-probe.py` tries the second of §8's two leftovers, and it turns out to contain the
+first. `FunLift` is read as the machine reads it. Under an operand `v` the machine does not
+reduce the body of `λx≤t.u` under `x ≤ t` (`Ms-Fun`) but under `x ≡ v` (`Ms-FOp`); so the body's
+derivation is *narrowed*, `x ≤ t` to `x ≡ v`, and pushed under the rest of the stack, by recursion
+on the derivation:
+
+| the step `F : p ⟶ˢ q` at stack `s₀`, extra stack `S` | `push(F, S)`: a zigzag of machine steps from `p` to `q` at `s₀ ++ S` |
+| --- | --- |
+| `Ms-Top`, `Ms-Equ`, `Ms-Pro y`, `y` not narrowed | the step itself |
+| `Ms-App F′` | `push(F′, S)`, one operand deeper |
+| `Ms-Fun F′`, `S = []` | `push(F′, [])` under `x ≤ t`, each step under `Ms-Fun` |
+| `Ms-Fun F′`, `S = v ∷ s` | narrow `x` to `v`; `push(F′, s)` under `x ≡ v`, each step under `Ms-FOp` |
+| `Ms-FOp F′` | `push(F′, S)` under `x ≡ α`, each step under `Ms-FOp` |
+| `Ms-Pro x`, `x` narrowed to `v`, bound `t` | `x ⟶ᵉ v`, then `lift(D, s₀ ++ S)` for a chain `D : v ≤*wf t` |
+
+and `lift(D, σ)` takes every equivalence step of `D` to the stack `σ` (`pushᵉ`) and every
+promotion through `push`. Nothing is substituted; `lift → push → lift` is the conjecture. The probe
+runs this on every instance it finds (a chain `u ≤*wf t`, a stack `S` with `spine u S` and
+`spine t S` well-formed) and checks the result at the top level, in the original context at the
+empty stack: every step a machine step, every promotion between well-formed terms, every turn from
+backward to forward steps at a well-formed term. The nested chains `D` are the shortest the search
+finds.
+
+| run | instances | with a round | result |
+| --- | --- | --- | --- |
+| terms to size 3, stacks of one or two operands | 60,779 | 17,447 | all valid |
+| terms to size 5 (7 of 8 shards, one lost to memory after 8 of 17 contexts; 4 contexts skipped) | 2,967,285 | 833,161 | all valid; 29 promotion points the oracle missed, all found at chain length 8 |
+| subjects of size 7 that apply their own parameter, sampled (120 per context), stacks of up to three operands, targets read off the subject's forward closure (partial: 20 contexts skipped on memory, 3 shards cut short) | 1,389,958 | 1,155,467 | no invalid step, no unresolved chain, no budget hit; 344 instances keep a promotion point the oracle cannot confirm — terms of about 20 nodes, over its size cap of 18 |
+
+No instance failed, none ran out of budget, the pending stack reached four operands, and nesting
+reached two rounds (29,408 instances).
+
+**The order the recursion descends in.** Round `k` narrows a parameter of bound `t_k` to an
+operand `v_k`. The next round happens inside `lift(v_k ≤*wf t_k, σ)`: an abstraction
+`λx′≤t′.…` of that chain meets the first operand of `σ`. That abstraction is below `t_k`, and `t_k`
+is applied to the same operand (`spine t_k σ` is well-formed), so `t_k ≤*wf λt″.⊤` and, by
+inversion (Lemma 10), `t′ ≡wf t″`: **the bound of each round is the domain of the bound of the round
+before.** The probe checks it on every nested round — 29,414 of 29,414. It is the order on which
+hereditary substitution terminates for simple types, and it is the measure on the given
+derivations that §8 asked for: not their depth, which grows (the pair (body depth, operand depth)
+goes to at most (operand depth, body depth − 1 + operand depth)), but the rank of the bound, with
+the second component of a lexicographic pair being the derivation `F` itself, on which `push` is
+structural.
+
+**The substitution route does not have this descent.** `Lem-9`/`Lem-7` reach the same place through
+`b[x\v]` and a context induction (`conj8-n`), which re-enters an abstraction the body already
+applies — `(λz≤A. x z) o` — under `z ≤ A` (`FunCongr`, then `AppCongr` with `o`), and a given
+derivation of `z ≤*wf ⊤` that goes through `z ⟶ˢ A` then asks for the conjecture at the pair
+`(o, A)`, whose rank is unrelated to anything before. The machine binds `z ≡ o` there and the
+narrowing route never promotes `z`. So the mutual induction of the paper's §5 (Conjecture 8 with
+Lemmas 7 and 9) is the wrong shape for the measure; the stack-aware one is the right one.
+
+**What Conjecture 8 reduces to.** Whenever the recursion terminates the conjecture holds for that
+instance: the well-formedness of every wrapped intermediate is the `app-wf-mid` argument, a point
+below the target applied to the same operand. It terminates when the domain order — `T ▷ d` if
+`T ≤*wf λd.⊤`, `T ▷ T v` if `T v` is well-formed — has no infinite descending chain from the bounds
+involved. Prevalidity excludes a cycle through the context (§4); a cycle or an infinite descent
+through *computation* needs a well-formed bound with no normal form of finite rank, the type-level
+image of a looping combinator, which the paper (§6) says exists for PSS only as a mechanically
+derived term of some forty pages. So:
+
+- a counterexample to Conjecture 8 cannot be small: it needs an infinite domain descent, and even
+  then the conjecture may hold by another chain (with a hypothetical `T ≡ λT.⊤` and
+  `δ = λx≤T. x x` the instance `δ δ ≤ (λx≤T. T x) δ` holds, though the recursion loops on a
+  perversely chosen derivation of `δ ≤*wf T`);
+- an unconditional proof along this recursion needs the domain order well-founded on well-formed
+  bounds, which is a normalization statement about the type level of MPSS and is not known.
+
+What can be proved is the conditional theorem: *if the domain order is well-founded, Conjecture 8
+holds* — by induction on the rank of the bound, then on the step derivation.
+
+Logs: `.search-logs/lift5_*.log`, `lift5_recheck.log`, `lift7s_*.log`.

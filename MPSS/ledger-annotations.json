@@ -3,52 +3,420 @@
   "title": "MPSS Proof Ledger",
   "eyebrow": "Pasquale &amp; García-Pérez · CSL 2026 · arXiv:2407.13882v2",
   "headline": "What holds up type safety in MPSS",
-  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; an edge means <em>the proof above cites the result below</em>.",
+  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed, and preservation with exactly one assumption: the paper's own Conjecture 8. Two of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "64 Agda modules",
+   "103 Agda modules",
    "--safe · 0 postulates · 0 holes",
-   "Assumed: Lemma 1, Lemma 2, Conjecture 8, Proposition 17 (repaired)",
-   "Lemma 1 is additionally reduced to Lemma 2 plus four named statements in MPSS.Commutation"
-  ]
+   "Type safety from exactly Conjecture 8 (MPSS.Preservation17)",
+   "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
+   "Lemmas 1, 2 and 31: open as printed, a variant proved (↻)",
+   "Conjecture 8: open, reduced in Agda to the two binding rules (FunLift, FOpLift)"
+  ],
+  "notes": {
+   "title": "Open threads",
+   "items": [
+    {
+     "anchor": "Conjecture 8 · context independence",
+     "html": "<p>The paper's own open question, and now the <em>only</em> assumption under type safety: Lemma 9 is the single place it enters, and from there it reaches Lemma 7, Lemma 6 and preservation. Searched with no counterexample at term sizes 3 and 5; reduced in <code>MPSS.Conjecture8Star</code> to one congruence whose hard case is the conjecture again on a pair of well-formedness derivations of smaller nesting depth, which is the candidate measure.</p><p>Restated here without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so requiring every term in the context to be locally closed would assume something strictly weaker than the paper does.</p>"
+    },
+    {
+     "anchor": "Lemma 2 and Lemma 1 · the diamond and commutation, as printed",
+     "html": "<p>Open for the paper's relation, and nothing depends on them any more: both are proved for the reduction with the promotion premise at the empty stack, which has the same closure, and Theorem 3 follows for the paper's calculus. The printed induction on Lemma 2 cannot be rescued by a measure (<code>MPSS.NoMeasure</code>).</p><p>What is known of the original diamond: the mixed diamond, the strip property, and confluence. What would close it: that the residuals of a peeled original step reassemble into one step, which held on every configuration tried (<code>MPSS/compression-probe.py</code>).</p>"
+    },
+    {
+     "anchor": "Lemma 31 · substitution for a ≤-bound name, as printed",
+     "html": "<p>Open and unattempted. The proved form substitutes for a name the context does not bind, which is what the β-rule's body premise needs; the printed form, with the name bound by <code>x ≤ t</code>, is used by nothing in the development. Lemma 32, the ≡-bound form, is proved as printed.</p>"
+    }
+   ]
+  },
+  "aliases": {
+   "⟶≡": "T:_∣_⊢_⟶ᵉ_",
+   "⟶ᵉ": "T:_∣_⊢_⟶ᵉ_",
+   "⟶≤": "T:_∣_⊢_⟶ˢ_",
+   "⟶ˢ": "T:_∣_⊢_⟶ˢ_",
+   "⟶≡↠": "T:_∣_⊢_⟶ᵉ*_",
+   "⟶ᵉ*": "T:_∣_⊢_⟶ᵉ*_",
+   "⟶ˢ*": "T:_∣_⊢_⟶ˢ*_",
+   "↣": "T:_∣_↣_∣_",
+   "⊲": "T:_∣_⊢_⊲[_]_",
+   "⊲*": "T:_∣_⊢_⊲*[_]_",
+   "≤*wf": "T:_⊢_⊑*wf[_]_",
+   "⊑*wf": "T:_⊢_⊑*wf[_]_",
+   "≤wf": "T:_⊢_⊑wf[_]_",
+   "≡wf": "T:_⊢_⊑wf[_]_",
+   "⊑wf": "T:_⊢_⊑wf[_]_",
+   "wf": "T:_⊢_wf",
+   "↦": "T:_↦_",
+   "Os-Bet": "T:_↦_#E-App",
+   "Os-Con": "T:_↦_",
+   "prevalid": "T:_∣_prevalid",
+   "Co": "T:CoCtx"
+  },
+  "fidelity": {
+   "T:_⊢_⟶ᵉ*wf_": "edited"
+  }
  },
  "nodes": {
   "1": {
    "name": "strong commutation",
    "defect": "",
-   "status": "open"
+   "status": "open",
+   "repair": "Lem-1′ (MPSS.VariantCommutation): commutation for the reduction with Me-Pro's premise at the empty stack; transferred to Theorem 3 through MPSS.VariantMachine",
+   "repairKind": "variant",
+   "repairStatus": "proved",
+   "attempts": [
+    {
+     "what": "The paper's proof: induction on the term structure of t₀, spending Lemma 2 in the Ms-Equ case.",
+     "outcome": "open",
+     "where": "MPSS.Commutation",
+     "why": "Reduces cleanly to Lemma 2 plus four named statements — Bet-App, Fun-Fun, FOp-FOp and ↣-Prevalid — with five of the eight cases discharged outright and the Me-Pro/Ms-Pro case vacuous by prevalidity. Lemma 2 itself has no induction principle (see Lemma 2). ↣-Prevalid has since been proved (Lemma 1a).",
+     "def": "Lem-1 : Set\nLem-1 = ∀ {Γ s Γ′ s′ t₀ t₁ t₂}\n      → Γ ∣ s ⊢ t₀ ⟶ᵉ t₁\n      → Γ ∣ s ⊢ t₀ ⟶ˢ t₂\n      → Γ ∣ s ↣ Γ′ ∣ s′\n      → ∃[ t₃ ] ((Γ ∣ s ⊢ t₂ ⟶ᵉ t₃) × (Γ′ ∣ s′ ⊢ t₁ ⟶ˢ t₃))",
+     "kind": "original",
+     "because": "The paper's proof cites Lemma 2 in one case, so separating the two shows what commutation needs beyond the diamond.",
+     "change": "commutation-reduction"
+    },
+    {
+     "what": "Move Me-Pro's premise to the empty stack, and prove commutation for that reduction.",
+     "outcome": "proved",
+     "where": "MPSS.VariantCommutation",
+     "why": "Lem-1′ by well-founded induction on the subject's size; the β case uses the diamond's Γ ∖ B invariant and substitution of an equivalence-bound name in a subtyping reduction (MPSS.VariantDrop). Bet-App′, Fun-Fun′ and FOp-FOp′ are proved rather than assumed.",
+     "def": "Lem-1′ : ∀ {Γ s Γ′ s′ t₀ t₁ t₂} → LC t₀\n       → Γ ∣ s ⊢ t₀ ⟶ᵉ′ t₁ → Γ ∣ s ⊢ t₀ ⟶ˢ′ t₂ → Γ ∣ s ↣′ Γ′ ∣ s′\n       → ∃[ t₃ ] ((Γ ∣ s ⊢ t₂ ⟶ᵉ′ t₃) × (Γ′ ∣ s′ ⊢ t₁ ⟶ˢ′ t₃))\nLem-1′ {Γ = Γ} lc e st c with join₁ lc e st c\n... | t₃ , f₁ , f₂ = t₃ , subst (λ Γ₁ → Γ₁ ∣ _ ⊢ _ ⟶ᵉ′ t₃) (∖-[] Γ) (f₁ [] (λ _ ()) (λ ()) (λ ())) , f₂",
+     "kind": "variant",
+     "because": "The diamond had been proved for the repaired reduction, and commutation was the remaining piece of Theorem 3 on that route.",
+     "change": "empty-stack-premise"
+    }
+   ]
   },
   "2": {
    "name": "diamond property",
-   "defect": "induction not well-founded as written"
+   "defect": "induction not well-founded as written",
+   "status": "open",
+   "repair": "Lem-2′ (MPSS.VariantDiamond): the diamond for the same repaired reduction",
+   "repairKind": "variant",
+   "repairStatus": "proved",
+   "attempts": [
+    {
+     "what": "The paper's induction on the derivation of t₀ ⟶≡ t₁.",
+     "outcome": "refuted",
+     "where": "MPSS.DiamondCases, DEAD-ENDS row 1",
+     "why": "At Me-Pro against Me-Var the hypothesis is applied to α₀ ⟶≡ α₂, built from the context reduction — a subderivation of nothing, of unrelated size; and the two edges are not consistently oriented across cases.",
+     "def": "Lem-2 : Set\nLem-2 = ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂}\n      → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ t₁\n      → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ t₂\n      → Γ₀ ∣ s₀ ↣ Γ₁ ∣ s₁\n      → Γ₀ ∣ s₀ ↣ Γ₂ ∣ s₂\n      → ∃[ t₃ ] ((Γ₁ ∣ s₁ ⊢ t₁ ⟶ᵉ t₃) × (Γ₂ ∣ s₂ ⊢ t₂ ⟶ᵉ t₃))",
+     "kind": "original",
+     "because": "The paper's proof was the only candidate, and its induction is the first thing to transcribe.",
+     "change": "audit"
+    },
+    {
+     "what": "Derivation sizes: sum, max, multiset, lexicographic either way; then context position against size.",
+     "outcome": "refuted",
+     "where": "MPSS.DerivationSize, rows 2–3",
+     "why": "One instance, x ≡ ⊤ ⊤ with a three-node context reduction, refutes three orders; the fourth fails its mirror. Position fails at binders, size at promotion.",
+     "kind": "repair",
+     "because": "A measure on derivation size is the standard remedy when the printed induction descends on something that is not a subderivation.",
+     "change": "diamond-measures"
+    },
+    {
+     "what": "Measures on configurations: the unfolding weight Φ, the multiplier Ψ, the heights M and M₂, the unrolled stack D and D′, and the lexicographic (configuration depth, term depth, size).",
+     "outcome": "refuted",
+     "where": "MPSS.Measure, Multiplier, Height, Unroll, LexDepth; rows 4–11",
+     "why": "Each fails at Me-Pro or Me-FOp: a stack entry is bound to a variable that Me-Pro will unfold, and has to be paid for twice. A positional argument (row 6) was withdrawn when the walk from Ω re-entered its own subtree.",
+     "kind": "repair",
+     "because": "The size failures pointed at the configuration — the stack and the context — rather than at the derivation.",
+     "change": "diamond-measures"
+    },
+    {
+     "what": "Any measure on configurations at all, meeting the three constraints in Height's Measure record.",
+     "outcome": "refuted",
+     "where": "MPSS.NoMeasure, row 18",
+     "why": "The record is uninhabited: Ω's walk alternates Me-App, Me-Pro, Me-FOp forever with the strict constraint at every round.",
+     "kind": "repair",
+     "because": "Eleven candidate measures had failed at the same two rules, so an impossibility result was cheaper than a twelfth candidate.",
+     "change": "diamond-measures"
+    },
+    {
+     "what": "Change the statement: Takahashi's complete development; erase the configuration and inherit the context-free diamond; weaken to confluence; fix the configuration.",
+     "outcome": "refuted",
+     "where": "MPSS.Develop, InfiniteBranching, Unfold, WeakDiamond, DiamondCases; rows 12–15",
+     "why": "t* does not exist at Ω since ⟶≡ is infinitely branching; erasure is not a simulation at Me-FOp; the consumer push≡ needs one step; Me-App needs the join at the reduced operand's stack, which only Ct-Stk supplies. The general one-step form is forced.",
+     "kind": "variant",
+     "because": "If the statement could not be proved as printed, a reformulation the downstream proofs could still use might be.",
+     "change": "diamond-reformulations"
+    },
+    {
+     "what": "Look for a counterexample.",
+     "outcome": "experiment",
+     "where": "diamond-search.py, diamond-search-capped.py; rows 16, 20",
+     "why": "None in 630 million joins at small bounds, none at Ω, none with self-application under a nesting cap. The recursion terminates on every input tried (rows 21, 34).",
+     "kind": "original",
+     "because": "A counterexample would have ended the search outright.",
+     "change": "diamond-experiments"
+    },
+    {
+     "what": "Carry the printed second conjunct through the induction.",
+     "outcome": "refuted",
+     "where": "MPSS.Moreover, MPSS.Strengthen; rows 17, 22",
+     "why": "False as printed — the context reduction forces the promotion — and insufficient. The case analysis is completed against the diamond as hypothesis under the invariant that does survive, the derivation at Γ₁ ∖ B.",
+     "kind": "repair",
+     "because": "The printed Me-App/Me-Bet case needs the second conjunct, so it had to be carried or replaced.",
+     "change": "diamond-invariant"
+    },
+    {
+     "what": "Measures on the derivations rather than the configuration: weights on Me-Pro nodes, pair-aware weights, ordinal potentials, anchors, orders on pairs of input positions.",
+     "outcome": "refuted",
+     "where": "measure-probe.py, anchor-probe.py, order-search.py; rows 19, 23–28",
+     "why": "Each survives millions of calls and then fails at a pull whose copied piece has internal promotions outweighing the one consumed; the position-pair order exists for fixed inputs (row 29) but no uniform definition was found.",
+     "kind": "repair",
+     "because": "The recursion terminates on every input tried, so a well-founded order on the derivations should exist even though none on configurations does.",
+     "change": "derivation-measures"
+    },
+    {
+     "what": "Structural conjectures about the recursion: distinct consumption, per-frame single visit.",
+     "outcome": "refuted",
+     "where": "frame-visit-probe.py, cycle-sweep.py; rows 32–33",
+     "why": "Both fail at Γ = u ≡ λ⊤.(w 0), w ≡ λ⊤.0 with subject u u and one edge of promotion depth 3; the piece for u is pulled twice on one path.",
+     "kind": "repair",
+     "because": "Invariants that would explain termination could be checked by sweep before anyone tried to prove them.",
+     "change": "diamond-experiments"
+    },
+    {
+     "what": "The diamond for the repaired reduction, both edges at the empty stack.",
+     "outcome": "proved",
+     "where": "MPSS.VariantDiamond, VariantMeasure",
+     "why": "Lem-2′ by strong induction on the size of the reachable part of the configuration; this is what Theorem 3 uses.",
+     "def": "Lem-2′ : ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂} → LC t₀\n       → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₁ → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₂\n       → Γ₀ ∣ s₀ ↣′ Γ₁ ∣ s₁ → Γ₀ ∣ s₀ ↣′ Γ₂ ∣ s₂\n       → ∃[ t₃ ] ((Γ₁ ∣ s₁ ⊢ t₁ ⟶ᵉ′ t₃) × (Γ₂ ∣ s₂ ⊢ t₂ ⟶ᵉ′ t₃))\nLem-2′ {Γ₁ = Γ₁} {Γ₂ = Γ₂} lc d₁ d₂ c₁ c₂ with join′ lc d₁ d₂ c₁ c₂\n... | t₃ , f₁ , f₂ =\n  t₃ , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ′ t₃) (∖-[] Γ₁) (f₁ [] (λ _ ()) (λ ()) (λ ()))\n     , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ′ t₃) (∖-[] Γ₂) (f₂ [] (λ _ ()) (λ ()) (λ ()))",
+     "kind": "variant",
+     "because": "The mixed diamond (Lemma 2a) suggested that with both edges repaired a plain measure on the reachable configuration would do.",
+     "change": "empty-stack-premise"
+    },
+    {
+     "what": "What is left as printed — that residuals of a peeled original step reassemble into one step — tested by executing the mixed diamond's join on real derivation trees.",
+     "outcome": "experiment",
+     "where": "compression-probe.py, onestep-check.py; row 36",
+     "why": "Every one of 4,313 chains needing compression was a single step. The strip property and confluence of ⟶ᵉ* are proved for the paper's relation (MPSS.Strip).",
+     "kind": "original",
+     "because": "The mixed diamond leaves reassembly of residuals as the only gap, and it could be tested on the canonical join before being attempted as a proof.",
+     "change": "mixed-diamond"
+    }
+   ]
   },
   "3": {
    "name": "transitivity elimination",
-   "defect": ""
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Reach the theorem through the repaired reduction: transitivity of ⊲′ from Lemmas 1 and 2 for it, carried to the paper's machine relation.",
+     "outcome": "proved",
+     "where": "MPSS.VariantTransitivity, MPSS.VariantMachine, MPSS.VariantTransfer",
+     "why": "Every repaired step is an original step and every original step a chain of repaired steps on locally closed terms, so ⊲′ = ⊲ and Theorem 3 holds with nothing assumed. The statement as printed, one step against one promotion, is still open and nothing needs it.",
+     "def": "Thm-3ᴸ : ∀ {Γ s u v m} → Γ ∣ s ⊢ u ⊲*ᴸ[ m ] v → Γ ∣ s ⊢ u ⊲[ m ] v\nThm-3ᴸ d = ⊲′⊆⊲ (Thm-3′-unconditional (⊲*ᴸ⊆⊲′*ᴸ d))",
+     "kind": "repair",
+     "because": "A result about the repaired relation says nothing about the paper's unless it transfers; the closures coincide, so it could.",
+     "change": "empty-stack-premise"
+    }
+   ]
   },
   "4": {
    "name": "progress",
-   "defect": ""
+   "defect": "",
+   "module": "MPSS.Unconditional"
   },
   "5": {
    "name": "preservation",
-   "defect": "depends on Prop 17 at its Ws-Rgh step without citing it"
+   "defect": "depends on Prop 17 at its Ws-Rgh step without citing it",
+   "status": "proved",
+   "attempts": [
+    {
+     "what": "The paper's proof, which moves from t ↦ t′ to Ws-Rgh without citing Proposition 17.",
+     "outcome": "refuted",
+     "where": "MPSS.Preservation (agda block)",
+     "why": "The checker names the gap: (t ↦ t′) is not (Γ ∣ [] ⊢ t ⟶ᵉ t′).",
+     "kind": "original",
+     "because": "The printed proof's step from the operational step to Ws-Rgh is transcribable directly.",
+     "change": "audit"
+    },
+    {
+     "what": "Proposition 27 with Lemma 6 supplying the reduct's well-formedness, from the assumed Prop-17ʳ.",
+     "outcome": "open",
+     "where": "MPSS.Preservation, MPSS.Unconditional",
+     "why": "Assembled with Conjecture 8 into type safety.",
+     "def": "Thm-5 : Prop-17ʳ → Lem-6\n      → ∀ {Γ t t' u}\n      → Γ ⊢ t ⊑*wf[ sub-m ] u\n      → t ↦ t'\n      → Γ ⊢ t' ⊑*wf[ sub-m ] u\nThm-5 prop-17 lem-6 d st = Prop-27 prop-17 d st (lem-6 (⊑*wf⇒wfˡ d) st)",
+     "kind": "repair",
+     "because": "Proposition 27 with Lemma 6 is the route the paper takes, given some form of Proposition 17.",
+     "change": "prop17-assumed"
+    },
+    {
+     "what": "Check the assumption.",
+     "outcome": "refuted",
+     "where": "MPSS.Prop17Refuted",
+     "why": "Prop-17ʳ is uninhabited; the theorem is not established. A chain form of Proposition 17 would restore it, since the machine relation is closed under chains.",
+     "def": "¬Prop-17ʳ : ¬ Prop-17ʳ\n¬Prop-17ʳ p = prop-17-false (Prop-17ʳ⇒Prop-17 p)",
+     "kind": "repair",
+     "because": "The assumed form was found to be refutable.",
+     "change": "prop17-refuted-assumption"
+    },
+    {
+     "what": "The same proof from the repaired chain form, Prop-17ʷ.",
+     "outcome": "proved",
+     "where": "MPSS.Preservation17",
+     "why": "Nothing assumed beyond Conjecture 8 where Lemma 7 enters.",
+     "kind": "repair",
+     "because": "The chain form re-establishes both inputs of the route.",
+     "change": "prop17-chain"
+    }
+   ]
   },
   "6": {
    "name": "evaluation preserves wf",
-   "defect": ""
+   "defect": "",
+   "status": "proved",
+   "attempts": [
+    {
+     "what": "Induction on t ↦ t′, with the β case through inversion, Lemmas 15 and 16 and Lemma 7, and the congruence cases through the assumed Prop-17ʳ.",
+     "outcome": "open",
+     "where": "MPSS.Evaluation, MPSS.Unconditional",
+     "why": "The β case is proved outright modulo Conjecture 8.",
+     "def": "Lem-6 : Set\nLem-6 = ∀ {Γ t t'} → Γ ⊢ t wf → t ↦ t' → Γ ⊢ t' wf",
+     "kind": "repair",
+     "because": "The paper's proof structure, with Proposition 17 in the annotation and application cases, given some form of it.",
+     "change": "prop17-assumed"
+    },
+    {
+     "what": "Check the assumption.",
+     "outcome": "refuted",
+     "where": "MPSS.Prop17Refuted",
+     "why": "The E-Lam-l and E-App cases call a hypothesis that is uninhabited.",
+     "def": "¬Prop-17ʳ : ¬ Prop-17ʳ\n¬Prop-17ʳ p = prop-17-false (Prop-17ʳ⇒Prop-17 p)",
+     "kind": "repair",
+     "because": "The assumed form was found to be refutable.",
+     "change": "prop17-refuted-assumption"
+    },
+    {
+     "what": "The same proof with the chain form, narrowing the body along it one Lemma 23 per step.",
+     "outcome": "proved",
+     "where": "MPSS.Preservation17",
+     "why": "Nothing assumed beyond Conjecture 8 where Lemma 7 enters.",
+     "kind": "repair",
+     "because": "The chain form supplies what the two cases need.",
+     "change": "prop17-chain"
+    }
+   ]
   },
   "7": {
    "name": "substitution preserves wf",
-   "defect": "cites Lemma 28 for a substituend Lemma 28 does not cover"
+   "defect": "cites Lemma 28 for a substituend Lemma 28 does not cover",
+   "attempts": [
+    {
+     "what": "The paper's citation of Lemma 28 for the substituend.",
+     "outcome": "refuted",
+     "where": "MPSS.Lemma7 (agda block)",
+     "why": "Lemma 28 substitutes the annotation and only the annotation; the case needs a general substituend.",
+     "kind": "original",
+     "because": "The citation is the only justification the printed proof gives for the substituend case.",
+     "change": "audit"
+    },
+    {
+     "what": "The general form, given the substituend locally closed and scoped, both of which Γ ⊢ α ≤*wf t supplies.",
+     "outcome": "proved",
+     "where": "MPSS.Lemma7, MPSS.Subst28",
+     "why": "Three mutually recursive functions over the three judgements, the sub-induction returning a diagram of reduction sequences; Conjecture 8 enters through Lemma 9.",
+     "kind": "repair",
+     "because": "The general substitution lemma has the hypotheses the citation lacks, and the case supplies them.",
+     "change": "defect-repairs"
+    }
+   ]
   },
   "8": {
    "name": "context independence",
-   "defect": ""
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Search at term size 3: contexts of one or two entries over six annotation shapes, every locally closed term, every well-subtyping pair with the side conditions, four covariant contexts, the conclusion tested through the machine relation under caps.",
+     "outcome": "experiment",
+     "kind": "original",
+     "where": "MPSS/conj8-search.py, MPSS/conj8-deep.py; MPSS/CONJ8.md",
+     "why": "561,145 instances; three failures at chain depth 4, all joining at depth 6. The joins needed are the ‘operand reaches the bound’ chains the structural analysis predicts.",
+     "because": "A counterexample at small size would settle the paper's open problem cheaply.",
+     "change": "conj8-search"
+    },
+    {
+     "what": "Search at term size 5, single-layer contexts.",
+     "outcome": "experiment",
+     "kind": "original",
+     "where": "MPSS/conj8-size5-2026-09-12.log",
+     "why": "11,698,280 instances on 32 of 133 contexts, no failure; the remaining 101 contexts unsearched.",
+     "because": "Size 3 is too small for the self-application patterns the structural analysis predicts.",
+     "change": "conj8-search"
+    },
+    {
+     "what": "Reduce the conjecture to one congruence, AppCongr₁, and locate its content: a promotion of the outermost parameter is the conjecture again on a pair of derivations of strictly smaller nesting depth.",
+     "outcome": "open",
+     "kind": "original",
+     "where": "MPSS.Conjecture8Star, MPSS.Push, MPSS.ReachFails; CONJ8.md §3–5",
+     "why": "The recursive instance's hypothesis is derivable and its next application well-formed; the candidate measure is the nesting depth of well-formedness premises. Steps 1–2 of the plan (a depth measure the assembling operations do not increase; lifting a ≤wf layer to the stack) are mechanizable now; steps 3–4 are the conjecture.",
+     "because": "The search found nothing, and the joins it needed had a shape suggesting a measure on the derivations.",
+     "change": "conj8-search"
+    },
+    {
+     "what": "The reflection question: is every machine chain between well-formed ends a well-subtyping chain? Searched at sizes 3 and 5.",
+     "outcome": "experiment",
+     "kind": "original",
+     "where": "MPSS/reflect-search.py, MPSS/reflect-deep.py",
+     "why": "All 8,271 pairs at size 3 and all 569,295 at size 5 are well-subtyping-related; the shortest machine chain can pass through a non-well-formed term, so a proof must construct a detour. If reflection holds, the conjecture can be proved in the machine relation, where commutation and confluence are available.",
+     "because": "Proving the conjecture in the machine relation would give access to commutation and confluence, which the well-subtyping relation lacks.",
+     "change": "conj8-search"
+    },
+    {
+     "what": "Reduce the conjecture to two obligations (Lemmas 8a, 8b and 8c): a promotion under λx≤t replayed when the parameter meets an operand (FunLift), and one under a parameter already bound to an operand replayed with more stack (FOpLift).",
+     "outcome": "open",
+     "kind": "original",
+     "because": "Both sides β-reduce to substituted bodies, and what remains is Lemma 9 on the substituted body, whose covariant case is the conjecture again for the operand and the annotation — with Lemma 7 needed for the substituted body's well-formedness.",
+     "where": "MPSS.CoFun, MPSS.Conj8Reduction, MPSS.Conj8Push; MPSS/CONJ8.md §7",
+     "why": "The mutual induction of the conjecture with Lemmas 7 and 9 is genuine. Structural recursion on the target's well-formedness derivation fails, because the recursive instance's hypotheses are Lemma 7's outputs; the nesting-depth measure of §4 is what to probe next.",
+     "change": "conj8-reduction"
+    },
+    {
+     "what": "Does the nesting depth of the well-formedness derivations descend along the recursion? Minimal depths computed level by level for every term and chain to size 5, and tested on chains, Conjecture 8, Lemmas 7 and 9, β-contraction and the recursion's own round.",
+     "outcome": "experiment",
+     "kind": "original",
+     "where": "MPSS/conj8-depth-probe.py; MPSS/CONJ8.md §8",
+     "because": "CONJ8.md §7 left it as the next thing to probe: the measure survives only if Lemma 7 and the conjecture return derivations no deeper than their inputs.",
+     "why": "It does not. With y ≡ λ⊤.0, f = λx≤y. x (y x) and v = y (y y), the instance (f v, f′ v) has depth 3 and its recursive instance (v (y v), y (y v)) depth 4: an application is one deeper than its operand, and substitution copies the operand under the body's applications. 60 of 59,531 rounds go up and 6,205 stay level; Lemma 7 is bounded by the sum of its inputs' depths, not the maximum (19,361 of 151,090). Chains (568,694), Conjecture 8 at size 3 (212,584) and Lemma 9 (365,010) never need more depth than their ends. Keeping the operand in the context as x ≡ v leaves only a +1 at head positions.",
+     "change": "conj8-depth-probe"
+    },
+    {
+     "what": "FunLift and FOpLift without substitution, as an algorithm: narrow the parameter to the operand in the context, push the body's derivation by recursion on it, replace a promotion of the parameter by its unfolding and the lifted chain from the operand to the bound; check the resulting chain at the top level.",
+     "outcome": "experiment",
+     "kind": "original",
+     "where": "MPSS/conj8-lift-probe.py; MPSS/CONJ8.md §9",
+     "because": "The depth probe showed that substitution is what raises the measure, and that keeping the operand in the context, as Ms-FOp does, leaves only a forced +1.",
+     "why": "Valid on every instance: 2,967,285 at size 5 and 1,389,958 sampled at size 7 with stacks of up to three operands, no invalid step, no unresolved chain, no budget hit. On all 29,414 nested rounds the bound of the round is the domain of the bound of the round before — the order on which hereditary substitution terminates. The substitution route (Lemmas 7 and 9 with the context induction) does not descend in it. So the conjecture follows from well-foundedness of the domain order on well-formed bounds, a counterexample needs an infinite domain descent, and an unconditional proof along this recursion needs a normalization statement about MPSS's type level.",
+     "change": "conj8-narrowing"
+    }
+   ]
   },
   "9": {
    "name": "promotion under substitution",
-   "defect": "concludes by rule Ws-Lft, which does not exist"
+   "defect": "concludes by rule Ws-Lft, which does not exist",
+   "attempts": [
+    {
+     "what": "The paper's closing step by rule Ws-Lft.",
+     "outcome": "refuted",
+     "where": "MPSS.Lemma9 (agda block)",
+     "why": "There is no such rule: Not in scope.",
+     "kind": "original",
+     "because": "The printed proof closes by naming a rule, so the name was looked up.",
+     "change": "audit"
+    },
+    {
+     "what": "Close by Ws-Lf2, which wants both sides well-formed — premises the lemma already has.",
+     "outcome": "proved",
+     "where": "MPSS.Lemma9",
+     "why": "Case split on whether source and target form a covariant pair, decided on the terms by coPair?; the covariant branch hands Conjecture 8 its context.",
+     "kind": "repair",
+     "because": "Ws-Lf2 is the rule that carries a promotion, and its well-formedness premises are already in hand.",
+     "change": "defect-repairs"
+    }
+   ]
   },
   "10": {
    "name": "inversion",
@@ -80,11 +448,91 @@
   },
   "17": {
    "name": "↦ to ⟶≡",
-   "defect": "base case needs an Me-Bet instance that cannot be built"
+   "defect": "base case needs an Me-Bet instance that cannot be built",
+   "repair": "Prop-17ʷ (MPSS.Prop17Chain): on well-formed terms an evaluation step is a chain of equivalence steps at Γ;nil through well-formed terms — proved with nothing assumed; Proposition 27, Lemma 6, Theorem 5 and type safety are re-derived from it in MPSS.Preservation17",
+   "repairKind": "variant",
+   "repairStatus": "proved",
+   "attempts": [
+    {
+     "what": "The proposition as printed: an evaluation step is an equivalence step, at every extended context.",
+     "outcome": "refuted",
+     "where": "MPSS.BetaScope",
+     "why": "The smallest witness, (λx≤⊤. y x) ⊤ with y ≤ ⊤: Me-Bet reduces the body in a context that does not bind x, and Me-App would push x onto the stack against Pv-Sta.",
+     "def": "Prop-17 : Set\nProp-17 = ∀ {Γ u v}\n        → Γ ∣ [] prevalid → LC u → fv u ⊑ dom Γ\n        → u ↦ v\n        → Γ ∣ [] ⊢ u ⟶ᵉ v\n\nprop-17-false : ¬ Prop-17\nprop-17-false p = no-β (p pv₀ lc-redex fv-redex steps)",
+     "kind": "original",
+     "because": "Lemma 6 and Theorem 5 cite it, and its printed proof settles the base case by one appeal to Me-Bet; transcribing that appeal was the first check.",
+     "change": "audit"
+    },
+    {
+     "what": "The charitable reading: only well-formed subjects, which is all Lemma 6 and Theorem 5 need.",
+     "outcome": "refuted",
+     "where": "MPSS.BetaScopeWf",
+     "why": "The witness can be made well-formed — (λx≤T. y x) T with T = λz≤⊤.⊤ and y ≤ λq≤T.⊤ — and still has no equivalence step to y T.",
+     "def": "no-step : ¬ (Γ₀ ∣ [] ⊢ R ⟶ᵉ app (fvar 0) T)\nno-step d = no-step′ d refl",
+     "kind": "variant",
+     "because": "The proposition is only ever used on well-formed terms, so a failure on ill-formed ones would not reach the theorems.",
+     "change": "audit"
+    },
+    {
+     "what": "A repaired statement, Prop-17ʳ: the same with prevalidity, local closure and a scoping premise fv u ⊆ dom Γ, assumed as a hypothesis of the downstream proofs.",
+     "outcome": "open",
+     "where": "MPSS.Assumed",
+     "why": "Taken as the form a repaired Me-Bet would deliver; Lemma 6, Theorem 5, Proposition 27 and type safety were proved from it.",
+     "def": "Prop-17ʳ : Set\nProp-17ʳ = ∀ {Γ s u v}\n         → Γ ∣ s prevalid → LC u → fv u ⊑ dom Γ\n         → u ↦ v\n         → Γ ∣ s ⊢ u ⟶ᵉ v",
+     "kind": "variant",
+     "because": "The refutation was diagnosed as a scoping defect of Me-Bet's body premise, and the downstream proofs needed some form of the proposition without changing the relation Lemmas 1 and 2 quantify over.",
+     "change": "prop17-assumed"
+    },
+    {
+     "what": "Check the assumption against the counterexamples.",
+     "outcome": "refuted",
+     "where": "MPSS.Prop17Refuted",
+     "why": "Prop-17ʳ at the empty stack is word for word the statement already refuted: the scoping premise constrains the redex, not the body Me-Bet opens with a fresh name. ¬ Prop-17ʳ is proved from both witnesses, so everything downstream is proved from a false hypothesis.",
+     "def": "¬Prop-17ʳ : ¬ Prop-17ʳ\n¬Prop-17ʳ p = prop-17-false (Prop-17ʳ⇒Prop-17 p)\n\n¬Prop-17ʳ-wf : ¬ Prop-17ʳ\n¬Prop-17ʳ-wf p = no-step (p (Pv-Nil pv₀) lc-R fv-R R↦)",
+     "kind": "variant",
+     "because": "A review of the ledger noticed that the assumed statement, at the empty stack, is word for word the statement already refuted.",
+     "change": "prop17-refuted-assumption"
+    },
+    {
+     "what": "The chain form with well-formedness carried along: for well-formed u, v with u ↦ v, a chain of equivalence steps at Γ;nil from u to v through well-formed terms.",
+     "outcome": "proved",
+     "where": "MPSS.Prop17Chain, MPSS.WfRename",
+     "why": "Two steps for β (bind and unfold the parameter by Me-FOp, then Me-Bet on the closed body), with the intermediate well-formed because its body is the contractum; the congruences lift the chain with Lemma 23, push≡*wf and pushᵉ, and under a binder by closing and renaming — renaming for the well-formedness judgements was the missing lemma. Nothing assumed.",
+     "def": "Prop-17ʷ : ∀ {Γ u v} → Γ ⊢ u wf → u ↦ v → Γ ⊢ v wf → Γ ⊢ u ⟶ᵉ*wf v\n\ndata _⊢_⟶ᵉ*wf_ : Ctx → Tm → Tm → Set where\n  εʷ   : ∀ {Γ t} → Γ ⊢ t wf → Γ ⊢ t ⟶ᵉ*wf t\n  step : ∀ {Γ a b c} → Γ ∣ [] ⊢ a ⟶ᵉ b → Γ ⊢ b wf → Γ ⊢ b ⟶ᵉ*wf c → Γ ⊢ a ⟶ᵉ*wf c",
+     "kind": "variant",
+     "because": "Every consumer sits under relations closed under chains, and on the witness a two-step chain does exist, so the chain form was the weakest change that could work.",
+     "change": "prop17-chain"
+    }
+   ]
   },
   "18": {
    "name": "reflexivity",
-   "defect": "Me-App's premise sits at the pushed stack; Pv-Sta refuses"
+   "defect": "Me-App's premise sits at the pushed stack; Pv-Sta refuses",
+   "repair": "reflexivity with the scoping premise fv u ⊆ dom Γ: ⟶ᵉ-refl and ⟶ˢ-refl (MPSS.StackPush)",
+   "repairKind": "variant",
+   "repairStatus": "proved",
+   "attempts": [
+    {
+     "what": "The proposition as printed: every term reduces to itself by ⟶≡ and by ⟶≤, at every extended context.",
+     "outcome": "refuted",
+     "where": "MPSS.ReflFails",
+     "why": "y y at the empty context: Me-App takes its operator premise at the stack y::nil, and Pv-Sta grants prevalidity there only when fv y ⊆ ∅. Refuted in four forms, with and without prevalidity and local closure, so no reading of “term” or “extended context” rescues it.",
+     "def": "Prop-18ᵉ-lc : Set\nProp-18ᵉ-lc = ∀ {Γ s u} → Γ ∣ s prevalid → LC u → Γ ∣ s ⊢ u ⟶ᵉ u\n\nprop-18ᵉ-lc-false : ¬ Prop-18ᵉ-lc\nprop-18ᵉ-lc-false refl-lc = no-refl (refl-lc (Pv-Nil Pv-Emp) lc-selfapp)",
+     "kind": "original",
+     "because": "Six results cite it and its printed proof is a one-line induction, so it was transcribed first; the Me-App node pushes the operand onto the stack.",
+     "change": "audit"
+    },
+    {
+     "what": "Reflexivity with the one hypothesis the paper leaves implicit: the term scoped in the domain, fv u ⊆ dom Γ.",
+     "outcome": "proved",
+     "where": "MPSS.StackPush",
+     "why": "⟶ᵉ-refl and ⟶ˢ-refl, by induction on the term with the stack pushed as Me-App demands; every use of Proposition 18 in the development is through these.",
+     "def": "⟶ᵉ-refl : ∀ {Γ s t} → Γ ∣ s prevalid → LC t → fv t ⊑ dom Γ → Γ ∣ s ⊢ t ⟶ᵉ t\n⟶ᵉ-refl pv lc-fvar        f = Me-Var pv\n⟶ᵉ-refl pv lc-Top         f = Me-Top pv\n⟶ᵉ-refl pv (lc-app {u} {v} lu lv) f =\n  Me-App (⟶ᵉ-refl (Pv-Sta pv lv (fv-app-arg {u} {v} f)) lu (fv-app-op {u} {v} f))\n         (⟶ᵉ-refl (prevalid-nil pv) lv (fv-app-arg {u} {v} f))\n⟶ᵉ-refl {Γ} {[]} pv (lc-lam {t} {b} L lt F) f =\n  Me-Fun (L ++ dom Γ) (⟶ᵉ-refl pv lt (fv-lam-ann {t} {b} f)) body\n  where\n    body : ∀ {x} → x ∉ (L ++ dom Γ)\n         → ((x , sub , t) ∷ Γ) ∣ [] ⊢ (b ^ fvar x) ⟶ᵉ (b ^ fvar x)\n    body {x} x∉ =\n      ⟶ᵉ-refl (prevalid-cons pv (∉-++ʳ L x∉) lt (fv-lam-ann {t} {b} f))\n              (F (∉-++ˡ x∉)) (fv-open-cons {b} x (fv-lam-body {t} {b} f))\n⟶ᵉ-refl {Γ} {α ∷ s} pv (lc-lam {t} {b} L lt F) f =\n  Me-FOp (L ++ dom Γ) (⟶ᵉ-refl (prevalid-nil pv) lt (fv-lam-ann {t} {b} f)) body\n  where\n    body : ∀ {x} → x ∉ (L ++ dom Γ)\n         → ((x , eqv , α) ∷ Γ) ∣ s ⊢ (b ^ fvar x) ⟶ᵉ (b ^ fvar x)\n    body {x} x∉ =\n      ⟶ᵉ-refl (prevalid-cons (prevalid-pop pv) (∉-++ʳ L x∉)\n                             (prevalid-head-lc pv) (prevalid-head-fv pv))\n              (F (∉-++ˡ x∉)) (fv-open-cons {b} x (fv-lam-body {t} {b} f))\n\n⟶ˢ-refl : ∀ {Γ s t} → Γ ∣ s prevalid → LC t → fv t ⊑ dom Γ → Γ ∣ s ⊢ t ⟶ˢ t\n⟶ˢ-refl pv lt f = Ms-Equ pv (⟶ᵉ-refl pv lt f)",
+     "kind": "variant",
+     "because": "The failure is exactly a missing scoping premise, so adding that premise is the smallest change that could make it true.",
+     "change": "prop18-scoped"
+    }
+   ]
   },
   "19": {
    "name": "weakening of context",
@@ -104,11 +552,78 @@
   },
   "23": {
    "name": "narrowing preserves wf",
-   "defect": ""
+   "defect": "",
+   "attempts": [
+    {
+     "what": "The naive route: narrow a well-subtyping chain step by step, which needs every intermediate to stay well-formed under ⟶≡.",
+     "outcome": "refuted",
+     "where": "MPSS.EqvWf",
+     "why": "Equivalence reduction does not preserve well-formedness — contexts carry a scoping condition where a typing one would be needed. A fact about MPSS, not a claim of the paper's.",
+     "kind": "repair",
+     "because": "Narrowing a chain step by step is the naive reading of the paper's ‘same reasoning as Lemma 7’.",
+     "change": "narrowing"
+    },
+    {
+     "what": "An audit entry claiming the paper's deferral to Lemma 7's technique does not reach the Wf-App case.",
+     "outcome": "refuted",
+     "where": "AUDIT.md, Lemma 23",
+     "why": "Lemma 7's sub-induction returns a diagram whose equivalence steps accumulate as reduction sequences, so well-formedness is needed only at endpoints and at Ws-Lf2 nodes, which carry it. The deferral is legitimate in outline.",
+     "kind": "original",
+     "because": "The audit's reconstruction of Lemma 7 predicted that every intermediate would have to be well-formed, which the previous step had shown false.",
+     "change": "narrowing"
+    },
+    {
+     "what": "The three-function shape of Lemma 7 with narrowing in place of substitution, and the promotion at each Ws-Lf2 rebuilt with its new target shown well-formed by Lemma 24's third conclusion.",
+     "outcome": "proved",
+     "where": "MPSS.Lemma23",
+     "why": "The old target is reconnected by one Ws-Rgh.",
+     "kind": "repair",
+     "because": "Lemma 7's actual technique accumulates reduction sequences rather than starred steps, and that transfers to narrowing.",
+     "change": "narrowing"
+    }
+   ]
   },
   "24": {
    "name": "narrowing a promotion",
-   "defect": "wf conclusion argued by an induction that would prove every term wf"
+   "defect": "wf conclusion argued by an induction that would prove every term wf",
+   "attempts": [
+    {
+     "what": "The first two conclusions by induction on the promotion.",
+     "outcome": "open",
+     "where": "MPSS.Narrowing24",
+     "why": "With the join strengthened from ⟶≤ to ⟶≡. The first two conclusions are proved this way; the third is outstanding.",
+     "kind": "variant",
+     "because": "The first two conclusions are the straightforward part of the printed proof.",
+     "change": "narrowing"
+    },
+    {
+     "what": "The third conclusion by the paper's argument: induction on the structure of v′.",
+     "outcome": "refuted",
+     "where": "AUDIT.md, Lemma 24",
+     "why": "Three of four cases use no hypothesis about v′, so the induction would prove every term well-formed, and ⊤ ⊤ is not; the abstraction case asserts its goal; the application case pushes a promotion the wrong way.",
+     "kind": "original",
+     "because": "The third conclusion is what Lemma 23 cannot do without, and its printed argument, a structural induction on well-formedness, looked wrong on its face.",
+     "change": "audit"
+    },
+    {
+     "what": "Rebuild the promotion from the old derivation, and show its new target well-formed alongside.",
+     "outcome": "open",
+     "where": "",
+     "why": "A derivation-directed rebuild cannot keep Ms-Fun's cofinite family uniform: each member of the family would be rebuilt separately.",
+     "kind": "repair",
+     "because": "Rebuilding the promotion from the old derivation is the direct route once the argument is known to be broken.",
+     "change": "narrowing"
+    },
+    {
+     "what": "Induct on the covariant context instead, carrying Co′[t] ≤*wf λy≤w.⊤ across Co′[t] ⟶≡ Co′[t′] with push≡*wf, and rebuild the promotion from the context.",
+     "outcome": "proved",
+     "where": "MPSS.CoNarrow, MPSS.CoPromote",
+     "why": "The depth of the context is the measure, and opening preserves it; Co-wf and Co-step are proved together. Lemma 23 follows outright.",
+     "kind": "repair",
+     "because": "The depth of a covariant context is preserved by opening, so inducting on it keeps Ms-Fun's cofinite family uniform where the derivation-directed route could not.",
+     "change": "narrowing"
+    }
+   ]
   },
   "25": {
    "name": "narrowing, equivalence",
@@ -120,7 +635,48 @@
   },
   "27": {
    "name": "reduction preserves subtyping",
-   "defect": "cites Ws-Lf1 where Ws-Rgh is meant"
+   "defect": "cites Ws-Lf1 where Ws-Rgh is meant",
+   "status": "proved",
+   "attempts": [
+    {
+     "what": "The paper's step from u ⟶≡ u′ to u′ ≤wf u by Ws-Rfl and Ws-Lf1.",
+     "outcome": "refuted",
+     "where": "MPSS.Preservation (agda block)",
+     "why": "Ws-Lf1 moves the left-hand side and yields the reverse; the checker reports u != u′.",
+     "kind": "original",
+     "because": "The printed step is transcribable directly.",
+     "change": "audit"
+    },
+    {
+     "what": "The same step by Ws-Rgh, lifted through Ws-Sub and Ws-Trs.",
+     "outcome": "proved",
+     "where": "MPSS.Preservation, push≡*wf",
+     "why": "Holds for any equivalence step in either mode, with nothing assumed.",
+     "def": "push≡*wf : ∀ {Γ u u' v m}\n         → Γ ∣ [] ⊢ u ⟶ᵉ u'\n         → Γ ⊢ u ⊑*wf[ m ] v\n         → Γ ⊢ u' wf\n         → Γ ⊢ u' ⊑*wf[ m ] v\npush≡*wf {Γ} {u} {u'} e d w' = Ws-Trs (Ws-Sub w' u'⊑u wu) wu d\n  where\n    wu : Γ ⊢ u wf\n    wu = ⊑*wf⇒wfˡ d",
+     "kind": "repair",
+     "because": "Ws-Rgh is the rule the paper's own Theorem 5 cites for the same step.",
+     "change": "defect-repairs"
+    },
+    {
+     "what": "The bridge from the operational step u ↦ u′ to an equivalence step, through the assumed Prop-17ʳ.",
+     "outcome": "invalidated",
+     "where": "MPSS.Prop17Refuted",
+     "why": "The assumption is uninhabited, so the proposition as printed, about operational steps, is not established.",
+     "def": "¬Prop-17ʳ : ¬ Prop-17ʳ\n¬Prop-17ʳ p = prop-17-false (Prop-17ʳ⇒Prop-17 p)",
+     "kind": "repair",
+     "because": "The operational step still had to be bridged to an equivalence step, and the assumed repair of Proposition 17 was the only bridge available.",
+     "change": "prop17-refuted-assumption"
+    },
+    {
+     "what": "push≡*wf folded along the chain the repaired Proposition 17 gives.",
+     "outcome": "proved",
+     "where": "MPSS.Preservation17",
+     "why": "Nothing assumed.",
+     "kind": "repair",
+     "because": "The chain form of Proposition 17 is the bridge that holds.",
+     "change": "prop17-chain"
+    }
+   ]
   },
   "28": {
    "name": "substitution preserves prevalidity",
@@ -136,15 +692,63 @@
   },
   "31": {
    "name": "reduction under substitution",
-   "defect": ""
+   "defect": "",
+   "repair": "the unbound form — the substituted name is not bound by the context — for both reductions: ⟶ᵉ-subst, ⟶ˢ-subst (MPSS.Subst); it is what the β-rule's body premise needs",
+   "repairKind": "variant",
+   "repairStatus": "proved",
+   "status": "open",
+   "attempts": [
+    {
+     "what": "Substitution for a name the context does not bind, for both reductions, and the opening form without a scoping hypothesis on the substituend.",
+     "outcome": "proved",
+     "where": "MPSS.Subst, MPSS.Open",
+     "why": "The form the β-rule's unbound body premise needs; the join in Lemma 2's Me-App/Me-Bet case is built from it. The opening form is needed where the substituend is a fresh name rather than a scoped term. The ≤-bound form, which is the printed Lemma 31, has not been attempted since nothing uses it; the ≡-bound form is Lemma 32.",
+     "def": "⟶ᵉ-subst : ∀ (Δ : Ctx) {Γ s t t′ v v′} x\n         → x ∉ dom (Δ ++ Γ) → LC v → LC v′ → fv v ⊑ dom Γ\n         → (Δ ++ Γ) ∣ s ⊢ t ⟶ᵉ t′\n         → (substCtx x v Δ ++ Γ) ∣ [] ⊢ v ⟶ᵉ v′\n         → (substCtx x v Δ ++ Γ) ∣ (substStack x v s) ⊢ (t [ x := v ]) ⟶ᵉ (t′ [ x := v′ ])",
+     "kind": "variant",
+     "because": "The β-rule's body premise binds nothing, so the unbound form is what Lemma 2's join construction needs. Opening with a fresh name carries no scoping hypothesis to hand the substitution lemma.",
+     "change": "subst-forms"
+    }
+   ]
   },
   "32": {
    "name": "reduction under subst, auxiliary",
-   "defect": ""
+   "defect": "",
+   "attempts": [
+    {
+     "what": "The ≡-bound form, as printed.",
+     "outcome": "proved",
+     "where": "MPSS.SubstEqv",
+     "why": "Proved as printed.",
+     "def": "⟶ᵉ-subst≡ : ∀ (Δ : Ctx) {Γ s t t′ v v′} x\n          → LC v → LC v′ → fv v ⊑ dom Γ\n          → (Δ ++ (x , eqv , v) ∷ Γ) ∣ s ⊢ t ⟶ᵉ t′\n          → Γ ∣ [] ⊢ v ⟶ᵉ v′\n          → (substCtx x v Δ ++ Γ) ∣ (substStack x v s) ⊢ (t [ x := v ]) ⟶ᵉ (t′ [ x := v′ ])",
+     "kind": "original",
+     "because": "The Me-App/Me-Bet case of Lemma 2 uses the ≡-bound form on the body's join, so it was needed as printed.",
+     "change": "subst-forms"
+    }
+   ]
   },
   "33": {
    "name": "congruence of ≤",
-   "defect": "swaps which side of ≤ promotes and which equivalence-reduces"
+   "defect": "swaps which side of ≤ promotes and which equivalence-reduces",
+   "attempts": [
+    {
+     "what": "The paper's attribution: the left side equivalence-reduces and the right promotes.",
+     "outcome": "refuted",
+     "where": "MPSS.Congruence (agda block)",
+     "why": "The mode index rejects it: an equivalence step on the left is the equivalence reading, and in the subtyping reading the left side takes a promotion.",
+     "kind": "original",
+     "because": "The printed attribution of the two sides is transcribable directly.",
+     "change": "audit"
+    },
+    {
+     "what": "Direct induction on ⊲, applying the matching reduction rule at each node.",
+     "outcome": "proved",
+     "where": "MPSS.Congruence",
+     "why": "Does not go through the common reduct and does not depend on Lemmas 34 and 35; the transitive form carries local closure at its transitivity nodes, an artefact of the encoding.",
+     "kind": "repair",
+     "because": "The mode index of the relation says which side takes which reduction.",
+     "change": "defect-repairs"
+    }
+   ]
   },
   "34": {
    "name": "congruence of ⟶≤",
@@ -157,21 +761,98 @@
   "36": {
    "name": "context weakening",
    "defect": ""
+  },
+  "8a": {
+   "name": "abstraction congruence of ≤*wf",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "The abstraction congruence of ≤*wf from a cofinite family of body chains.",
+     "outcome": "proved",
+     "kind": "original",
+     "because": "The context induction needs it at every λx≤a.Co, and renaming for the well-formedness judgements, proved for the repaired Proposition 17, was the missing piece.",
+     "where": "MPSS.CoFun",
+     "why": "One name's chain closed step by step, each step's family recovered by renaming.",
+     "change": "conj8-reduction"
+    }
+   ]
+  },
+  "8b": {
+   "name": "Conjecture 8 from StepLift",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "The layer walk: a ≤wf layer split into its two chains, every equivalence step lifted by pushᵉ and Me-App, every promotion point's application shown well-formed, the promotions delegated to one obligation, StepLift; the context induction on the context's depth, so that no local-closure premise is needed.",
+     "outcome": "proved",
+     "kind": "original",
+     "because": "§5.2 of the plan had this in prose, and it is unconditional.",
+     "where": "MPSS.Conj8Reduction",
+     "why": "conj8 : StepLift → Conj-8, for the statement MPSS.Assumed declares.",
+     "change": "conj8-reduction"
+    }
+   ]
+  },
+  "8c": {
+   "name": "StepLift from FunLift and FOpLift",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "StepLift over spines: Ms-Pro, Ms-Top, Ms-Equ hold at every stack, Ms-App is the statement one operand deeper, the binding rules with no extra stack are the step itself.",
+     "outcome": "proved",
+     "kind": "original",
+     "because": "Generalising over the pending operands lets the promotion's own derivation carry the induction, and isolates exactly the rules that cannot follow it.",
+     "where": "MPSS.Conj8Push",
+     "why": "conj8-from-lifts : FunLift → FOpLift → Conj-8. Type safety rests on the two binding rules and nothing else.",
+     "change": "conj8-reduction"
+    }
+   ]
+  },
+  "1a": {
+   "name": "context reduction preserves prevalidity",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "A reduced extended context is prevalid: the hypothesis ↣-Prevalid of the commutation proof, as a theorem.",
+     "outcome": "proved",
+     "where": "MPSS.CtxPrevalid",
+     "why": "A fact about ↣ alone, no longer a hypothesis.",
+     "kind": "original",
+     "because": "Of the four hypotheses left, it was the one that is a fact about context reduction alone.",
+     "change": "commutation-reduction"
+    }
+   ]
+  },
+  "2a": {
+   "name": "mixed diamond",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "The mixed diamond: one edge with its promotion premises at the empty stack, measured on the original side alone.",
+     "outcome": "proved",
+     "where": "MPSS.MixedDiamond, MixedMeasure, Sized, Uniform; row 35",
+     "why": "Lem-2ᵐ, joined by one original step each. The side whose promotion premise is a subderivation pays for every pull the other side makes; the empty-stack premise is what stops a pulled piece being pushed under the stack.",
+     "def": "Lem-2ᵐ : ∀ {Γ₀ s₀ Γ₁ s₁ Γ₂ s₂ t₀ t₁ t₂} → LC t₀\n       → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ′ t₁ → Γ₀ ∣ s₀ ⊢ t₀ ⟶ᵉ t₂\n       → Γ₀ ∣ s₀ ↣′ Γ₁ ∣ s₁ → Γ₀ ∣ s₀ ↣ Γ₂ ∣ s₂\n       → ∃[ t₃ ] ((Γ₁ ∣ s₁ ⊢ t₁ ⟶ᵉ t₃) × (Γ₂ ∣ s₂ ⊢ t₂ ⟶ᵉ t₃))\nLem-2ᵐ {Γ₁ = Γ₁} {Γ₂ = Γ₂} lc v d c₁ c₂\n  with uniform lc d | uniformCtx (prevalid-ctx (⟶ᵉ-prevalid d)) (stack-lc (⟶ᵉ-prevalid d)) c₂\n... | d′ , n , sd | c₂′ , sc with join lc v d′ sd c₁ c₂′ sc\n...   | t₃ , f₁ , f₂ =\n  t₃ , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ t₃) (∖-[] Γ₁) (f₁ [] (λ _ ()) (λ ()) (λ ()))\n     , subst (λ Γ → Γ ∣ _ ⊢ _ ⟶ᵉ t₃) (∖-[] Γ₂) (f₂ [] (λ _ ()) (λ ()) (λ ()))",
+     "kind": "original",
+     "because": "The trace of the refuting configuration showed the side whose promotion premise is a subderivation pays for every pull — which is exactly what a repaired step guarantees.",
+     "change": "mixed-diamond"
+    }
+   ]
   }
  },
  "detail": {
   "1": {
-   "account": "<strong>Reduced to Lemma 2 plus four named statements</strong>, by induction on the promotion, with no measure anywhere — the diamond absorbs the one case that would need one. The paper's own proof cites Lemma 2, so the two are sequential rather than mutual, and this is that reduction carried out.<br><br>Five of the eight cases are discharged outright: <code>Ms-Equ</code> is a single application of Lemma 2 and the only place it is used; <code>Ms-Top</code> joins at <code>⊤</code>; <code>Ms-Pro</code> reads the annotation's reduct off the context reduction by <code>↣-sub</code>; <code>Ms-App</code> recurses at the pushed stack, which is what <code>Ct-Stk</code> exists for; and <code>Me-TAp</code> against <code>Ms-App</code> collapses to <code>⊤</code>.<br><br>What remains is not of one weight. <code>Fun-Fun</code> and <code>FOp-FOp</code> are locally nameless bookkeeping over an induction hypothesis that does apply. <code>↣-Prevalid</code> is a fact about <code>↣</code> alone. <code>Bet-App</code> is the one with mathematical content — the case where the printed β-rule puts the two body premises in different contexts.<br><br>Still assumed downstream: nothing is rewired, so <code>MPSS.Transitivity</code> continues to take Lemma 1 as one hypothesis rather than four.",
+   "account": "<strong>Open as printed; proved for the repaired reduction, and that is enough for Theorem 3.</strong> <code>Lem-1′</code> in <code>MPSS.VariantCommutation</code> is Lemma 1 for <code>⟶ᵉ′</code>, the equivalence reduction with <code>Me-Pro</code>'s premise at the empty stack instead of the current one, by well-founded induction on the subject's size; the three cases <code>MPSS.Commutation</code> leaves as hypotheses (<code>Bet-App</code>, <code>Fun-Fun</code>, <code>FOp-FOp</code>) are proved there. The two reductions have the same reflexive-transitive closure on locally closed terms (<code>MPSS.EmptyStackPro</code>: every repaired step is an original step; <code>MPSS.Peel</code>: every original step is a chain of repaired steps), and the machine relation is closed under chains, so what is proved for <code>⊲′</code> holds for the paper's <code>⊲</code> (<code>MPSS.VariantMachine</code>).<br><br>The statement as printed — one original equivalence step against one promotion, joined in one step each — remains unproved, and no theorem depends on it any more. Earlier work stands: <code>MPSS.Commutation</code> reduces it to Lemma 2 plus four named statements, with five of the eight cases discharged outright and the <code>Me-Pro</code>/<code>Ms-Pro</code> case vacuous.",
    "agda": {
     "quote": "Case Me-Pro with Ms-Pro:",
     "paper": "-- the paper opens a case for a variable that both promotes and unfolds.\n-- Ms-Pro reads a subtype annotation, Me-Pro an equivalence one:\n\n  Ms-Pro : Γ ∣ s prevalid → x ≤ t ∈ Γ           → Γ ∣ s ⊢ fvar x ⟶ˢ t\n  Me-Pro : Γ ∣ s prevalid → x ≐ α ∈ Γ → …       → Γ ∣ s ⊢ fvar x ⟶ᵉ α'",
     "err": "",
     "ours": "clash : ∀ {Γ x α t} → Γ prevalid → x ≐ α ∈ Γ → x ≤ t ∈ Γ → _\nclash (Pv-Ctx pv x∉ _ _) (there me) (here refl) = x∉ (∈-dom me)\nclash (Pv-EqA pv x∉ _ _) (here refl) (there ms) = x∉ (∈-dom ms)\nclash (Pv-Ctx pv _ _ _)  (there me) (there ms)  = clash pv me ms\nclash (Pv-EqA pv _ _ _)  (there me) (there ms)  = clash pv me ms\n\nLem-1 (Me-Pro pv me _) (Ms-Pro pv' ms) d =\n  ⊥-elim (clash (prevalid-ctx pv) me ms)",
     "note": "A prevalid context gives each name one annotation of one kind — <code>Pv-Ctx</code> and <code>Pv-EqA</code> both demand the name be absent from the domain below. So the two memberships cannot both hold, and the case is vacuous. This is not an error in the proof: an impossible case discharged by hand costs nothing but the reader's time. It is recorded because a case list is a claim about what can occur, and this one over-counts."
-   }
+   },
+   "hyps": []
   },
   "2": {
-   "account": "Not proved here, and assumed. The printed induction carries no well-founded measure: its hypothesis is applied to <code>α₀ ⟶≡ α₂</code>, built from the lemma's own hypothesis by <code>Ct-Ann</code> and weakening, which is a subderivation of neither argument and of unrelated size. Four families of candidate measures fail, and the obstruction is stable — <code>Me-Pro</code> needs a variable lookup to outweigh its annotation at the current stack, while <code>Me-FOp</code> needs a stack entry to outweigh the variable it becomes.<br><br>It is now the load-bearing assumption: <code>MPSS.Commutation</code> derives Lemma 1 from it as a black box, so the diamond is the single result the commutation theorem waits on. The two also share an obstruction — the <code>Me-App</code>/<code>Me-Bet</code> case needs the abstraction body's two premises in the same context, which the printed β-rule denies and the repair restores.",
+   "account": "<strong>Open as printed, and the printed induction cannot be repaired by a measure.</strong> <code>MPSS.NoMeasure</code>: the record of constraints a configuration measure would have to satisfy is uninhabited, since Ω's walk alternates <code>Me-App</code>, <code>Me-Pro</code> and <code>Me-FOp</code> forever with <code>Me-Pro</code> strict at every round. <code>MPSS.DiamondStep</code> completes the case analysis against the diamond taken as hypothesis, under a corrected invariant (the printed second conjunct is refuted, <code>MPSS.Moreover</code>).<br><br>What is proved: <code>Lem-2′</code>, the diamond for the repaired reduction, by strong induction on the size of the part of the configuration reachable from the subject (<code>MPSS.VariantDiamond</code>); <code>Lem-2ᵐ</code>, the mixed diamond — one repaired step against one original step, joined by one <em>original</em> step each (<code>MPSS.MixedDiamond</code>); and, for the paper's relation alone, the strip property and confluence of <code>⟶ᵉ*</code> (<code>MPSS.Strip</code>). What Lemma 2 as printed still needs is that the residuals of a peeled original step reassemble into one step; on every configuration tried they do (<code>MPSS/compression-probe.py</code>, 4,313 chains, all one step).",
    "faults": [
     {
      "q": "By multiple use of the rule Ct-Ann, we have Γ₀′;nil ⊢ α₀ ⟶≡ α₂.",
@@ -188,16 +869,20 @@
     "err": "",
     "ours": "",
     "note": "Not transcribable as a single step: the fault is in the shape of the induction over the whole proof, not in one rule application. The induction hypothesis is applied to α₀ ⟶≡ α₂, a derivation built from the lemma's own hypothesis by Ct-Ann and weakening — so there is no line to write down that Agda would reject, only a recursion whose termination cannot be justified."
-   }
+   },
+   "hyps": []
   },
   "3": {
-   "account": "Induction on the collapsed derivation. Transitivity of the single-step relation, proved by pushing an equivalence step along the left: past <code>As-Left-1</code> that crosses a promotion and spends Lemma 1, past <code>As-Left-2</code> it crosses an equivalence step and spends Lemma 2. Both are applied at <code>Ct-Refl</code> — transitivity never moves the context."
+   "account": "<strong>Proved, nothing assumed.</strong> <code>Thm-3wf</code> in <code>MPSS.Unconditional</code>, on well-formed chains; <code>Thm-3ᴸ</code> in <code>MPSS.VariantTransfer</code> on chains with local closure recorded. The route: Lemma 1 and Lemma 2 for the repaired reduction give transitivity of <code>⊲′</code> (<code>MPSS.VariantTransitivity</code>), and <code>⊲′</code> is <code>⊲</code> on locally closed terms (<code>MPSS.VariantMachine</code>). The argument is the paper's: push an equivalence step along the left, spending Lemma 1 past <code>As-Left-1</code> and Lemma 2 past <code>As-Left-2</code>, always at <code>Ct-Refl</code>. Only the induction under the two lemmas is different.",
+   "hyps": []
   },
   "4": {
-   "account": "Induction on local closure, reading the well-formedness derivation alongside. The application case is the only one that consults the derivation, and Theorem 11 is what excludes a stuck <code>⊤</code> in operator position. Reuses v1's context-free normal-form and ↦ machinery."
+   "account": "<strong>Proved, nothing assumed</strong> (<code>Thm-4</code>, <code>MPSS.Unconditional</code>). Induction on local closure, reading the well-formedness derivation alongside. The application case is the only one that consults the derivation, and Theorem 11 — unconditional once Theorem 3 is — excludes a stuck <code>⊤</code> in operator position.",
+   "module": "MPSS.Unconditional",
+   "hyps": []
   },
   "5": {
-   "account": "Proposition 27 with Lemma 6 supplying the reduct's well-formedness. The step Proposition 27 needs is isolated as <code>push≡*wf</code>, which absorbs any equivalence step on the left through <code>Ws-Rgh</code> and needs nothing assumed.",
+   "account": "<strong>Proved, from Conjecture 8 alone</strong> (<code>Thm-5ʷ</code>, <code>MPSS.Preservation17</code>). Proposition 27 with Lemma 6 supplying the reduct's well-formedness, both now derived from the repaired Proposition 17 in its chain form; Conjecture 8 enters through Lemma 7 in Lemma 6's β case. The step the paper leaves uncited, from <code>t ↦ t′</code> to well-subtyping, is <code>push-chain</code>: <code>push≡*wf</code> folded along the chain of well-formed equivalence steps that <code>Prop-17ʷ</code> supplies. An earlier proof from the assumed <code>Prop-17ʳ</code> (<code>MPSS.Preservation</code>) established nothing, that assumption being refuted.",
    "faults": [
     {
      "q": "hence Γ ⊢ t′ ≤*wf t by rule Ws-Rgh.",
@@ -210,10 +895,16 @@
     "err": "error: [UnequalTerms]\n(t ↦ t') !=< (Γ ∣ [] ⊢ t ⟶ᵉ t')\nwhen checking that the expression st has type Γ ∣ [] ⊢ t ⟶ᵉ t'",
     "ours": "ours-5 : Prop-17ʳ → ∀ {Γ t t'} → Γ ⊢ t wf → fv t ⊑ dom Γ → t ↦ t'\n       → Γ ⊢ t' ⊑wf[ sub-m ] t\nours-5 prop-17 w ft st =\n  Ws-Rgh (Ws-Rfl (wf⇒prevalid w))\n         (prop-17 (Pv-Nil (wf⇒prevalid w)) (wf⇒lc w) ft st)",
     "note": "The typechecker spells out the missing citation: bridging ↦ and ⟶≡ is Proposition 17, which this proof never mentions — and which is refuted."
-   }
+   },
+   "hyps": [
+    "Conj-8"
+   ]
   },
   "6": {
-   "account": "Induction on <code>t ↦ t′</code>. The β case is the content: <code>Wf-App</code> records the operand below the domain <code>z</code> while <code>Wf-Fun</code> binds the body under the operator's own annotation <code>u</code>, and inversion plus Lemmas 15 and 16 are what relate the two before Lemma 7 substitutes."
+   "account": "<strong>Proved, from Conjecture 8 alone</strong> (<code>Lem-6ʷ</code>, <code>MPSS.Preservation17</code>). Induction on <code>t ↦ t′</code>. The β case is the content: <code>Wf-App</code> records the operand below the domain <code>z</code> while <code>Wf-Fun</code> binds the body under the operator's own annotation <code>u</code>; inversion plus Lemmas 15 and 16 relate the two, and Lemma 7 substitutes — which is where Conjecture 8 enters. The annotation case narrows the body's well-formedness along the chain the repaired Proposition 17 gives for <code>t ↦ t′</code>, one Lemma 23 per step (<code>narrow-chain</code>); the application cases are Proposition 27. The earlier proof in <code>MPSS.Evaluation</code> called the refuted <code>Prop-17ʳ</code> in those cases.",
+   "hyps": [
+    "Conj-8"
+   ]
   },
   "7": {
    "account": "Three mutually recursive functions over the three mutually inductive judgements. The sub-induction returns a diagram — <code>a ⟶≡↠ a′</code>, <code>b ⟶≡↠ c</code>, <code>b′ ⟶≡↠ c</code>, and <code>a′ ≤*wf b′</code> unless <code>a′ = b′</code> — so equivalence steps accumulate as reduction sequences rather than as <code>⊑wf</code> steps needing to be starred. Well-formedness is then needed only at the chain's endpoints, where <code>Ws-Sub</code> supplies it, and at the <code>Ws-Lf2</code> nodes, where it is a premise.",
@@ -232,7 +923,7 @@
    }
   },
   "8": {
-   "account": "Neither proved nor refuted. Assumed, and restated without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so demanding every term in the context be locally closed would assume something strictly weaker than the paper conjectures."
+   "account": "Neither proved nor refuted. Assumed, and restated without the <code>CoLC</code> premise: in <code>λx≤t.Co</code> the bound <code>x</code> may occur in an inner <code>Co t</code> node, so demanding every term in the context be locally closed would assume something strictly weaker than the paper conjectures.<br><br>Searched with no counterexample: 561,145 instances at term size 3, and 11.7 million at size 5 on 32 of 133 contexts (<code>MPSS/conj8-search.py</code>, <code>MPSS/CONJ8.md</code>). <code>MPSS.Conjecture8Star</code> reduces it to one congruence, <code>AppCongr₁</code>, whose only hard case is a promotion of the outermost parameter — the conjecture again, on a pair of well-formedness derivations of strictly smaller nesting depth, which is the candidate measure."
   },
   "9": {
    "account": "Case split on whether the source and target form a covariant pair, decided on the <em>terms</em> by <code>coPair?</code>. The covariant branch hands Conjecture 8 its context; the other hands <code>Ws-Lf2</code> a promotion. The <code>Ms-Pro</code> case is the whole content of the split: promoting the removed variable yields its own annotation, which is exactly <code>CoPair</code> at the empty context.",
@@ -272,7 +963,7 @@
    "account": "Induction on <code>⊑wf[eqv-m]</code>, keeping each rule and changing only the mode index."
   },
   "17": {
-   "account": "<strong>Refuted by counterexample, on a well-formed subject.</strong> With <code>T = λz≤⊤.⊤</code> and <code>y ≤ λq≤T.⊤</code>, the redex <code>(λx≤T. y x) T</code> is well-formed, locally closed, scoped in the domain, and steps operationally to <code>y T</code> — and has no equivalence step to it. Exhaustive case analysis on the derivation: <code>Me-App</code> cannot produce a variable in operator position, and <code>Me-Bet</code>'s body premise is stuck.",
+   "account": "<strong>Refuted by counterexample, on a well-formed subject.</strong> With <code>T = λz≤⊤.⊤</code> and <code>y ≤ λq≤T.⊤</code>, the redex <code>(λx≤T. y x) T</code> is well-formed, locally closed, scoped in the domain, and steps operationally to <code>y T</code> — and has no equivalence step to it. Exhaustive case analysis on the derivation: <code>Me-App</code> cannot produce a variable in operator position, and <code>Me-Bet</code>'s body premise is stuck.<br><br><strong>The assumed repair is refuted as well.</strong> <code>MPSS.Assumed</code> carried <code>Prop-17ʳ</code>: the same statement with a scoping premise on the redex, at every stack. <code>MPSS.Prop17Refuted</code> proves <code>¬ Prop-17ʳ</code> from each of the two counterexamples — the scoping premise never reaches the body, which <code>Me-Bet</code> opens with a fresh name. The repair therefore has to be to the rule (bind the parameter in <code>Me-Bet</code>'s body premise, as <code>Me-Fun</code> and <code>Me-FOp</code> do) or to the statement (an operational step is a <em>chain</em> of equivalence steps: the witness reaches <code>y T</code> in two, binding and unfolding the parameter by <code>Me-FOp</code>, then contracting the closed body). Neither is mechanized yet.<br><br><strong>The repair that holds: the chain form.</strong> <code>Prop-17ʷ</code> in <code>MPSS.Prop17Chain</code>: for well-formed <code>u</code>, <code>v</code> with <code>u ↦ v</code>, a chain <code>Γ;nil ⊢ u ⟶≡ … ⟶≡ v</code> every term of which is well-formed. The β case is two steps — <code>Me-App</code> over <code>Me-FOp</code> binds the parameter to the operand and unfolds it everywhere (<code>unfold</code>), then <code>Me-Bet</code> contracts the closed body — and the intermediate <code>(λx≤t. u[x\\\\v]) v</code> is well-formed because its body is the contractum. The congruence cases lift the chain, each intermediate shown well-formed by Lemma 23 (annotations), <code>push≡*wf</code> (applications), or renaming under a binder (<code>MPSS.WfRename</code>, new). Every consumer is re-derived from it in <code>MPSS.Preservation17</code>, and type safety rests on Conjecture 8 alone.",
    "faults": [
     {
      "q": "the result holds by rule Me-Bet and",
@@ -349,7 +1040,7 @@
    "account": "Induction along the context. Domains are untouched by narrowing, so every scoping side condition survives a rewriting; the entry itself needs the new annotation locally closed and scoped in the older part, which reduction supplies."
   },
   "27": {
-   "account": "<code>Ws-Rfl</code> gives <code>u′ ⊑wf u′</code>; <code>Ws-Rgh</code> walks the right-hand side back along <code>u ⟶≡ u′</code>; <code>Ws-Sub</code> lifts that to the transitive closure and <code>Ws-Trs</code> composes. Isolated as <code>push≡*wf</code>, which works for any equivalence step in either mode.",
+   "account": "<strong>Proved as printed, nothing assumed</strong> (<code>Prop-27ʷ</code>, <code>MPSS.Preservation17</code>). The paper's first line invokes Proposition 17 to turn the operational step into an equivalence step; the repaired form gives a chain of them through well-formed terms, and <code>push≡*wf</code> — <code>Ws-Rfl</code>, then <code>Ws-Rgh</code> in place of the cited <code>Ws-Lf1</code>, then <code>Ws-Sub</code> and <code>Ws-Trs</code> — is folded along it. The earlier proof in <code>MPSS.Preservation</code> bridged the gap with the refuted <code>Prop-17ʳ</code>.",
    "faults": [
     {
      "q": "By rule Ws-Rfl and Ws-Lf1, we have Γ ⊢ u′ ≤wf u.",
@@ -362,7 +1053,8 @@
     "err": "error: [UnequalTerms]\nu != u' of type Tm\nwhen checking that the expression e has type Γ ∣ [] ⊢ u' ⟶ᵉ _v'_11",
     "ours": "ours-27 : ∀ {Γ u u'} → Γ prevalid → Γ ∣ [] ⊢ u ⟶ᵉ u' → Γ ⊢ u' ⊑wf[ sub-m ] u\nours-27 pv e = Ws-Rgh (Ws-Rfl pv) e",
     "note": "Ws-Lf1 moves the left-hand side, so it wants the step to start at u′. Ws-Rgh moves the right, which is the side the conclusion actually moves."
-   }
+   },
+   "hyps": []
   },
   "28": {
    "account": "Proved for an arbitrary scoped substituend, not only for the annotation. Substitution never changes a domain, so scoping transfers by rewriting; the content is that <code>x</code> cannot survive its own substitution, which is what lets the middle entry be dropped from the domain — so <code>fv-subst</code> returns the disequality alongside the membership."
@@ -374,10 +1066,11 @@
    "account": "The side condition is moved from the derivation to the term. Every promotion derivation runs down a covariant spine to its leaf, since the structural rules are exactly <code>Ms-App</code> into an operator and <code>Ms-Fun</code>/<code>Ms-FOp</code> into a body, so a term with no covariant spine ending at <code>x</code> admits no derivation promoting it. That matters because a condition on a derivation cannot be carried into a cofinite family, where different witnesses could take different rules."
   },
   "31": {
-   "account": "Induction over <code>⟶≡</code>, with <code>subst-open</code> commuting substitution past the cofinite openings at each binder."
+   "account": "<strong>Open as printed; a variant is proved.</strong> The printed lemma substitutes for a name bound by <code>x ≤ t</code> in the context. What is proved (<code>MPSS.Subst</code>) is the form where the context does not bind the name at all, for both reductions, by induction over the derivation with <code>subst-open</code> commuting substitution past the cofinite openings at each binder. That form is what the β-rule's unbound body premise needs; the ≤-bound form is not used by the diamond and has not been attempted.",
+   "hyps": []
   },
   "32": {
-   "account": "The promotion counterpart, plus the opening form <code>⟶ᵉ-open</code> proved without a scoping hypothesis."
+   "account": "<strong>Proved as printed</strong> (<code>⟶ᵉ-subst≡</code>, <code>MPSS.SubstEqv</code>): substitution for a name bound by <code>x ≡ v</code>, with the operand reducing to <code>v′</code> on the right. The <code>Me-App</code>/<code>Me-Bet</code> case of Lemma 2 uses exactly this bound form on the body's join under <code>x ≡ v₂</code>. The unbound form, and the opening form <code>⟶ᵉ-open</code> proved without a scoping hypothesis, are in <code>MPSS.Subst</code> and <code>MPSS.Open</code>."
   },
   "33": {
    "account": "Direct induction on <code>⊲</code>, applying the matching reduction rule at each node — so it does not go through the common reduct, and does not depend on Lemmas 34 and 35 at all. The transitive form is stated over a relation carrying local closure at its transitivity nodes, which <code>Ast-Trans</code> does not record and which is an artefact of locally nameless encoding rather than a defect.",
@@ -403,7 +1096,762 @@
   },
   "36": {
    "account": "Induction on the context reduction. The stack rule contributes nothing to the context, so <code>Ct-Stk</code> is simply dropped."
+  },
+  "8a": {
+   "account": "The abstraction congruence the context induction of Conjecture 8 needs at every <code>λx≤a.Co</code>: from a cofinite family of body chains, a chain between the abstractions. One name's chain is closed step by step, and each step's family is recovered by renaming for the well-formedness judgements (<code>MPSS.WfRename</code>). Not a result of the paper."
+  },
+  "8b": {
+   "account": "<code>conj8 : StepLift → Conj-8</code>. A <code>≤wf</code> layer is split into its two chains; every equivalence step is lifted by <code>pushᵉ</code> and <code>Me-App</code>, every promotion point's application is shown well-formed, and the promotions are delegated to the one obligation <code>StepLift</code>. The context induction is on the context's depth, so no local-closure premise is needed. Not a result of the paper."
+  },
+  "8c": {
+   "account": "<code>steplift : FunLift → FOpLift → StepLift</code>, by generalising over the pending operands: <code>Ms-Pro</code>, <code>Ms-Top</code> and <code>Ms-Equ</code> hold at every stack, <code>Ms-App</code> is the statement one operand deeper, and the binding rules with no extra stack are the step itself. With Lemma 8b, Conjecture 8 rests on <code>FunLift</code> and <code>FOpLift</code> and nothing else. Not a result of the paper."
+  },
+  "1a": {
+   "account": "One of the four statements the paper's proof of Lemma 1 was reduced to, and the one that is a fact about <code>↣</code> alone. Proved outright, so it is no longer a hypothesis of <code>MPSS.Commutation</code>. Not a result of the paper."
+  },
+  "2a": {
+   "account": "The diamond with one edge in the repaired reduction — its promotion premises at the empty stack — and the other in the paper's, joined by one original step each. The side whose promotion premise is a subderivation pays for every pull the other side makes, so the measure is on the original side alone. It gives the strip property and confluence of <code>⟶ᵉ*</code> for the paper's relation (<code>MPSS.Strip</code>). Not a result of the paper."
   }
  },
- "deps": {}
+ "deps": {
+  "5": [
+   17
+  ],
+  "27": [
+   17
+  ]
+ },
+ "types": {
+  "T:_∣_⊢_⟶ᵉ′_": {
+   "account": "Equivalence reduction with <code>Me-Pro</code>'s premise at the <em>empty</em> stack. Every other rule is the paper's; the closures coincide on locally closed terms, and the machine relation sees only closures, so what is proved for it transfers to the paper's relation.",
+   "attempts": [
+    {
+     "what": "Move the premise to the empty stack, and check the closures agree.",
+     "outcome": "checked",
+     "where": "MPSS.EmptyStackPro, MPSS.Peel, MPSS.VariantMachine",
+     "why": "Every repaired step is an original step, every original step a chain of repaired steps, and ⊲′ = ⊲ on locally closed terms. The diamond and commutation for it are Lemmas 2 and 1 in their variant forms, and Theorem 3 for the paper's relation follows.",
+     "kind": "variant",
+     "because": "The difficulty of the diamond was located in one design choice: Me-Pro's premise at the current stack, which lets an unfolding consume pending operands in the same step.",
+     "change": "empty-stack-premise"
+    }
+   ],
+   "original": "Typechecks as written, but the diamond for it has no well-founded induction: an unfolded definition can consume pending operands in the same step, so the join recursion copies pieces under the stack and re-enters old material, and no configuration measure meets the three constraints (NoMeasure).",
+   "origin": "development",
+   "rules": {
+    "Me-Var′": {
+     "rule": "Me-Var",
+     "note": "as printed"
+    },
+    "Me-Top′": {
+     "rule": "Me-Top",
+     "note": "as printed"
+    },
+    "Me-Pro′": {
+     "rule": "Me-Pro",
+     "note": "the annotation reduced at the empty stack, not the current one — the one change"
+    },
+    "Me-App′": {
+     "rule": "Me-App",
+     "note": "as printed"
+    },
+    "Me-TAp′": {
+     "rule": "Me-TAp",
+     "note": "as printed"
+    },
+    "Me-Bet′": {
+     "rule": "Me-Bet",
+     "note": "as printed"
+    },
+    "Me-Fun′": {
+     "rule": "Me-Fun",
+     "note": "as printed"
+    },
+    "Me-FOp′": {
+     "rule": "Me-FOp",
+     "note": "as printed"
+    }
+   }
+  },
+  "T:_∣_⊢_⟶ˢ′_": {
+   "account": "Subtyping reduction over the repaired equivalence reduction: <code>Ms-Equ</code> and the annotation premises use <code>⟶ᵉ′</code>; otherwise the paper's rules.",
+   "attempts": [
+    {
+     "what": "The same rules over the repaired equivalence reduction.",
+     "outcome": "checked",
+     "where": "MPSS.VariantSub",
+     "why": "Substitution of an equivalence-bound name (⟶ˢ′-subst≡) and Lemma 1′ go through; the closures coincide with the paper's.",
+     "kind": "variant",
+     "because": "Commutation needs the subtyping side over the same repaired steps as the equivalence side.",
+     "change": "empty-stack-premise"
+    }
+   ],
+   "original": "Typechecks as written; Lemma 1 for it reduces to Lemma 2 plus three cases (MPSS.Commutation) and waits on the diamond.",
+   "origin": "development",
+   "rules": {
+    "Ms-Pro′": {
+     "rule": "Ms-Pro",
+     "note": "as printed, over the repaired equivalence reduction"
+    },
+    "Ms-Top′": {
+     "rule": "Ms-Top",
+     "note": "as printed, over the repaired equivalence reduction"
+    },
+    "Ms-Equ′": {
+     "rule": "Ms-Equ",
+     "note": "as printed, over the repaired equivalence reduction"
+    },
+    "Ms-App′": {
+     "rule": "Ms-App",
+     "note": "as printed, over the repaired equivalence reduction"
+    },
+    "Ms-Fun′": {
+     "rule": "Ms-Fun",
+     "note": "as printed, over the repaired equivalence reduction"
+    },
+    "Ms-FOp′": {
+     "rule": "Ms-FOp",
+     "note": "as printed, over the repaired equivalence reduction"
+    }
+   }
+  },
+  "T:_∣_↣′_∣_": {
+   "account": "Context reduction whose annotation steps are repaired equivalence steps; the shape of <code>Ct-Ann</code> and <code>Ct-Stk</code> is the paper's.",
+   "attempts": [
+    {
+     "what": "The same over the repaired steps.",
+     "outcome": "checked",
+     "where": "MPSS.VariantCtx",
+     "why": "Avoidance and bound substitution transfer (MPSS.VariantDrop).",
+     "kind": "variant",
+     "because": "The diamond's context reductions must consist of repaired steps for the measure on the reachable configuration to decrease.",
+     "change": "empty-stack-premise"
+    }
+   ],
+   "original": "Typechecks as written, and is what the mixed diamond's original side uses; the variant side needs its pieces to be repaired steps.",
+   "origin": "development",
+   "rules": {
+    "Ct-Refl′": {
+     "rule": "—",
+     "note": "reflexivity, as in the original"
+    },
+    "Ct-Ann′": {
+     "rule": "Ct-Ann",
+     "note": "over repaired steps"
+    },
+    "Ct-Stk′": {
+     "rule": "Ct-Stk",
+     "note": "over repaired steps"
+    }
+   }
+  },
+  "T:_⊢_⟶ᵉ*wf_": {
+   "account": "A chain of equivalence steps at the empty stack every term of which is well-formed — the relation the repaired Proposition 17 delivers, and exactly what its consumers use: a well-subtyping derivation is pushed along it one <code>push≡*wf</code> per step, and a body's well-formedness narrowed along it one Lemma 23 per step.",
+   "attempts": [
+    {
+     "what": "A plain chain of equivalence steps.",
+     "outcome": "checked",
+     "where": "MPSS.Congruence (⟶ᵉ*)",
+     "why": "True as a statement about ⟶≡.",
+     "def": "data _∣_⊢_⟶ᵉ*_ : Ctx → Stack → Tm → Tm → Set where\n  εᵉ   : ∀ {Γ s a} → Γ ∣ s prevalid → Γ ∣ s ⊢ a ⟶ᵉ* a\n  _◅ᵉ_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c",
+     "kind": "variant",
+     "because": "Every consumer of Proposition 17 sits under relations closed under chains, so a chain is the weakest form that could still serve them.",
+     "change": "prop17-chain"
+    },
+    {
+     "what": "The consumers cannot use a plain chain.",
+     "outcome": "invalidated",
+     "kind": "variant",
+     "where": "MPSS.EqvWf",
+     "because": "push≡*wf and Lemma 23 are what the consumers of Proposition 17 apply along the chain.",
+     "why": "push≡*wf needs the target of every step well-formed, and Lemma 23 the new annotation well-formed. Equivalence reduction does not preserve well-formedness in general (MPSS.EqvWf), so the property must be carried, not derived.",
+     "change": "prop17-chain"
+    },
+    {
+     "what": "The chain with well-formedness at every term.",
+     "outcome": "checked",
+     "where": "MPSS.Prop17Chain",
+     "why": "β in two steps with a well-formed intermediate; congruences lift the chain with Lemma 23, push≡*wf, pushᵉ and renaming (MPSS.WfRename).",
+     "kind": "variant",
+     "because": "push≡*wf and Lemma 23 need well-formedness at every step, and equivalence reduction does not preserve it, so it must be carried along.",
+     "change": "prop17-chain"
+    }
+   ],
+   "original": "The relation typechecks; the proposition about it is refuted (Me-Bet reduces the body with its parameter unbound; no scoping premise on the redex reaches it), so a different relation is needed as the bridge.",
+   "origin": "development",
+   "rules": {
+    "εʷ": {
+     "rule": "—",
+     "note": "a well-formed term, a chain of length zero"
+    },
+    "step": {
+     "rule": "—",
+     "note": "one equivalence step to a well-formed term, then a chain"
+    }
+   }
+  },
+  "T:Tm": {
+   "origin": "paper",
+   "rules": {
+    "bvar": {
+     "rule": "x",
+     "note": "a bound variable, as a de Bruijn index — the locally nameless split of the paper's single variable form"
+    },
+    "fvar": {
+     "rule": "x",
+     "note": "a free variable, as a name"
+    },
+    "Top": {
+     "rule": "Top",
+     "note": ""
+    },
+    "lam": {
+     "rule": "λx≤t.u",
+     "note": "the binder is nameless; the body's parameter is index 0"
+    },
+    "app": {
+     "rule": "u v",
+     "note": ""
+    }
+   },
+   "fidelity": "Section 2's term syntax, locally nameless: one variable form becomes two, and abstractions carry no name."
+  },
+  "T:LC": {
+   "origin": "encoding",
+   "rules": {
+    "lc-fvar": {
+     "rule": "—",
+     "note": "local closure: no dangling index; no counterpart in the paper, whose terms are always closed under their binders"
+    },
+    "lc-Top": {
+     "rule": "—",
+     "note": ""
+    },
+    "lc-lam": {
+     "rule": "—",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "lc-app": {
+     "rule": "—",
+     "note": ""
+    }
+   },
+   "fidelity": "An artefact of the encoding, standing for the paper's implicit assumption that terms are well-scoped under their binders."
+  },
+  "T:Ann": {
+   "origin": "encoding",
+   "rules": {
+    "sub": {
+     "rule": "x ≤ t",
+     "note": "the kind of a subtype entry"
+    },
+    "eqv": {
+     "rule": "x ≡ t",
+     "note": "the kind of an equivalence entry"
+    }
+   },
+   "fidelity": "The tag distinguishing the paper's two kinds of context entry."
+  },
+  "T:Ctx": {
+   "origin": "paper",
+   "rules": {},
+   "fidelity": "Γ ::= ∅ | Γ, x ≤ t | Γ, x ≡ t, as a list of tagged entries, newest first."
+  },
+  "T:Stack": {
+   "origin": "paper",
+   "rules": {},
+   "fidelity": "s ::= nil | t :: s, as a list."
+  },
+  "T:_prevalid": {
+   "origin": "paper",
+   "rules": {
+    "Pv-Emp": {
+     "rule": "Pv-Emp",
+     "note": ""
+    },
+    "Pv-Ctx": {
+     "rule": "Pv-Ctx",
+     "note": "x ∉ dom Γ and the annotation scoped in dom Γ, as printed; local closure of the annotation added by the encoding"
+    },
+    "Pv-EqA": {
+     "rule": "Pv-EqA",
+     "note": "likewise"
+    }
+   },
+   "fidelity": "Prevalidity of logical contexts, rule for rule."
+  },
+  "T:_∣_prevalid": {
+   "origin": "paper",
+   "rules": {
+    "Pv-Nil": {
+     "rule": "Pv-Nil",
+     "note": ""
+    },
+    "Pv-Sta": {
+     "rule": "Pv-Sta",
+     "note": "the stack entry scoped in dom Γ, as printed; local closure added by the encoding"
+    }
+   },
+   "fidelity": "Prevalidity of extended contexts, rule for rule."
+  },
+  "T:_∣_⊢_⟶ᵉ_": {
+   "origin": "paper",
+   "rules": {
+    "Me-Var": {
+     "rule": "Me-Var",
+     "note": ""
+    },
+    "Me-Top": {
+     "rule": "Me-Top",
+     "note": ""
+    },
+    "Me-Pro": {
+     "rule": "Me-Pro",
+     "note": "the annotation reduced at the current stack, as printed — the premise the repaired relation moves"
+    },
+    "Me-App": {
+     "rule": "Me-App",
+     "note": "operand pushed, operand reduced at the empty stack, as printed"
+    },
+    "Me-TAp": {
+     "rule": "Me-TAp",
+     "note": ""
+    },
+    "Me-Bet": {
+     "rule": "Me-Bet",
+     "note": "the body reduced with its parameter unbound, at the current stack, exactly as printed — this is what refutes Proposition 17; the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "Me-Fun": {
+     "rule": "Me-Fun",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "Me-FOp": {
+     "rule": "Me-FOp",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    }
+   },
+   "fidelity": "Figure 2, equivalence reduction, rule for rule. The three binder rules quantify the fresh name cofinitely."
+  },
+  "T:_∣_⊢_⟶ˢ_": {
+   "origin": "paper",
+   "rules": {
+    "Ms-Pro": {
+     "rule": "Ms-Pro",
+     "note": ""
+    },
+    "Ms-Top": {
+     "rule": "Ms-Top",
+     "note": ""
+    },
+    "Ms-Equ": {
+     "rule": "Ms-Equ",
+     "note": ""
+    },
+    "Ms-App": {
+     "rule": "Ms-App",
+     "note": ""
+    },
+    "Ms-Fun": {
+     "rule": "Ms-Fun",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "Ms-FOp": {
+     "rule": "Ms-FOp",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    }
+   },
+   "fidelity": "Figure 2, subtyping reduction, rule for rule."
+  },
+  "T:_∣_↣_∣_": {
+   "origin": "paper",
+   "rules": {
+    "Ct-Refl": {
+     "rule": "—",
+     "note": "the paper writes Ct-Ann and Ct-Stk with a premise of the same shape and no base case; reflexivity at every extended context is taken as the base, which makes the relation reflexive"
+    },
+    "Ct-Ann": {
+     "rule": "Ct-Ann",
+     "note": ""
+    },
+    "Ct-Stk": {
+     "rule": "Ct-Stk",
+     "note": ""
+    }
+   },
+   "fidelity": "Reduction of extended contexts, with the base case the paper leaves implicit made explicit as reflexivity."
+  },
+  "T:_∣_⊢_⊲[_]_": {
+   "origin": "paper",
+   "rules": {
+    "As-Refl": {
+     "rule": "u ≤ t iff …",
+     "note": "the paper defines u ≤ t as: some v with u ⟶≤↠ v and t ⟶≡↠ v; this inductive presentation builds that diagram step by step"
+    },
+    "As-Left-1": {
+     "rule": "u ⟶≤↠ v",
+     "note": "a promotion step on the left"
+    },
+    "As-Left-2": {
+     "rule": "u ⟶≤↠ v",
+     "note": "an equivalence step on the left, which Ms-Equ subsumes into ⟶≤"
+    },
+    "As-Right": {
+     "rule": "t ⟶≡↠ v",
+     "note": "an equivalence step on the right"
+    }
+   },
+   "fidelity": "Section 2's subtyping relation, as an inductive diagram. The mode index carries the ≡ reading of the same shape alongside the ≤ one, where the paper has two relations."
+  },
+  "T:_∣_⊢_⊲*[_]_": {
+   "origin": "paper",
+   "rules": {
+    "Ast-Sub": {
+     "rule": "—",
+     "note": "one subtyping"
+    },
+    "Ast-Trans": {
+     "rule": "—",
+     "note": "transitivity, the relation Theorem 3 eliminates; its middle term is locally closed, an encoding side condition"
+    }
+   },
+   "fidelity": "The transitive closure of the subtyping relation, which Theorem 3 collapses; the paper states the theorem without naming the closure."
+  },
+  "T:_⊢_wf": {
+   "origin": "paper",
+   "rules": {
+    "Wf-PrS": {
+     "rule": "Wf-PrS",
+     "note": ""
+    },
+    "Wf-PrE": {
+     "rule": "Wf-PrE",
+     "note": ""
+    },
+    "Wf-Top": {
+     "rule": "Wf-Top",
+     "note": ""
+    },
+    "Wf-Fun": {
+     "rule": "Wf-Fun",
+     "note": "the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "Wf-App": {
+     "rule": "Wf-App",
+     "note": ""
+    }
+   },
+   "fidelity": "Well-formedness, rule for rule."
+  },
+  "T:_⊢_⊑wf[_]_": {
+   "origin": "paper",
+   "rules": {
+    "Ws-Rfl": {
+     "rule": "Ws-Rfl",
+     "note": ""
+    },
+    "Ws-Lf1": {
+     "rule": "Ws-Lf1",
+     "note": ""
+    },
+    "Ws-Lf2": {
+     "rule": "Ws-Lf2",
+     "note": "the ≤ reading only, as printed: the rule has no ≡ instance"
+    },
+    "Ws-Rgh": {
+     "rule": "Ws-Rgh",
+     "note": ""
+    }
+   },
+   "fidelity": "Single-layer well-subtyping and well-equivalence, as one relation with a mode index."
+  },
+  "T:_⊢_⊑*wf[_]_": {
+   "origin": "paper",
+   "rules": {
+    "Ws-Sub": {
+     "rule": "Ws-Sub",
+     "note": ""
+    },
+    "Ws-Trs": {
+     "rule": "Ws-Trs",
+     "note": ""
+    }
+   },
+   "fidelity": "Transitive well-subtyping and well-equivalence, as one relation with a mode index."
+  },
+  "T:_↦_": {
+   "origin": "paper",
+   "rules": {
+    "E-App": {
+     "rule": "Os-Bet",
+     "note": "local closure of the abstraction and the operand added by the encoding"
+    },
+    "E-Lam-l": {
+     "rule": "Os-Con",
+     "note": "the evaluation context λx≤C.t"
+    },
+    "E-Lam-r": {
+     "rule": "Os-Con",
+     "note": "the evaluation context λx≤t.C; the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "E-App-l": {
+     "rule": "Os-Con",
+     "note": "the evaluation context C t"
+    },
+    "E-App-r": {
+     "rule": "Os-Con",
+     "note": "the evaluation context t C"
+    }
+   },
+   "fidelity": "The reduction semantics: Os-Bet, and Os-Con split into one rule per evaluation context."
+  },
+  "T:NF": {
+   "origin": "paper",
+   "rules": {
+    "nf-Top": {
+     "rule": "normal form",
+     "note": "Top"
+    },
+    "nf-lam": {
+     "rule": "normal form",
+     "note": "an abstraction with a body in normal form; the paper's ‘x fresh’ side condition is a cofinite family: the body premise holds for every name outside a finite set"
+    },
+    "nf-ne": {
+     "rule": "normal form",
+     "note": "a variable applied to normal forms"
+    }
+   },
+   "fidelity": "Normal forms, from the prose definition in Section 2: Top, an abstraction whose body is in normal form, or a variable applied to normal forms."
+  },
+  "T:Neutral": {
+   "origin": "paper",
+   "rules": {
+    "ne-var": {
+     "rule": "normal form",
+     "note": "a variable"
+    },
+    "ne-app": {
+     "rule": "normal form",
+     "note": "applied to a normal form"
+    }
+   },
+   "fidelity": "The variable-applied-to-normal-forms case of the paper's normal forms."
+  },
+  "T:CoCtx": {
+   "origin": "paper",
+   "rules": {
+    "∙": {
+     "rule": "□",
+     "note": ""
+    },
+    "co-fun": {
+     "rule": "λx≤t.Co",
+     "note": "the annotation may mention the binder of an enclosing co-fun, as the paper's grammar allows"
+    },
+    "co-app": {
+     "rule": "Co t",
+     "note": ""
+    }
+   },
+   "fidelity": "Covariant contexts Co ::= □ | λx≤t.Co | Co t, from Conjecture 8's statement."
+  },
+  "T:CoLC": {
+   "origin": "encoding",
+   "rules": {
+    "colc-∙": {
+     "rule": "—",
+     "note": ""
+    },
+    "colc-fun": {
+     "rule": "—",
+     "note": ""
+    },
+    "colc-app": {
+     "rule": "—",
+     "note": ""
+    }
+   },
+   "fidelity": "Local closure of every term in a covariant context — deliberately not assumed by Conj-8, since the paper's contexts need not satisfy it."
+  },
+  "T:CoPair": {
+   "origin": "development",
+   "rules": {
+    "cp-var": {
+     "rule": "—",
+     "note": ""
+    },
+    "cp-fun": {
+     "rule": "—",
+     "note": ""
+    },
+    "cp-app": {
+     "rule": "—",
+     "note": ""
+    }
+   },
+   "fidelity": "The development's own: ‘u = Co[x] and v = Co[t] for the same Co’, decidable, which Lemma 9's case split runs on."
+  },
+  "T:Mode": {
+   "origin": "encoding",
+   "rules": {
+    "sub-m": {
+     "rule": "≤",
+     "note": ""
+    },
+    "eqv-m": {
+     "rule": "≡",
+     "note": ""
+    }
+   },
+   "fidelity": "The index that lets one relation carry both the paper's ≤ and ≡ readings."
+  },
+  "T:_∣_⊢_⟶ᵉ*_": {
+   "origin": "paper",
+   "rules": {
+    "εᵉ": {
+     "rule": "↠",
+     "note": "the empty chain"
+    },
+    "_◅ᵉ_": {
+     "rule": "↠",
+     "note": "one more step"
+    }
+   },
+   "fidelity": "The paper's ⟶≡↠, the reflexive-transitive closure, at a fixed extended context."
+  },
+  "T:_∣_⊢_⟶ˢ*_": {
+   "origin": "paper",
+   "rules": {
+    "εˢ": {
+     "rule": "↠",
+     "note": "the empty chain"
+    },
+    "_◅ˢ_": {
+     "rule": "↠",
+     "note": "one more step"
+    }
+   },
+   "fidelity": "The paper's ⟶≤↠, at a fixed extended context."
+  }
+ },
+ "changes": [
+  {
+   "id": "audit",
+   "when": "2026-08-24",
+   "title": "The faithfulness audit of the printed proofs",
+   "summary": "Every numbered result transcribed and its printed proof checked step by step. Propositions 17 and 18 refuted by counterexample; six proofs found to cite a wrong rule, a nonexistent rule, a lemma that does not cover the case, or an induction that would prove too much."
+  },
+  {
+   "id": "prop18-scoped",
+   "when": "2026-08-24",
+   "title": "Reflexivity with the scoping premise",
+   "summary": "Proposition 18 repaired as a variant: reflexivity holds once the term is scoped in the context's domain."
+  },
+  {
+   "id": "defect-repairs",
+   "when": "2026-08-24",
+   "title": "Routing around the defects in Lemmas 7, 9, 33 and Proposition 27",
+   "summary": "The four proofs whose statements stand but whose printed arguments do not, re-proved with the right rule or the general lemma."
+  },
+  {
+   "id": "narrowing",
+   "when": "2026-08-24",
+   "title": "Narrowing — Lemmas 23 and 24",
+   "summary": "Lemma 24's third conclusion proved by induction on the covariant context after the printed argument was found to prove every term well-formed; Lemma 23 on top of it, with one audit claim withdrawn along the way."
+  },
+  {
+   "id": "subst-forms",
+   "when": "2026-08-24",
+   "title": "Substitution in the three forms",
+   "summary": "Reduction under substitution for an unbound name, for opening, and for an ≡-bound name; the ≤-bound form the paper prints is unneeded."
+  },
+  {
+   "id": "prop17-assumed",
+   "when": "2026-09-02",
+   "title": "The assumed repair of Proposition 17",
+   "summary": "With the printed proposition refuted, its consumers were proved from an assumed statement carrying a scoping premise on the redex."
+  },
+  {
+   "id": "commutation-reduction",
+   "when": "2026-09-03",
+   "title": "Lemma 1 reduced to Lemma 2",
+   "summary": "Commutation as the paper proves it, with the diamond and three cases left as hypotheses, one of which was then discharged."
+  },
+  {
+   "id": "diamond-measures",
+   "when": "2026-09-03",
+   "title": "Measures for the diamond",
+   "summary": "Every measure on derivations and configurations that the printed induction on Lemma 2 might use, refuted one by one, then all of them at once."
+  },
+  {
+   "id": "diamond-reformulations",
+   "when": "2026-09-03",
+   "title": "Reformulating the diamond",
+   "summary": "Complete developments, erasure, confluence and a fixed configuration, each refuted as a way around the one-step diamond."
+  },
+  {
+   "id": "diamond-invariant",
+   "when": "2026-09-06",
+   "title": "The invariant the diamond's cases need",
+   "summary": "The printed second conjunct refuted and replaced by the invariant that survives the recursion; the case analysis completed against it."
+  },
+  {
+   "id": "derivation-measures",
+   "when": "2026-09-08",
+   "title": "Measures on the derivations",
+   "summary": "Weights on promotion nodes, pair-aware weights, anchors and position orders, each surviving millions of calls and then failing."
+  },
+  {
+   "id": "diamond-experiments",
+   "when": "2026-09-08",
+   "title": "Searches and sweeps on the diamond",
+   "summary": "Counterexample searches, the recursion run on explicit trees, and structural conjectures checked by sweep."
+  },
+  {
+   "id": "empty-stack-premise",
+   "when": "2026-09-08",
+   "title": "The promotion premise at the empty stack",
+   "summary": "The equivalence, subtyping and context reductions edited so that an unfolded annotation is reduced at the empty stack; the diamond and commutation proved for them, and Theorem 3 transferred to the paper's calculus through the coinciding closures."
+  },
+  {
+   "id": "mixed-diamond",
+   "when": "2026-09-12",
+   "title": "The mixed diamond and the reassembly question",
+   "summary": "One original edge against one repaired edge, joined by original steps; what is left of the printed diamond isolated and tested."
+  },
+  {
+   "id": "conj8-search",
+   "when": "2026-09-12",
+   "title": "Conjecture 8 searched and reduced",
+   "summary": "Searches at sizes 3 and 5, the reduction to one congruence with a nesting-depth measure, and the reflection question."
+  },
+  {
+   "id": "prop17-refuted-assumption",
+   "when": "2026-09-13",
+   "title": "The assumed Proposition 17 is refuted",
+   "summary": "The assumed statement instantiates to the refuted one, so preservation had been proved from a false hypothesis."
+  },
+  {
+   "id": "prop17-chain",
+   "when": "2026-09-13",
+   "title": "Proposition 17 in chain form; type safety from Conjecture 8 alone",
+   "summary": "The chain of equivalence steps through well-formed terms proved for evaluation steps, with renaming for the well-formedness judgements; Proposition 27, Lemma 6 and Theorem 5 re-derived from it."
+  },
+  {
+   "id": "conj8-reduction",
+   "when": "2026-09-13",
+   "title": "Conjecture 8 reduced to the two binding rules",
+   "summary": "The abstraction congruence of well-subtyping proved; the layer walk mechanized; the conjecture, in the form the development assumes, rests on lifting a promotion under a binder whose parameter meets an operand — FunLift and FOpLift — and nothing else."
+  },
+  {
+   "id": "conj8-depth-probe",
+   "when": "2026-09-18",
+   "title": "The nesting-depth measure for Conjecture 8, probed",
+   "summary": "The measure proposed for the mutual induction of Conjecture 8 with Lemmas 7 and 9 — the nesting depth of well-formedness derivations — computed on all terms to size 5. It does not descend: a round of the recursion can raise it, because substitution copies the operand under the body's applications. Chains, the layer walk and Lemma 9 are depth-neutral."
+  },
+  {
+   "id": "conj8-narrowing",
+   "when": "2026-09-18",
+   "title": "Conjecture 8 by narrowing instead of substitution",
+   "summary": "FunLift and FOpLift read as the machine reads them: under an operand the body is reduced under x ≡ v, so the body's derivation is narrowed and pushed by recursion on itself, and a promotion of the parameter becomes its unfolding followed by the lifted chain v ≤*wf t. Run as an algorithm and checked on 4.4 million instances; the recursion descends in the domain order on bounds."
+  }
+ ]
 }
