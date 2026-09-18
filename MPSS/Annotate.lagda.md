@@ -59,7 +59,7 @@ data _⊒_ : Ctx → Ctx → Set where
 ## The class of side conditions, and the suppliers
 
 ```agda
-module _ (𝒫 : Ctx → Stack → (Tm → Set) → Set)
+module _ (𝒫 : Ctx → Stack → (Tm → Set) → Set₁)
          (𝒫-app : ∀ {Γ s P v} → 𝒫 Γ s P → 𝒫 Γ (v ∷ s) (App P v))
          (𝒫-fop : ∀ {Γ s P α t x} → 𝒫 Γ (α ∷ s) P → x ∉ dom Γ
                 → 𝒫 ((x , eqv , α) ∷ Γ) s (Fun P t x))
