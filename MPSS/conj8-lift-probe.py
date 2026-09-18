@@ -28,6 +28,7 @@ backward e-steps to forward steps is at a well-formed term. It also records the 
 recursion: how deep lift nests, and what each nested call is given.
 
   python3 conj8-lift-probe.py MAXSIZE SHARD NSHARDS [STACKSIZE default 3]
+  C8_PERVERSE=k: nested chains by a randomised walk (longest of k tries) instead of the shortest
   C8_SAMPLE=n: n sampled subjects of size MAXSIZE per context, in place of all pairs; C8_K, C8_WFD, C8_BUDGET, and the depth probe's caps
 """
 import sys, os, collections, gc
@@ -104,8 +105,39 @@ def bwd_(G, t, steps):
     _bwd[key] = back
     return back
 
-def chain(G, u, t, steps=None):
+PERVERSE = int(os.environ.get('C8_PERVERSE', 0))
+_prng = random.Random(7)
+
+def perverse_chain(G, u, t, steps):
+    """a chain u ≤*wf t found by a randomised depth-first walk, promotions tried first: the
+    nested chains of a proof are given, not chosen, so the recursion should not depend on
+    their being short"""
+    back = bwd_(G, t, steps)
+    best = None
+    for _ in range(PERVERSE):
+        path = []; a = u; seen = {u}
+        for _ in range(steps + 3):
+            if a in back and path and _prng.random() < 0.5: break
+            nxt = []
+            if wf_(G, a):
+                nxt += [('s', b) for b in sreds(G, (), a, WK) if b not in seen and tsize(b) <= SIZE and wf_(G, b)]
+            nxt += [('e', b) for b in ereds(G, (), a, WK) if b not in seen and tsize(b) <= SIZE]
+            if not nxt: break
+            k, b = _prng.choice(nxt[:6]) if _prng.random() < 0.7 else _prng.choice(nxt)
+            path.append((k, a, b)); seen.add(b); a = b
+        if a in back:
+            bwd = []; c = a
+            while back[c] is not None:
+                bwd.append(('r', c, back[c])); c = back[c]
+            cand = path + bwd
+            if best is None or len(cand) > len(best): best = cand
+    return best
+
+def chain(G, u, t, steps=None, nested=False):
     steps = steps or WD
+    if PERVERSE and nested:
+        c = perverse_chain(G, u, t, steps)
+        if c is not None: return [s for s in c if not (s[0] == 'e' and s[1] == s[2])]
     par, back = fwd_(G, u, steps), bwd_(G, t, steps)
     c = None
     small, big = (par, back) if len(par) <= len(back) else (back, par)
@@ -152,7 +184,7 @@ def push(R, Gn, N, F, p, q, s0, S_, depth):
         y = F[1]
         if y not in N: return [('s', p, q)]
         v, t = N[y]
-        D = chain(Gn, v, t, 8)
+        D = chain(Gn, v, t, 8, nested=True)
         if D is None: raise Unresolved(f"no chain {show(v)} ≤ {show(t)} in {showG(Gn)}")
         return [('e', p, v)] + lift(R, Gn, D, s0 + S_, depth + 1, (v, t))
     if k == 'Top': return [('s', p, q)]

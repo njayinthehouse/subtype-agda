@@ -189,3 +189,36 @@ by closing the chain at one fresh name and renaming, which needed renaming for t
 well-formedness judgements (`WfRename`, new). `Preservation17` re-derives Proposition 27, Lemma 6
 and Theorem 5 from it, and **type safety from Conjecture 8 alone**. Nothing existing was
 modified; the superseded modules stay.
+
+## Conjecture 8, the night of 2026-09-18 — not settled; what it reduces to
+
+Full account in `CONJ8.md` §8–10. In short:
+
+- **The nesting-depth measure of `CONJ8.md` §4 is dead** (`conj8-depth-probe.py`). A round of the
+  recursion can raise the depth of the well-formedness derivations (`f = λx≤y. x (y x)`,
+  `v = y (y y)` under `y ≡ λ⊤.0`: 3 to 4), because substitution copies the operand under the
+  body's applications; Lemma 7 is bounded by the sum of its inputs' depths, not the maximum.
+  Chains, the layer walk and Lemma 9 are depth-neutral.
+- **The recursion is the machine's, not substitution's** (`conj8-lift-probe.py`). Under an operand
+  the body of `λx≤t.u` is reduced under `x ≡ v`; narrowing the body's derivation and replacing a
+  promotion of `x` by `x ⟶ᵉ v` and the lifted chain `v ≤*wf t` gives a valid well-subtyping chain
+  on all 4.7 million instances tried, and **each round's bound is the domain of the previous
+  round's** (31,178 of 31,178 nested rounds) — the order of hereditary substitution. The
+  substitution route (Lemmas 7 and 9 with the context induction) does not descend in it.
+- **Mechanized** (`--safe`, nothing existing touched): `Conj8Pair` (Lemmas 7 and 9 from the
+  conjecture at the one pair `(α, t)`), `FunLift0` (`FunLift` under one operand from the conjecture
+  at `(v, t)`), `PushWf` (**`⇛-push`**: the push theorem for well-subtyping chains at a stack,
+  side condition a parameter, narrowing at an abstraction that meets an operand, one chain at the
+  stack in force at each narrowed leaf), `DomainOrder` (the order, `domain-step`, and `Conj-8ʳ`
+  declared, not proved).
+- **What is owed for the conditional theorem** (finite domain rank ⇒ Conjecture 8): the rank
+  lemmas, and the side condition at the points of a lifted chain, which has to be proved together
+  with the lifting, in stack form, by induction on (rank of the bound, size of the wrapper, length
+  of the chain). `FunLift`/`FOpLift` as `Conj8Push` states them — over spines at the empty stack —
+  are the wrong interface for that: a chain of whole applied terms cannot be taken apart again
+  into steps at a stack.
+- **What an unconditional answer needs.** A proof needs the domain order well-founded on
+  well-formed bounds — a normalization statement about MPSS's type level, which its rules do not
+  obviously give. A refutation needs an instance with infinite domain descent, that is a
+  well-formed type-level looping combinator, and then an argument that *no* chain exists; nothing
+  small can be one (`CONJ8.md` §10).
