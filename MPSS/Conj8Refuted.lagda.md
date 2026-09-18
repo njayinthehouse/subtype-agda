@@ -293,3 +293,111 @@ module Hyp₂ {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
   wf-t′δ : Γ ⊢ app t′ δ wf
   wf-t′δ = Wf-App t′≤LRT δ≤R
 ```
+
+## The right-hand plug reduces to an abstraction
+
+```agda
+open import MPSS.Strip using (_∣_⊢_⟶ᵉ*_; ε; _◅_; strip*)
+open import MPSS.Scope using (⟶ᵉ-lc)
+open import MPSS.Unconditional using (Thm-3wf)
+open import MPSS.Assumed using (Conj-8)
+open import MPSS.Conjecture8 using (∙; co-app)
+
+open Hyp₂ pvΓ₀ (here refl)
+
+lcδ : LC δ
+lcδ = lc-lam [] lc-fvar (λ _ → lc-app lc-fvar lc-fvar)
+
+lct′ : LC t′
+lct′ = lc-lam [] lc-fvar (λ _ → lc-app lc-fvar lc-fvar)
+
+fvδ : fv δ ⊑ dom Γ₀
+fvδ (here refl) = here refl
+
+pv[] : Γ₀ ∣ [] prevalid
+pv[] = Pv-Nil pvΓ₀
+
+pv[δ] : Γ₀ ∣ (δ ∷ []) prevalid
+pv[δ] = Pv-Sta pv[] lcδ fvδ
+
+reflδ : Γ₀ ∣ [] ⊢ δ ⟶ᵉ δ
+reflδ = ⟶ᵉ-refl pv[] lcδ fvδ
+
+lcWδ : LC (app W δ)
+lcWδ = lc-app lcW lcδ
+
+fvWδ : fv (app W δ) ⊑ dom Γ₀
+fvWδ (here refl) = here refl
+
+r₁ : Γ₀ ∣ [] ⊢ app t′ δ ⟶ᵉ app (lam Rv (app W δ)) δ
+r₁ = Me-App (Me-FOp {u' = app W δ} (dom Γ₀) (⟶ᵉ-refl pv[] lc-fvar (λ { (here refl) → here refl })) body) reflδ
+  where
+    body : ∀ {x} → x ∉ dom Γ₀ → ((x , eqv , δ) ∷ Γ₀) ∣ [] ⊢ app Rv (fvar x) ⟶ᵉ app W δ
+    body {x} x∉ =
+      Me-App (Unfold.stepR (there (here refl)) (Pv-Sta (Pv-Nil pvx′) lc-fvar (λ { (here refl) → here refl })))
+             (Me-Pro (Pv-Nil pvx′) (here refl) (⟶ᵉ-refl (Pv-Nil pvx′) lcδ (λ h → there (fvδ h))))
+      where
+        pvx′ : ((x , eqv , δ) ∷ Γ₀) prevalid
+        pvx′ = Pv-EqA pvΓ₀ x∉ lcδ fvδ
+
+r₂ : Γ₀ ∣ [] ⊢ app (lam Rv (app W δ)) δ ⟶ᵉ app W δ
+r₂ = Me-Bet {u = app W δ} {u' = app W δ} [] (λ _ → ⟶ᵉ-refl pv[] lcWδ fvWδ) reflδ
+
+r₃ : Γ₀ ∣ [] ⊢ app W δ ⟶ᵉ app mid δ
+r₃ = Me-App (stepWᵃ pv[δ]) reflδ
+
+r₄ : Γ₀ ∣ [] ⊢ app mid δ ⟶ᵉ app LOO δ
+r₄ = Me-App (stepMid pv[δ]) reflδ
+
+r₅ : Γ₀ ∣ [] ⊢ app LOO δ ⟶ᵉ W
+r₅ = Me-Bet {u = W} {u' = W} [] (λ _ → ⟶ᵉ-refl pv[] lcW closedW) reflδ
+
+right : Γ₀ ∣ [] ⊢ app t′ δ ⟶ᵉ* LOO
+right = r₁ ◅ r₂ ◅ r₃ ◅ r₄ ◅ r₅ ◅ stepW pvΓ₀ ◅ stepMid pv[] ◅ ε pv[]
+```
+
+## The left-hand plug never reaches one
+
+```agda
+okΓ₀ : CtxOK Γ₀
+okΓ₀ (here refl) p = ⊥-elim (p refl)
+
+nsΓ₀ : NoSub Γ₀
+nsΓ₀ (there ())
+
+Bd-δδ : Bd (app δ δ)
+Bd-δδ = b-app cδ cδ
+  where
+    cδ : Cl δ
+    cδ = c-lam (b-app c-bvar c-bvar)
+
+presᵉ* : ∀ {t t″} → Bd t → Γ₀ ∣ [] ⊢ t ⟶ᵉ* t″ → Bd t″
+presᵉ* bd (ε _)   = bd
+presᵉ* bd (e ◅ p) = presᵉ* (presᵉ-Bd okΓ₀ [] bd e) p
+
+Reaches : Tm → Set
+Reaches t = ∃[ w ] ∃[ b ] (Γ₀ ∣ [] ⊢ t ⟶ᵉ* lam w b)
+
+no-chain : ∀ {v t} → Bd v → LC t → Reaches t → ¬ (Γ₀ ∣ [] ⊢ v ≤ t)
+no-chain bd lt (w , b , p) (As-Refl _)       = Bd-lam (presᵉ* bd p)
+no-chain bd lt rt          (As-Left-1 st d)  = no-chain (presˢ-Bd okΓ₀ nsΓ₀ [] bd st) lt rt d
+no-chain bd lt (w , b , p) (As-Right d e) with strip* lt p e
+... | _ , Me-Fun _ _ _ , q = no-chain bd (⟶ᵉ-lc lt e) (_ , _ , q) d
+```
+
+## Conjecture 8 is false
+
+```agda
+¬Conj-8 : ¬ Conj-8
+¬Conj-8 c8 =
+  no-chain Bd-δδ (lc-app lct′ lcδ) (_ , _ , right)
+           (Thm-3wf (c8 (co-app ∙ δ) lcδ lct′ δ≤t′ wf-δδ wf-t′δ))
+```
+
+## What this establishes
+
+`¬Conj-8`: Conjecture 8, as the paper states it and as `MPSS/Assumed` transcribes it, is false. The
+counterexample lives in a prevalid context whose one annotation is ill-formed, `R ≡ ω ω`. It says
+nothing yet about the conjecture restricted to contexts with well-formed annotations — but there
+`MPSS/CONJ8.md` §11 applies: the same instance fails as soon as any well-formed term behaves as
+`R` does here.
