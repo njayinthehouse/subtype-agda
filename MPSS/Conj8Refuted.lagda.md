@@ -484,10 +484,37 @@ module G {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
 ¬Lem-6 lem-6 = ¬wf-δδδ (lem-6 (G.wf-gδ pvΓ₀ (here refl)) (E-App lcg lcδ))
 ```
 
+Lemma 7 goes with it, since `MPSS/Preservation17` proves Lemma 6 from it and from nothing else
+that is assumed.
+
+```agda
+open import MPSS.Evaluation using (Lem-7₀)
+open import MPSS.Preservation17 using (Lem-6ʷ)
+
+¬Lem-7 : ¬ Lem-7₀
+¬Lem-7 lem-7 = ¬Lem-6 (Lem-6ʷ lem-7)
+```
+
+## Nor is subtyping preserved: Theorem 5, as stated, is false
+
+Preservation is stated for an arbitrary logical context too. With `g δ ≤*wf g δ` by reflexivity
+and `g δ ↦ (δ δ) δ`, its conclusion would make `(δ δ) δ` well-formed.
+
+```agda
+Preservation : Set
+Preservation = ∀ {Γ t t' u} → Γ ⊢ t ⊑*wf[ sub-m ] u → t ↦ t' → Γ ⊢ t' ⊑*wf[ sub-m ] u
+
+¬Thm-5 : ¬ Preservation
+¬Thm-5 thm-5 = ¬wf-δδδ (⊑*wf⇒wfˡ (thm-5 (Ws-Sub w (Ws-Rfl pvΓ₀) w) (E-App lcg lcδ)))
+  where w = G.wf-gδ pvΓ₀ (here refl)
+```
+
 ## What this establishes
 
-`¬Conj-8` and `¬Lem-6`: Conjecture 8 and Lemma 6, as the paper states them — for an arbitrary
-logical context — are false. Both counterexamples live in the one prevalid context `R ≡ ω ω`, whose
-annotation is not well-formed. They say nothing yet about contexts with well-formed annotations,
+`¬Conj-8`, `¬Lem-6`, `¬Lem-7` and `¬Thm-5`: Conjecture 8, Lemmas 6 and 7 and Theorem 5 (preservation), as the paper
+states them — for an arbitrary logical context — are false. The counterexamples live in the one
+prevalid context `R ≡ ω ω`, whose annotation is not well-formed. `Preservation` is the second
+component of `type-safety` in `MPSS/Preservation17`, which is proved there from `Conj-8`: from a
+false hypothesis. They say nothing yet about contexts with well-formed annotations,
 or about closed programs; there `MPSS/CONJ8.md` §11 applies — the same instances fail as soon as
 any well-formed term behaves as `R` does here.
