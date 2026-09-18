@@ -594,3 +594,37 @@ algorithm (`conj8-subst-probe.py`): 3,190,343 instances at size 5 (7 of 8 shards
 none unresolved; sampled size 7 still running, none so far. The dependent-bound generator
 (`conj8-dep-gen.py`) works in the empty context, which is `WfCtx`: 800 of 800 valid by the
 substitution route.
+
+## 16. Towards a provable variant: reducibility over ranked targets — 2026-09-18
+
+The variant aimed at: Conjecture 8 over `WfCtx` contexts, for pairs whose targets are accessible
+in the domain order (`Ranked`, `MPSS/DomainOrder`). It leaves out exactly what §14 shows cannot be
+handled by rank — the type of the polymorphic identity is not `Ranked` — and what §11 shows would
+be a counterexample.
+
+Its proof cannot be a rank induction *on the conjecture*: the conjecture is used, on the way, at
+pairs of unrelated rank (a redex the body already contains, §9; the contractum of a head redex,
+§13). The standard way out is reducibility: define by recursion on the rank a predicate that can
+then be *used* at any rank, and prove the fundamental lemma by induction on derivations, under
+substitutions of good terms.
+
+`MPSS/Reducible`, mechanized so far:
+
+- `Good a m`, for `a : Ranked Γ T`: `m` well-formed, `m ≤*wf T`, and — in every extension of the
+  context, for every `v` good at the domain of `T` — `m v ≤*wf T v` and `m v` good at `T v`.
+  Conjecture 8 for spines, made hereditary. Defined by recursion on the accessibility proof.
+- `good-irr`: it does not depend on that proof.
+- `neutral-good`: a term that promotes to the target at every stack — a variable and its bound —
+  is good at it. The base case.
+
+Owed: goodness closed under equivalence expansion on the left and under `≡wf` of the target; the
+fundamental lemma (a well-formed `b` under good substitution is well-formed, and `a ≤*wf c` under
+good substitution is good), whose abstraction case is β-expansion with the body taken under the
+substitution extended by the operand; and Conjecture 8 from it, by filling the hole with a
+variable bounded by the target.
+
+**A design question this does not answer.** `Ranked` is a semantic condition on targets. A
+*language* in which every well-formed term is ranked — so that the variant is a theorem about a
+system and not about instances — needs a syntactic stratification (no parameter bounded by `⊤`
+used as an annotation, or universe levels on `⊤`), and which one is wanted is a choice about the
+calculus, not about the proof.

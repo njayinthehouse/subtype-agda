@@ -52,8 +52,56 @@ good-irr {Γ , T} (acc rs) (acc rs′) (wm , d , h) =
     in proj₁ r , good-irr (rs (▷-app Δ w)) (rs′ (▷-app Δ w)) (proj₂ r)
 ```
 
+## Terms that promote to the target at every stack are good
+
+The base case of the reducibility argument. If `m ⟶ˢ T` holds at every stack, in every context of
+a family `Q` closed under extension — a variable and its bound, with `Q Γ′` = "`x ≤ T ∈ Γ′`" —
+then `m` is good at `T`: `m v ⟶ˢ T v` is `Ms-App` over the step at the stack `v ∷ s`, between
+well-formed terms (`app-wf-mid`), and `m v`, `T v` are again such a pair.
+
+```agda
+open import Data.List.Membership.Propositional using (_∈_)
+open import Data.List.Membership.Propositional.Properties using (∈-++⁺ʳ)
+open import Relation.Binary.PropositionalEquality using (subst; sym)
+open import MPSS.Narrow using (wf-fv)
+open import MPSS.Weakening using (⊑*wf-weaken)
+open import MPSS.Subst.Base using (dom-++)
+open import MPSS.Conjecture8Star using (app-wf-mid)
+
+Steps : (Ctx → Set) → Tm → Tm → Set
+Steps Q m T = ∀ {Γ′ s} → Q Γ′ → Γ′ ∣ s prevalid → Γ′ ∣ s ⊢ m ⟶ˢ T
+
+one : ∀ {Q : Ctx → Set} {Γ m T} → Q Γ → Steps Q m T → Γ ⊢ m wf → Γ ⊢ T wf → Γ ⊢ m ≤*wf T
+one q st wm wT =
+  Ws-Sub wm (Ws-Lf2 wm (st q (Pv-Nil (wf⇒prevalid wm))) wT (Ws-Rfl (wf⇒prevalid wm))) wT
+
+arg-wf′ : ∀ {Γ f v} → Γ ⊢ app f v wf → Γ ⊢ v wf
+arg-wf′ (Wf-App _ d₂) = ⊑*wf⇒wfˡ d₂
+
+neutral-good : ∀ (Q : Ctx → Set) (Q-ext : ∀ (Δ : Ctx) {Γ} → Q Γ → Q (Δ ++ Γ))
+               {Γ T m} (a : Ranked Γ T) → Q Γ → Steps Q m T
+             → Γ ⊢ m wf → Γ ⊢ T wf → Good a m
+neutral-good Q Q-ext {Γ} {T} {m} (acc rs) q st wm wT =
+  wm , m≤T , λ Δ {v} w e gv →
+    let wv   = arg-wf′ w
+        Q′   : Ctx → Set
+        Q′ Γ′ = Q Γ′ × (fv v ⊑ dom Γ′)
+        ext′ : ∀ (Δ′ : Ctx) {Γ′} → Q′ Γ′ → Q′ (Δ′ ++ Γ′)
+        ext′ Δ′ {Γ′} (q₀ , f) = Q-ext Δ′ q₀ , λ h → subst (_ ∈_) (sym (dom-++ Δ′ Γ′)) (∈-++⁺ʳ (dom Δ′) (f h))
+        q′   : Q′ (Δ ++ Γ)
+        q′   = Q-ext Δ q , wf-fv wv
+        st′  : Steps Q′ (app m v) (app T v)
+        st′  = λ { (q₀ , f) pv → Ms-App (st q₀ (Pv-Sta pv (wf⇒lc wv) f)) }
+        m≤TΔ = ⊑*wf-weaken [] Δ (wf⇒prevalid w) m≤T
+        wmv  = app-wf-mid m≤TΔ (⊑*wf⇒wfˡ m≤TΔ) w
+    in one {Q′} q′ st′ wmv w , neutral-good Q′ ext′ (rs (▷-app Δ w)) q′ st′ wmv w
+  where
+    m≤T = one {Q} q st wm wT
+```
+
 ## What this establishes
 
-The definition, its two projections, and its independence of the accessibility proof. The
-fundamental lemma — every well-formed term below a ranked target is good at it, under good
+The definition, its two projections, its independence of the accessibility proof, and the base
+case: a term that promotes to the target at every stack — a variable and its bound — is good at it.
+The fundamental lemma — every well-formed term below a ranked target is good at it, under good
 substitutions — is owed.
