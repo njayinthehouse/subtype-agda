@@ -310,3 +310,56 @@ What can be proved is the conditional theorem: *if the domain order is well-foun
 holds* — by induction on the rank of the bound, then on the step derivation.
 
 Logs: `.search-logs/lift5_*.log`, `lift5_recheck.log`, `lift7s_*.log`.
+
+## 10. What is mechanized of §9, and the proof it is a part of — 2026-09-18, night
+
+Three new `--safe` modules, nothing existing touched.
+
+| module | content |
+| --- | --- |
+| `MPSS/Conj8Pair` | `Lem-9ᵖ`, `Lem-7ᵖ`: Lemmas 9 and 7 for the substitution `x := α` with `α ≤*wf t` need Conjecture 8 **at the pair `(α, t)` only**, in the contexts extending the one the pair lives in (`C8At Γ α t`). The proofs are those of `MPSS/Lemma9` and `MPSS/Lemma7` with the one call replaced |
+| `MPSS/FunLift0` | `FunLift₀`: `(λx≤t.u) v ≤*wf (λx≤t.u′) v` from a body promotion under `x ≤ t`, **from `C8At Γ v t`** — §7's sketch: both sides β-reduce through well-formed terms (`Prop-17ʷ`), `v ≤*wf t` by inversion (`operand≤`: Lemmas 10, 15, 16), the middle is `Lem-9ᵖ`, the two ends are well-formed by `Lem-7ᵖ` |
+| `MPSS/PushWf` | `⇛-push`: §9's `push`, for the chains the conjecture is about. A promotion derivation at `Γˢ ∣ s₀`, annotated at its leaves, replays at the narrowed `Γᵉ ∣ s₀ ++ s` as `Γᵉ ∣ s₀ ++ s ⊢[ P ] a ◁* a′` (`MPSS/Frame`), the side condition `P` a parameter that becomes `App P v` under an application and `Fun P t x` under a binder. An abstraction that meets an operand narrows its parameter and goes on (`q-fun-cons`); the datum at a narrowed variable is **one chain `α ◁* t` at the stack in force under the side condition in force** — not `MPSS/Push`'s reachability at every stack, which `MPSS/ReachFails` refutes |
+
+So the structural half of the recursion is checked: `lift → push` is `⇛-push`, and the only thing
+it asks from outside is `push → lift`, the chain at a narrowed leaf.
+
+**The rest of the proof, as it now stands on paper.** Not mechanized; every step below that is not
+a citation is an obligation.
+
+1. *Rank.* `rk Γ T` is 0 if no application `T o` is well-formed in (an extension of) `Γ`, and
+   otherwise one more than the ranks of the domain `d` (`T ≤*wf λd.⊤`) and of every well-formed
+   `T o`. By inversion (Lemma 10) the domain is unique up to `≡wf`, and two terms below a common
+   abstraction have `≡wf` domains, so `rk` is invariant under `≡wf` and along `≤*wf` between
+   applicable terms. *Hypothesis of the theorem:* `rk` is finite on the targets involved.
+2. *Main statement*, by induction on `rk Γ t`, then on the size of the covariant context, then on
+   the chain: Conjecture 8 at the target `t` — for every extension of `Γ`, every `a ≤*wf t` and
+   every covariant context.
+3. *Application frame.* `walk` of `MPSS/Conj8Reduction`, with each promotion `p ⟶ˢ p′` lifted
+   under the operand by `⇛-push` from the annotation of its derivation (`s₀ = []`, `s = [v]`).
+   A binder the derivation already enters under an operand (`Ms-FOp`, a redex the term had) is
+   structural and costs nothing — this is where the substitution route loses the descent (§9).
+   An abstraction `λx≤w.b` that meets the operand is narrowed, `w ≡wf` the domain of the frame's
+   target, so `rk w < rk` of the target, and `v ≤*wf w` by `operand≤`.
+4. *Narrowed leaf* `x ≡ α`, old bound `w`, stack `σ`: the chain `α ◁* w` at `σ` is the main
+   statement at the target `w` for the spine `σ` in the narrowed context, by 2 at lower rank.
+5. *Side condition.* `P z` is well-formedness of the whole term with `z` in the hole. For the
+   points of a lifted chain it follows from `z ≤*wf w` and well-formedness at `w`, frame by frame:
+   `app-wf-mid` at an application frame, with `z v ≤*wf w v` from 2 at lower rank at the smaller
+   context; `Wf-Fun` at a binder, in the **un-narrowed** context, where 2 applies as well.
+6. *The leaf's chain is ours to choose only below the first round.* The top chain is given; the
+   chains at narrowed leaves come out of `Wf-App` premises (through `operand≤`), so they too are
+   given. Step 4 needs nothing of them but the rank of their target.
+
+**Why this is the end of what small cases can say.** The recursion terminates whenever `rk` is
+finite, and then the conjecture holds. If a well-formed `T` with `T ≡wf λx≤T.⊤` existed, the
+recursion would loop on a suitably given derivation (§9's `δ δ`), though the instance itself still
+holds through a shorter chain; whether an instance can *fail* there is what a refutation would
+have to show, on terms the size of a type-level looping combinator. Nothing in MPSS's
+well-formedness rules out such a `T` — contexts need only be prevalid, and `Wf-Fun` does not bound
+the annotation's rank — and nothing small builds one: self-application at a bound `P` needs
+`P ≤*wf λd.⊤` and `P ≤*wf d`, which with invariant annotations is a recursive type.
+
+**Status.** Conjecture 8 is neither proved nor refuted. It is proved, on paper, for every
+instance whose targets have finite domain rank, with the structural half mechanized; and any
+counterexample has infinite domain rank.

@@ -391,6 +391,15 @@
      "because": "The depth probe showed that substitution is what raises the measure, and that keeping the operand in the context, as Ms-FOp does, leaves only a forced +1.",
      "why": "Valid on every instance: 2,967,285 at size 5 and 1,389,958 sampled at size 7 with stacks of up to three operands, no invalid step, no unresolved chain, no budget hit. On all 29,414 nested rounds the bound of the round is the domain of the bound of the round before — the order on which hereditary substitution terminates. The substitution route (Lemmas 7 and 9 with the context induction) does not descend in it. So the conjecture follows from well-foundedness of the domain order on well-formed bounds, a counterexample needs an infinite domain descent, and an unconditional proof along this recursion needs a normalization statement about MPSS's type level.",
      "change": "conj8-narrowing"
+    },
+    {
+     "what": "Prove the conjecture by induction on the domain rank of the target, then the context, then the chain, with the narrowing push (Lemma 8e) for each promotion and the chain at a narrowed leaf from the induction hypothesis at the bound, whose rank is lower.",
+     "outcome": "open",
+     "kind": "original",
+     "where": "MPSS/CONJ8.md §10; MPSS.PushWf, MPSS.FunLift0, MPSS.Conj8Pair",
+     "because": "The probe showed each round's bound is the domain of the previous round's, and that the substitution route does not descend in that order.",
+     "why": "On paper it goes through for every instance whose targets have finite domain rank; the structural half is mechanized, the rank induction and the side condition at the points of a lifted chain are not. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
+     "change": "conj8-narrowing-agda"
     }
    ]
   },
@@ -837,6 +846,51 @@
      "change": "mixed-diamond"
     }
    ]
+  },
+  "8d": {
+   "name": "FunLift under one operand",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "(λx≤t.u) v ≤*wf (λx≤t.u′) v from a body promotion under x ≤ t, given Conjecture 8 at the pair (v, t).",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.FunLift0",
+     "because": "CONJ8.md §7 had it in prose; mechanizing it pins the recursion to one pair per round.",
+     "why": "Both sides β-reduce through well-formed terms (Prop-17ʷ); v ≤*wf t by inversion; Lemma 9 for x := v in the middle, Lemma 7 for the two ends, both from the conjecture at (v, t) alone.",
+     "change": "conj8-narrowing-agda"
+    }
+   ]
+  },
+  "8e": {
+   "name": "push with the side condition",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "A promotion derivation at Γˢ ∣ s₀ replays at the narrowed Γᵉ ∣ s₀ ++ s as a well-subtyping chain at that stack, the side condition a parameter; an abstraction that meets an operand narrows its parameter; the datum at a narrowed variable is one chain from the operand to the old bound at the stack in force.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.PushWf",
+     "because": "The lift probe showed the narrowing recursion valid on 4.4 million instances, and MPSS.Push had the same theorem only for bare ⟶ˢ* chains with a datum MPSS.ReachFails refutes.",
+     "why": "Structural in the derivation: MPSS.Frame's chains wrap under an application as App P v and under a binder as Fun P t x (MPSS.Wrap). No measure is needed here; it is needed to supply the chains at the narrowed leaves.",
+     "change": "conj8-narrowing-agda"
+    }
+   ]
+  },
+  "8f": {
+   "name": "Lemmas 7 and 9 from one pair",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Lemmas 9 and 7 for the substitution x := α with α ≤*wf t, from Conjecture 8 at the pair (α, t) in the contexts extending Γ.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.Conj8Pair",
+     "because": "Both modules take the whole conjecture and call it once, at that pair.",
+     "why": "The proofs of MPSS.Lemma9 and MPSS.Lemma7 with the call replaced by the local hypothesis C8At Γ α t.",
+     "change": "conj8-narrowing-agda"
+    }
+   ]
   }
  },
  "detail": {
@@ -1111,6 +1165,15 @@
   },
   "2a": {
    "account": "The diamond with one edge in the repaired reduction — its promotion premises at the empty stack — and the other in the paper's, joined by one original step each. The side whose promotion premise is a subderivation pays for every pull the other side makes, so the measure is on the original side alone. It gives the strip property and confluence of <code>⟶ᵉ*</code> for the paper's relation (<code>MPSS.Strip</code>). Not a result of the paper."
+  },
+  "8d": {
+   "account": "<code>FunLift₀ : C8At Γ v t → …</code>. The first of the two obligations of Lemma 8c, in the case the recursion turns on: one operand, the abstraction at the head. Not a result of the paper."
+  },
+  "8e": {
+   "account": "<code>⇛-push</code>: the structural half of the recursion of Conjecture 8, for chains <code>Γ ∣ s ⊢[ P ] a ◁* a′</code>. The annotated derivation <code>⇛</code> carries the side condition at its leaves and, at a variable the narrowing rebinds, the chain <code>α ◁* t</code> at the stack in force. Not a result of the paper."
+  },
+  "8f": {
+   "account": "<code>Lem-9ᵖ</code> and <code>Lem-7ᵖ</code> with the hypothesis <code>C8At Γ₀ α t</code> — the conjecture for the one pair, in every context extending <code>Γ₀</code>. Not a result of the paper."
   }
  },
  "deps": {
@@ -1852,6 +1915,12 @@
    "when": "2026-09-18",
    "title": "Conjecture 8 by narrowing instead of substitution",
    "summary": "FunLift and FOpLift read as the machine reads them: under an operand the body is reduced under x ≡ v, so the body's derivation is narrowed and pushed by recursion on itself, and a promotion of the parameter becomes its unfolding followed by the lifted chain v ≤*wf t. Run as an algorithm and checked on 4.4 million instances; the recursion descends in the domain order on bounds."
+  },
+  {
+   "id": "conj8-narrowing-agda",
+   "when": "2026-09-18",
+   "title": "The narrowing route, mechanized as far as its structural half",
+   "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter. What is left is the supply of the chain at a narrowed leaf, by induction on the domain rank of the bound — on paper in CONJ8.md §10."
   }
  ]
 }

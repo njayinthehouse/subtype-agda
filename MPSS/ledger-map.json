@@ -119,6 +119,37 @@
    "supports": [
     "8"
    ]
+  },
+  {
+   "id": "8d",
+   "ref": "Lemma 8d",
+   "names": [
+    "FunLift₀"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8e",
+   "ref": "Lemma 8e",
+   "names": [
+    "⇛-push"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8f",
+   "ref": "Lemma 8f",
+   "names": [
+    "Lem-7ᵖ",
+    "Lem-9ᵖ"
+   ],
+   "supports": [
+    "8"
+   ]
   }
  ]
 }
