@@ -303,7 +303,7 @@ open import MPSS.Unconditional using (Thm-3wf)
 open import MPSS.Assumed using (Conj-8)
 open import MPSS.Conjecture8 using (∙; co-app)
 
-open Hyp₂ pvΓ₀ (here refl)
+module H₀ = Hyp₂ pvΓ₀ (here refl)
 
 lcδ : LC δ
 lcδ = lc-lam [] lc-fvar (λ _ → lc-app lc-fvar lc-fvar)
@@ -391,13 +391,103 @@ no-chain bd lt (w , b , p) (As-Right d e) with strip* lt p e
 ¬Conj-8 : ¬ Conj-8
 ¬Conj-8 c8 =
   no-chain Bd-δδ (lc-app lct′ lcδ) (_ , _ , right)
-           (Thm-3wf (c8 (co-app ∙ δ) lcδ lct′ δ≤t′ wf-δδ wf-t′δ))
+           (Thm-3wf (c8 (co-app ∙ δ) lcδ lct′ H₀.δ≤t′ H₀.wf-δδ H₀.wf-t′δ))
+```
+
+
+## Evaluation does not preserve well-formedness either
+
+Lemma 6 of the paper, `Lem-6` of `MPSS/Preservation`, is what preservation rests on, and the
+development proves it from Conjecture 8. In the same context it is false outright:
+
+    g = λx≤R. (x δ) δ        g δ  ↦  (δ δ) δ
+
+`g δ` is well-formed — under `x ≤ R` the application `x δ` promotes to `R δ`, which reduces to `W`,
+as `R` does — and `(δ δ) δ` is not: its well-formedness would put `δ δ` below an abstraction.
+
+```agda
+open import MPSS.Preservation using (Lem-6)
+open import MPSS.Static using (⊑*wf⇒wfʳ)
+
+module Hyp₃ {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
+
+  open Hyp₂ pv mR public
+
+  fvδ′ : fv δ ⊑ dom Γ
+  fvδ′ (here refl) = ∈-dom mR
+
+  pvs : Γ ∣ (δ ∷ []) prevalid
+  pvs = Pv-Sta (Pv-Nil pv) lcδ fvδ′
+
+  rδ : Γ ∣ [] ⊢ δ ⟶ᵉ δ
+  rδ = ⟶ᵉ-refl (Pv-Nil pv) lcδ fvδ′
+
+  wf-Rδ : Γ ⊢ app Rv δ wf
+  wf-Rδ = Wf-App R≤LRT δ≤R
+
+  -- R δ reduces to W, and so does R
+  Rδ≤R : Γ ⊢ app Rv δ ≤*wf Rv
+  Rδ≤R = Ws-Sub wf-Rδ
+           (Ws-Lf1 (Me-App (Unfold.stepR mR pvs) rδ)
+           (Ws-Lf1 (Me-App (stepWᵃ pvs) rδ)
+           (Ws-Lf1 (Me-App (stepMid pvs) rδ)
+           (Ws-Lf1 (Me-Bet {u = W} {u' = W} [] (λ _ → ⟶ᵉ-refl (Pv-Nil pv) lcW closedW) rδ)
+           (Ws-Rgh (Ws-Rfl pv) (Unfold.stepR mR (Pv-Nil pv)))))))
+           wfR
+
+g : Tm
+g = lam Rv (app (app (bvar 0) δ) δ)
+
+lcg : LC g
+lcg = lc-lam [] lc-fvar (λ _ → lc-app (lc-app lc-fvar lcδ) lcδ)
+
+module G {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
+
+  open Hyp₃ pv mR
+
+  module _ {x : Name} (x∉ : x ∉ dom Γ) where
+
+    open Hyp₃ (pv′ x∉) (there mR) using ()
+      renaming (δ≤R to δ≤R′; wf-Rδ to wf-Rδ′; Rδ≤R to Rδ≤R′; R≤LRT to R≤LRT′; wfR to wfR′)
+
+    wf-xδ : Γx x∉ ⊢ app (fvar x) δ wf
+    wf-xδ = Wf-App (Ws-Trs (x≤R x∉) wfR′ R≤LRT′) δ≤R′
+
+    xδ≤LRT : Γx x∉ ⊢ app (fvar x) δ ≤*wf LRT
+    xδ≤LRT =
+      Ws-Trs (Ws-Sub wf-xδ
+                (Ws-Lf2 wf-xδ
+                   (Ms-App (Ms-Pro (Pv-Sta (Pv-Nil (pv′ x∉)) lcδ (λ h → there (fvδ′ h))) (here refl)))
+                   wf-Rδ′ (Ws-Rfl (pv′ x∉)))
+                wf-Rδ′)
+             wf-Rδ′
+             (Ws-Trs Rδ≤R′ wfR′ R≤LRT′)
+
+    wf-body : Γx x∉ ⊢ app (app (fvar x) δ) δ wf
+    wf-body = Wf-App xδ≤LRT δ≤R′
+
+  wfg : Γ ⊢ g wf
+  wfg = Wf-Fun (dom Γ) (λ x∉ → wf-body x∉) wfR
+
+  wf-gδ : Γ ⊢ app g δ wf
+  wf-gδ = Wf-App
+            (Ws-Sub wfg
+               (Ws-Lf2 wfg (Ms-Fun {u' = Top} (dom Γ) (λ x∉ → Ms-Top (Pv-Nil (pv′ x∉)))) wfLRT (Ws-Rfl pv))
+               wfLRT)
+            δ≤R
+
+¬wf-δδδ : ¬ (Γ₀ ⊢ app (app δ δ) δ wf)
+¬wf-δδδ (Wf-App d₁ _) =
+  no-chain Bd-δδ (wf⇒lc (⊑*wf⇒wfʳ d₁)) (_ , _ , ε pv[]) (Thm-3wf d₁)
+
+¬Lem-6 : ¬ Lem-6
+¬Lem-6 lem-6 = ¬wf-δδδ (lem-6 (G.wf-gδ pvΓ₀ (here refl)) (E-App lcg lcδ))
 ```
 
 ## What this establishes
 
-`¬Conj-8`: Conjecture 8, as the paper states it and as `MPSS/Assumed` transcribes it, is false. The
-counterexample lives in a prevalid context whose one annotation is ill-formed, `R ≡ ω ω`. It says
-nothing yet about the conjecture restricted to contexts with well-formed annotations — but there
-`MPSS/CONJ8.md` §11 applies: the same instance fails as soon as any well-formed term behaves as
-`R` does here.
+`¬Conj-8` and `¬Lem-6`: Conjecture 8 and Lemma 6, as the paper states them — for an arbitrary
+logical context — are false. Both counterexamples live in the one prevalid context `R ≡ ω ω`, whose
+annotation is not well-formed. They say nothing yet about contexts with well-formed annotations,
+or about closed programs; there `MPSS/CONJ8.md` §11 applies — the same instances fail as soon as
+any well-formed term behaves as `R` does here.
