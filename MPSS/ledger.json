@@ -5,7 +5,7 @@
   "headline": "MPSS Proof Ledger",
   "standfirst": "",
   "footer": [
-   "107 modules"
+   "110 modules"
   ]
  },
  "nodes": [
@@ -338,7 +338,7 @@
    "ref": "Lemma 8c",
    "name": "",
    "status": "proved",
-   "module": "MPSS.Conj8Push",
+   "module": "MPSS.Conj8FromLeaves",
    "defect": "",
    "origin": "development"
   },
@@ -366,6 +366,15 @@
    "name": "",
    "status": "proved",
    "module": "MPSS.Conj8Pair",
+   "defect": "",
+   "origin": "development"
+  },
+  {
+   "id": "8g",
+   "ref": "Lemma 8g",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.Conj8FromLeaves",
    "defect": "",
    "origin": "development"
   }
@@ -420,7 +429,8 @@
    "8c",
    "8d",
    "8e",
-   "8f"
+   "8f",
+   "8g"
   ],
   "9": [
    "8",
@@ -1622,7 +1632,7 @@
   "8": {
    "module": "MPSS.Assumed",
    "account": "",
-   "sig": "Conj-8 : Set\nConj-8 = ∀ {Γ u t} (C : CoCtx)\n       → LC u → LC t\n       → Γ ⊢ u ≤*wf t\n       → Γ ⊢ plug C u wf\n       → Γ ⊢ plug C t wf\n       → Γ ⊢ plug C u ≤*wf plug C t",
+   "sig": "Conj-8 : Set\nConj-8 = ∀ {Γ u t} (C : CoCtx)\n       → LC u → LC t\n       → Γ ⊢ u ≤*wf t\n       → Γ ⊢ plug C u wf\n       → Γ ⊢ plug C t wf\n       → Γ ⊢ plug C u ≤*wf plug C t\n\nConj-8ʳ : Set\nConj-8ʳ = ∀ {Γ u t} (C : CoCtx)\n        → (∀ (C′ : CoCtx) → Γ ⊢ plug C′ t wf → Ranked Γ (plug C′ t))\n        → LC u → LC t\n        → Γ ⊢ u ≤*wf t\n        → Γ ⊢ plug C u wf\n        → Γ ⊢ plug C t wf\n        → Γ ⊢ plug C u ≤*wf plug C t",
    "paper": [
     "Conjecture 8 (Well-subtyping is context independent).",
     "Let Γ be a logical context and u and t be terms such that",
@@ -4115,15 +4125,12 @@
    "types": []
   },
   "8c": {
-   "module": "MPSS.Conj8Push",
+   "module": "MPSS.Conj8FromLeaves",
    "account": "",
    "sig": "  steplift : StepLift",
    "paper": [],
    "faults": [],
-   "hyps": [
-    "FOpLift",
-    "FunLift"
-   ],
+   "hyps": [],
    "types": []
   },
   "8d": {
@@ -4257,6 +4264,22 @@
      "decl": "data LC : Tm → Set where\n  lc-fvar : ∀ {x} → LC (fvar x)\n  lc-Top  : LC Top\n  lc-lam  : ∀ {t b} (L : List Name)\n          → LC t\n          → (∀ {x} → x ∉ L → LC (b ^ fvar x))\n          → LC (lam t b)\n  lc-app  : ∀ {f a} → LC f → LC a → LC (app f a)"
     }
    ]
+  },
+  "8g": {
+   "module": "MPSS.Conj8FromLeaves",
+   "account": "",
+   "sig": "conj8-from-obligation : Obligation → Conj-8",
+   "paper": [],
+   "faults": [],
+   "hyps": [],
+   "types": [
+    {
+     "name": "Obligation",
+     "display": "Obligation",
+     "module": "MPSS.Conj8FromLeaves",
+     "decl": "Obligation : Set₁\nObligation = NewLeaf 𝒲 w-app w-fop w-fun"
+    }
+   ]
   }
  },
  "types": [
@@ -4273,6 +4296,20 @@
    "display": "Γ ∣ s ⊢ t ⟶ᵉ* t′",
    "module": "MPSS.Congruence",
    "decl": "data _∣_⊢_⟶ᵉ*_ : Ctx → Stack → Tm → Tm → Set where\n  εᵉ   : ∀ {Γ s a} → Γ ∣ s prevalid → Γ ∣ s ⊢ a ⟶ᵉ* a\n  _◅ᵉ_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c"
+  },
+  {
+   "id": "T:Obligation",
+   "name": "Obligation",
+   "display": "Obligation",
+   "module": "MPSS.Conj8FromLeaves",
+   "decl": "Obligation : Set₁\nObligation = NewLeaf 𝒲 w-app w-fop w-fun"
+  },
+  {
+   "id": "T:𝒲",
+   "name": "𝒲",
+   "display": "𝒲",
+   "module": "MPSS.Conj8FromLeaves",
+   "decl": "data 𝒲 : Ctx → Stack → (Tm → Set) → Set₁ where\n  w-top : ∀ {Γ v} → Γ ⊢ v wf → 𝒲 Γ (v ∷ []) (App (Wf Γ) v)\n  w-app : ∀ {Γ s P v} → 𝒲 Γ s P → 𝒲 Γ (v ∷ s) (App P v)\n  w-fop : ∀ {Γ s P α t x} → 𝒲 Γ (α ∷ s) P → x ∉ dom Γ → 𝒲 ((x , eqv , α) ∷ Γ) s (Fun P t x)\n  w-fun : ∀ {Γ P t x} → 𝒲 Γ [] P → x ∉ dom Γ → 𝒲 ((x , sub , t) ∷ Γ) [] (Fun P t x)"
   },
   {
    "id": "T:CoCtx",
@@ -4536,6 +4573,14 @@
    "module": "MPSS.Frame",
    "sig": "App : (Tm → Set) → Tm → Tm → Set",
    "body": "App P v z = P (app z v)\n"
+  },
+  {
+   "id": "F:Wf",
+   "name": "Wf",
+   "display": "Wf",
+   "module": "MPSS.Frame",
+   "sig": "Wf : Ctx → Tm → Set",
+   "body": "Wf Γ a = Γ ⊢ a wf\n"
   },
   {
    "id": "F:EStep",
@@ -4935,6 +4980,9 @@
    "T:_⊢_wf",
    "T:_⊢_⊑*wf[_]_"
   ],
+  "8g": [
+   "T:Obligation"
+  ],
   "T:_∣_↣_∣_": [
    "T:Ctx",
    "T:Stack",
@@ -5137,6 +5185,20 @@
    "T:_∣_⊢[_]_◁*_",
    "T:_∣_⊢_⟶ᵉ_"
   ],
+  "T:Obligation": [
+   "T:𝒲"
+  ],
+  "T:𝒲": [
+   "F:App",
+   "F:Fun",
+   "F:Wf",
+   "F:dom",
+   "T:Ctx",
+   "T:LC",
+   "T:Stack",
+   "T:Tm",
+   "T:_⊢_wf"
+  ],
   "F:plug": [
    "T:CoCtx",
    "T:CoLC",
@@ -5229,6 +5291,11 @@
    "F:closeRec",
    "T:LC",
    "T:Tm"
+  ],
+  "F:Wf": [
+   "T:Ctx",
+   "T:Tm",
+   "T:_⊢_wf"
   ]
  },
  "groups": [

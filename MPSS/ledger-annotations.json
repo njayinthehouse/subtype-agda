@@ -396,9 +396,9 @@
      "what": "Prove the conjecture by induction on the domain rank of the target, then the context, then the chain, with the narrowing push (Lemma 8e) for each promotion and the chain at a narrowed leaf from the induction hypothesis at the bound, whose rank is lower.",
      "outcome": "open",
      "kind": "original",
-     "where": "MPSS/CONJ8.md §10; MPSS.PushWf, MPSS.FunLift0, MPSS.Conj8Pair",
+     "where": "MPSS/CONJ8.md §10; MPSS.Conj8FromLeaves, MPSS.Annotate, MPSS.PushWf, MPSS.DomainOrder",
      "because": "The probe showed each round's bound is the domain of the previous round's, and that the substitution route does not descend in that order.",
-     "why": "A plan, not a proof: the structural half is mechanized (Lemma 8e) and the recursion runs correctly on every instance tried; owed are the rank lemmas (invariance under ≡wf and along ≤*wf between applicable terms) and the side condition at the points of a lifted chain, which forces the lifting to stay in stack form and to be proved together with the well-formedness of its points. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
+     "why": "A plan, not a proof. Machine-checked: Conjecture 8 from one obligation (Lemma 8g) — the chain from the operand to the annotation when an abstraction meets an operand, in stack form under the generated side conditions; and the descent step (MPSS.DomainOrder: that annotation is the domain of the target). Owed: the obligation itself, by induction on the rank of the annotation, which needs the rank lemmas and the side condition at the points of a lifted chain proved together with the lifting. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
      "change": "conj8-narrowing-agda"
     }
    ]
@@ -891,6 +891,21 @@
      "change": "conj8-narrowing-agda"
     }
    ]
+  },
+  "8g": {
+   "name": "Conjecture 8 from one obligation",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Conjecture 8 from the supplier of the chain α ◁* t at an abstraction λx≤t.u that meets an operand α — at any stack of any extension of x ≡ α, Γ, under any side condition generated from 'z applied to v is well-formed' by the application and binder wrappers that holds at t.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.Conj8FromLeaves, MPSS.Annotate, MPSS.PushWf",
+     "because": "FunLift and FOpLift over spines cannot be called recursively: a chain of whole applied terms cannot be taken apart into steps at a stack. The push in stack form can.",
+     "why": "conj8-from-obligation : Obligation → Conj-8. The annotation of a plain derivation is structural and carries the side condition down unchanged; an abstraction already entered under an operand needs nothing (FOpLift disappears); the obligation is Conjecture 8 at the pair (operand, annotation) in stack form, which is what an induction on the rank of the annotation needs.",
+     "change": "conj8-narrowing-agda"
+    }
+   ]
   }
  },
  "detail": {
@@ -1174,6 +1189,9 @@
   },
   "8f": {
    "account": "<code>Lem-9ᵖ</code> and <code>Lem-7ᵖ</code> with the hypothesis <code>C8At Γ₀ α t</code> — the conjecture for the one pair, in every context extending <code>Γ₀</code>. Not a result of the paper."
+  },
+  "8g": {
+   "account": "<code>conj8-from-obligation : Obligation → Conj-8</code>, with <code>Obligation = NewLeaf 𝒲 …</code>. Everything in the recursion of Conjecture 8 except the call back into it is machine-checked: <code>⇛-push</code> (Lemma 8e), <code>annotate</code>, <code>steplift</code>, and <code>conj8</code> of Lemma 8b. Not a result of the paper."
   }
  },
  "deps": {
@@ -1920,7 +1938,7 @@
    "id": "conj8-narrowing-agda",
    "when": "2026-09-18",
    "title": "The narrowing route, mechanized as far as its structural half",
-   "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter. MPSS.DomainOrder states the domain order and proves the descent step. What is left is the supply of the chain at a narrowed leaf, by induction on the domain rank of the bound — on paper in CONJ8.md §10."
+   "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter, the annotation of a plain derivation for it, and Conjecture 8 from the one obligation that is left — the chain at an abstraction that meets an operand; the domain order and its descent step. Owed: that obligation, by induction on the domain rank of the annotation (CONJ8.md §10)."
   }
  ]
 }

@@ -313,13 +313,23 @@ Logs: `.search-logs/lift5_*.log`, `lift5_recheck.log`, `lift7s_*.log`.
 
 ## 10. What is mechanized of §9, and the proof it is a part of — 2026-09-18, night
 
-Three new `--safe` modules, nothing existing touched.
+Six new `--safe` modules, nothing existing touched.
 
 | module | content |
 | --- | --- |
 | `MPSS/Conj8Pair` | `Lem-9ᵖ`, `Lem-7ᵖ`: Lemmas 9 and 7 for the substitution `x := α` with `α ≤*wf t` need Conjecture 8 **at the pair `(α, t)` only**, in the contexts extending the one the pair lives in (`C8At Γ α t`). The proofs are those of `MPSS/Lemma9` and `MPSS/Lemma7` with the one call replaced |
 | `MPSS/FunLift0` | `FunLift₀`: `(λx≤t.u) v ≤*wf (λx≤t.u′) v` from a body promotion under `x ≤ t`, **from `C8At Γ v t`** — §7's sketch: both sides β-reduce through well-formed terms (`Prop-17ʷ`), `v ≤*wf t` by inversion (`operand≤`: Lemmas 10, 15, 16), the middle is `Lem-9ᵖ`, the two ends are well-formed by `Lem-7ᵖ` |
 | `MPSS/PushWf` | `⇛-push`: §9's `push`, for the chains the conjecture is about. A promotion derivation at `Γˢ ∣ s₀`, annotated at its leaves, replays at the narrowed `Γᵉ ∣ s₀ ++ s` as `Γᵉ ∣ s₀ ++ s ⊢[ P ] a ◁* a′` (`MPSS/Frame`), the side condition `P` a parameter that becomes `App P v` under an application and `Fun P t x` under a binder. An abstraction that meets an operand narrows its parameter and goes on (`q-fun-cons`); the datum at a narrowed variable is **one chain `α ◁* t` at the stack in force under the side condition in force** — not `MPSS/Push`'s reachability at every stack, which `MPSS/ReachFails` refutes |
+
+| `MPSS/Annotate` | `push-from-leaves`: a *plain* promotion derivation, with the side condition at its two ends, lifts to `Γᵉ ∣ s₀ ++ s` — the annotation `⇛` is built by recursion on the derivation, the side condition carried down unchanged (`App P v u` is `P (app u v)`; `Fun P t x (u ^ x)` is `P (lam t u)` up to `close-open`). Asked from outside: a supplier of the chain `α ◁* t` at each rebound variable, and one (`NewLeaf`) at each abstraction that meets an operand — for a class `𝒫` of side conditions closed under the two wrappers |
+| `MPSS/Conj8FromLeaves` | **`conj8-from-obligation : Obligation → Conj-8`.** With `𝒫` the class `𝒲` generated from "`z` applied to `v` is well-formed" by the wrappers, `StepLift` follows from `NewLeaf 𝒲`, and `conj8` of `MPSS/Conj8Reduction` does the rest. `FOpLift` is gone — an abstraction already entered under an operand is structural — and `FunLift` has become the one obligation, in stack form |
+
+`Obligation`, unfolded: *for a generated side condition `P` at `Γᵉ ∣ α ∷ s′` that holds at
+`λx≤t.u` and `λx≤t.u′`, and `x` fresh — for every extension `Γ′` of `x ≡ α, Γᵉ`, every stack `σ`
+and every generated `P′` at `Γ′ ∣ σ` that holds at `t`: a chain `Γ′ ∣ σ ⊢[ P′ ] α ◁* t`.* That is
+Conjecture 8 at the pair (operand, annotation), in the narrowed context, at a stack, with the
+well-formedness of the wrapped points as the side condition — the form in which the recursion can
+call itself, and the only thing not machine-checked.
 
 `MPSS/DomainOrder` adds the order itself (`_▷ᵈ_`: a target steps down to its domain and to itself
 applied, in any extension of its context), `domain-step` — an abstraction `λx≤w.u` below `T`, with

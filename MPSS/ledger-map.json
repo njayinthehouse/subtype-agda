@@ -150,6 +150,16 @@
    "supports": [
     "8"
    ]
+  },
+  {
+   "id": "8g",
+   "ref": "Lemma 8g",
+   "names": [
+    "conj8-from-obligation"
+   ],
+   "supports": [
+    "8"
+   ]
   }
  ]
 }
