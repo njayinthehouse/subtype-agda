@@ -146,3 +146,150 @@ stepMid : ∀ {Γ s} → Γ ∣ s prevalid → Γ ∣ s ⊢ mid ⟶ᵉ LOO
 stepMid {Γ} pv =
   Me-Bet {u = LOO} {u' = LOO} [] (λ _ → ⟶ᵉ-refl pv lcLOO closedLOO) (⟶ᵉ-refl (prevalid-nil pv) lcω closedω)
 ```
+
+## The hypotheses of the instance
+
+In any prevalid context that defines `R`.
+
+```agda
+module Hyp {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
+
+  open Unfold
+
+  R∈ : ∀ {N : List Name} → dom Γ ⊑ N → fv Rv ⊑ N
+  R∈ f (here refl) = f (∈-dom mR)
+
+  pvx : ∀ {x t} → x ∉ dom Γ → LC t → fv t ⊑ dom Γ → ((x , sub , t) ∷ Γ) prevalid
+  pvx x∉ lt ft = Pv-Ctx pv x∉ lt ft
+
+  wfR : Γ ⊢ Rv wf
+  wfR = Wf-PrE pv mR
+
+  wfLRR : Γ ⊢ LRR wf
+  wfLRR = Wf-Fun (dom Γ) (λ x∉ → Wf-PrE (pvx x∉ lc-fvar (R∈ (λ h → h))) (there mR)) wfR
+
+  wfLRT : Γ ⊢ LRT wf
+  wfLRT = Wf-Fun (dom Γ) (λ x∉ → Wf-Top (pvx x∉ lc-fvar (R∈ (λ h → h)))) wfR
+
+  -- λx≤R.R reduces to λx≤W.W in one step
+  stepLRR : Γ ∣ [] ⊢ LRR ⟶ᵉ LOO
+  stepLRR = Me-Fun (dom Γ) (stepR mR (Pv-Nil pv))
+                   (λ x∉ → stepR (there mR) (Pv-Nil (pvx x∉ lc-fvar (R∈ (λ h → h)))))
+
+  -- λx≤W.W is below R, and below λx≤R.R: the right-hand ends of the layers
+  LOO⊑R : ∀ {m} → Γ ⊢ LOO ⊑wf[ m ] Rv
+  LOO⊑R = Ws-Rgh (Ws-Rgh (Ws-Rgh (Ws-Rfl pv) (stepMid (Pv-Nil pv))) (stepW pv)) (stepR mR (Pv-Nil pv))
+
+  R≤LRR : Γ ⊢ Rv ≤*wf LRR
+  R≤LRR = Ws-Sub wfR
+            (Ws-Lf1 (stepR mR (Pv-Nil pv)) (Ws-Lf1 (stepW pv) (Ws-Lf1 (stepMid (Pv-Nil pv))
+               (Ws-Rgh (Ws-Rfl pv) stepLRR))))
+            wfLRR
+
+  LRR≤LRT : Γ ⊢ LRR ≤*wf LRT
+  LRR≤LRT = Ws-Sub wfLRR
+              (Ws-Lf2 wfLRR (Ms-Fun {u' = Top} (dom Γ)
+                               (λ x∉ → Ms-Top (Pv-Nil (pvx x∉ lc-fvar (R∈ (λ h → h))))))
+                      wfLRT (Ws-Rfl pv))
+              wfLRT
+
+  R≤LRT : Γ ⊢ Rv ≤*wf LRT
+  R≤LRT = Ws-Trs R≤LRR wfLRR LRR≤LRT
+```
+
+`x x` is well-formed under `x ≤ R`, so `δ` is; `δ` promotes to `t′`; and `t′` is below `R`, because
+its body `R x` reduces to `W` under the operand `x`.
+
+```agda
+module Hyp₂ {Γ : Ctx} (pv : Γ prevalid) (mR : R ≐ W ∈ Γ) where
+
+  open Unfold
+  open Hyp pv mR public
+
+  module _ {x : Name} (x∉ : x ∉ dom Γ) where
+
+    Γx : Ctx
+    Γx = (x , sub , Rv) ∷ Γ
+
+    pv′ : Γx prevalid
+    pv′ = pvx x∉ lc-fvar (R∈ (λ h → h))
+
+    open Hyp pv′ (there mR) using () renaming (wfR to wfR′; R≤LRT to R≤LRT′)
+
+    wf-x : Γx ⊢ fvar x wf
+    wf-x = Wf-PrS pv′ (here refl)
+
+    x≤R : Γx ⊢ fvar x ≤*wf Rv
+    x≤R = Ws-Sub wf-x (Ws-Lf2 wf-x (Ms-Pro (Pv-Nil pv′) (here refl)) wfR′ (Ws-Rfl pv′)) wfR′
+
+    wf-xx : Γx ⊢ app (fvar x) (fvar x) wf
+    wf-xx = Wf-App (Ws-Trs x≤R wfR′ R≤LRT′) x≤R
+
+    wf-Rx : Γx ⊢ app Rv (fvar x) wf
+    wf-Rx = Wf-App R≤LRT′ x≤R
+
+    xx⟶Rx : Γx ∣ [] ⊢ app (fvar x) (fvar x) ⟶ˢ app Rv (fvar x)
+    xx⟶Rx = Ms-App (Ms-Pro (Pv-Sta (Pv-Nil pv′) lc-fvar (λ { (here refl) → here refl })) (here refl))
+
+  wfδ : Γ ⊢ δ wf
+  wfδ = Wf-Fun (dom Γ) (λ x∉ → wf-xx x∉) wfR
+
+  wft′ : Γ ⊢ t′ wf
+  wft′ = Wf-Fun (dom Γ) (λ x∉ → wf-Rx x∉) wfR
+
+  -- the hypothesis u ≤*wf t of the instance
+  δ≤t′ : Γ ⊢ δ ≤*wf t′
+  δ≤t′ = Ws-Sub wfδ
+           (Ws-Lf2 wfδ (Ms-Fun {u' = app Rv (bvar 0)} (dom Γ) (λ x∉ → xx⟶Rx x∉)) wft′ (Ws-Rfl pv))
+           wft′
+
+  -- t′ reduces to λx≤W.W: the annotation unfolds, and the body R x unfolds R under the operand x
+  -- and contracts
+  e₁ : Γ ∣ [] ⊢ t′ ⟶ᵉ lam W (app W (bvar 0))
+  e₁ = Me-Fun (dom Γ) (stepR mR (Pv-Nil pv))
+         (λ x∉ → Me-App (stepR (there mR) (Pv-Sta (Pv-Nil (pv′ x∉)) lc-fvar (λ { (here refl) → here refl })))
+                         (Me-Var (Pv-Nil (pv′ x∉))))
+
+  pvW : ∀ {x} → x ∉ dom Γ → ((x , sub , W) ∷ Γ) prevalid
+  pvW x∉ = pvx x∉ lcW closedW
+
+  pvWx : ∀ {x} → x ∉ dom Γ → ((x , sub , W) ∷ Γ) ∣ (fvar x ∷ []) prevalid
+  pvWx x∉ = Pv-Sta (Pv-Nil (pvW x∉)) lc-fvar (λ { (here refl) → here refl })
+
+  reflW : Γ ∣ [] ⊢ W ⟶ᵉ W
+  reflW = ⟶ᵉ-refl (Pv-Nil pv) lcW closedW
+
+  e₂ : Γ ∣ [] ⊢ lam W (app W (bvar 0)) ⟶ᵉ lam W (app mid (bvar 0))
+  e₂ = Me-Fun (dom Γ) reflW (λ x∉ → Me-App (stepWᵃ (pvWx x∉)) (Me-Var (Pv-Nil (pvW x∉))))
+
+  e₃ : Γ ∣ [] ⊢ lam W (app mid (bvar 0)) ⟶ᵉ lam W (app LOO (bvar 0))
+  e₃ = Me-Fun (dom Γ) reflW (λ x∉ → Me-App (stepMid (pvWx x∉)) (Me-Var (Pv-Nil (pvW x∉))))
+
+  e₄ : Γ ∣ [] ⊢ lam W (app LOO (bvar 0)) ⟶ᵉ LOO
+  e₄ = Me-Fun {u' = W} (dom Γ) reflW
+         (λ x∉ → Me-Bet {u = W} {u' = W} [] (λ _ → ⟶ᵉ-refl (Pv-Nil (pvW x∉)) lcW closedW)
+                        (Me-Var (Pv-Nil (pvW x∉))))
+
+  t′≤R : Γ ⊢ t′ ≤*wf Rv
+  t′≤R = Ws-Sub wft′ (Ws-Lf1 e₁ (Ws-Lf1 e₂ (Ws-Lf1 e₃ (Ws-Lf1 e₄ LOO⊑R)))) wfR
+
+  δ≤R : Γ ⊢ δ ≤*wf Rv
+  δ≤R = Ws-Trs δ≤t′ wft′ t′≤R
+
+  δ≤LRT : Γ ⊢ δ ≤*wf LRT
+  δ≤LRT = Ws-Sub wfδ
+            (Ws-Lf2 wfδ (Ms-Fun {u' = Top} (dom Γ) (λ x∉ → Ms-Top (Pv-Nil (pv′ x∉)))) wfLRT (Ws-Rfl pv))
+            wfLRT
+
+  t′≤LRT : Γ ⊢ t′ ≤*wf LRT
+  t′≤LRT = Ws-Sub wft′
+             (Ws-Lf2 wft′ (Ms-Fun {u' = Top} (dom Γ) (λ x∉ → Ms-Top (Pv-Nil (pv′ x∉)))) wfLRT (Ws-Rfl pv))
+             wfLRT
+
+  -- the two plugs of the instance
+  wf-δδ : Γ ⊢ app δ δ wf
+  wf-δδ = Wf-App δ≤LRT δ≤R
+
+  wf-t′δ : Γ ⊢ app t′ δ wf
+  wf-t′δ = Wf-App t′≤LRT δ≤R
+```
