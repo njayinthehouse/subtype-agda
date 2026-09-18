@@ -389,7 +389,7 @@
      "kind": "original",
      "where": "MPSS/conj8-lift-probe.py; MPSS/CONJ8.md §9",
      "because": "The depth probe showed that substitution is what raises the measure, and that keeping the operand in the context, as Ms-FOp does, leaves only a forced +1.",
-     "why": "Valid on every instance: 2,967,285 at size 5 and 1,389,958 sampled at size 7 with stacks of up to three operands, no invalid step, no unresolved chain, no budget hit. On all 29,414 nested rounds the bound of the round is the domain of the bound of the round before — the order on which hereditary substitution terminates. The substitution route (Lemmas 7 and 9 with the context induction) does not descend in it. So the conjecture follows from well-foundedness of the domain order on well-formed bounds, a counterexample needs an infinite domain descent, and an unconditional proof along this recursion needs a normalization statement about MPSS's type level.",
+     "why": "Valid on every instance: 2,967,285 at size 5 and 1,688,723 sampled at size 7 with stacks of up to three operands, no invalid step, no unresolved chain, no budget hit. On all 31,178 nested rounds the bound of the round is the domain of the bound of the round before — the order on which hereditary substitution terminates. The substitution route (Lemmas 7 and 9 with the context induction) does not descend in it. So the conjecture follows from well-foundedness of the domain order on well-formed bounds, a counterexample needs an infinite domain descent, and an unconditional proof along this recursion needs a normalization statement about MPSS's type level.",
      "change": "conj8-narrowing"
     },
     {
@@ -1914,13 +1914,13 @@
    "id": "conj8-narrowing",
    "when": "2026-09-18",
    "title": "Conjecture 8 by narrowing instead of substitution",
-   "summary": "FunLift and FOpLift read as the machine reads them: under an operand the body is reduced under x ≡ v, so the body's derivation is narrowed and pushed by recursion on itself, and a promotion of the parameter becomes its unfolding followed by the lifted chain v ≤*wf t. Run as an algorithm and checked on 4.4 million instances; the recursion descends in the domain order on bounds."
+   "summary": "FunLift and FOpLift read as the machine reads them: under an operand the body is reduced under x ≡ v, so the body's derivation is narrowed and pushed by recursion on itself, and a promotion of the parameter becomes its unfolding followed by the lifted chain v ≤*wf t. Run as an algorithm and checked on 4.7 million instances; the recursion descends in the domain order on bounds."
   },
   {
    "id": "conj8-narrowing-agda",
    "when": "2026-09-18",
    "title": "The narrowing route, mechanized as far as its structural half",
-   "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter. What is left is the supply of the chain at a narrowed leaf, by induction on the domain rank of the bound — on paper in CONJ8.md §10."
+   "summary": "Lemmas 7 and 9 from the conjecture at one pair; FunLift under one operand from the conjecture at the pair (operand, annotation); the push theorem for well-subtyping chains at a stack with the side condition as a parameter. MPSS.DomainOrder states the domain order and proves the descent step. What is left is the supply of the chain at a narrowed leaf, by induction on the domain rank of the bound — on paper in CONJ8.md §10."
   }
  ]
 }

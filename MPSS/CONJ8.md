@@ -265,17 +265,17 @@ finds.
 | --- | --- | --- | --- |
 | terms to size 3, stacks of one or two operands | 60,779 | 17,447 | all valid |
 | terms to size 5 (7 of 8 shards, one lost to memory after 8 of 17 contexts; 4 contexts skipped) | 2,967,285 | 833,161 | all valid; 29 promotion points the oracle missed, all found at chain length 8 |
-| subjects of size 7 that apply their own parameter, sampled (120 per context), stacks of up to three operands, targets read off the subject's forward closure (partial: 20 contexts skipped on memory, 3 shards cut short) | 1,389,958 | 1,155,467 | no invalid step, no unresolved chain, no budget hit; 344 instances keep a promotion point the oracle cannot confirm — terms of about 20 nodes, over its size cap of 18 |
+| subjects of size 7 that apply their own parameter, sampled (120 per context), stacks of up to three operands, targets read off the subject's forward closure (23 contexts skipped on memory, two shards cut short by their time limit) | 1,688,723 | 1,418,772 | no invalid step, no unresolved chain, no budget hit; 507 instances keep a promotion point the oracle cannot confirm — terms of about 20 nodes, over its size cap of 18 |
 
 No instance failed, none ran out of budget, the pending stack reached four operands, and nesting
-reached two rounds (29,408 instances).
+reached two rounds (31,172 instances).
 
 **The order the recursion descends in.** Round `k` narrows a parameter of bound `t_k` to an
 operand `v_k`. The next round happens inside `lift(v_k ≤*wf t_k, σ)`: an abstraction
 `λx′≤t′.…` of that chain meets the first operand of `σ`. That abstraction is below `t_k`, and `t_k`
 is applied to the same operand (`spine t_k σ` is well-formed), so `t_k ≤*wf λt″.⊤` and, by
 inversion (Lemma 10), `t′ ≡wf t″`: **the bound of each round is the domain of the bound of the round
-before.** The probe checks it on every nested round — 29,414 of 29,414. It is the order on which
+before.** The probe checks it on every nested round — 31,178 of 31,178. It is the order on which
 hereditary substitution terminates for simple types, and it is the measure on the given
 derivations that §8 asked for: not their depth, which grows (the pair (body depth, operand depth)
 goes to at most (operand depth, body depth − 1 + operand depth)), but the rank of the bound, with
@@ -320,6 +320,11 @@ Three new `--safe` modules, nothing existing touched.
 | `MPSS/Conj8Pair` | `Lem-9ᵖ`, `Lem-7ᵖ`: Lemmas 9 and 7 for the substitution `x := α` with `α ≤*wf t` need Conjecture 8 **at the pair `(α, t)` only**, in the contexts extending the one the pair lives in (`C8At Γ α t`). The proofs are those of `MPSS/Lemma9` and `MPSS/Lemma7` with the one call replaced |
 | `MPSS/FunLift0` | `FunLift₀`: `(λx≤t.u) v ≤*wf (λx≤t.u′) v` from a body promotion under `x ≤ t`, **from `C8At Γ v t`** — §7's sketch: both sides β-reduce through well-formed terms (`Prop-17ʷ`), `v ≤*wf t` by inversion (`operand≤`: Lemmas 10, 15, 16), the middle is `Lem-9ᵖ`, the two ends are well-formed by `Lem-7ᵖ` |
 | `MPSS/PushWf` | `⇛-push`: §9's `push`, for the chains the conjecture is about. A promotion derivation at `Γˢ ∣ s₀`, annotated at its leaves, replays at the narrowed `Γᵉ ∣ s₀ ++ s` as `Γᵉ ∣ s₀ ++ s ⊢[ P ] a ◁* a′` (`MPSS/Frame`), the side condition `P` a parameter that becomes `App P v` under an application and `Fun P t x` under a binder. An abstraction that meets an operand narrows its parameter and goes on (`q-fun-cons`); the datum at a narrowed variable is **one chain `α ◁* t` at the stack in force under the side condition in force** — not `MPSS/Push`'s reachability at every stack, which `MPSS/ReachFails` refutes |
+
+`MPSS/DomainOrder` adds the order itself (`_▷ᵈ_`: a target steps down to its domain and to itself
+applied, in any extension of its context), `domain-step` — an abstraction `λx≤w.u` below `T`, with
+`T v` well-formed, has `w ≡wf` the domain of `T` and `v ≤*wf w` — and the conditional conjecture
+`Conj-8ʳ` as a type, **declared and not proved**.
 
 So the structural half of the recursion is checked: `lift → push` is `⇛-push`, and the only thing
 it asks from outside is `push → lift`, the chain at a narrowed leaf.
@@ -370,5 +375,5 @@ the annotation's rank — and nothing small builds one: self-application at a bo
 
 **Status.** Conjecture 8 is neither proved nor refuted. There is a proof plan for every instance
 whose targets have finite domain rank — the structural half mechanized (`⇛-push`), the recursion
-validated by execution on 4.4 million instances, steps 1 and 5 above owed — and any
+validated by execution on 4.7 million instances, steps 1 and 5 above owed — and any
 counterexample has infinite domain rank.
