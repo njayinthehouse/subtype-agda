@@ -398,7 +398,7 @@
      "kind": "original",
      "where": "MPSS/CONJ8.md §10; MPSS.PushWf, MPSS.FunLift0, MPSS.Conj8Pair",
      "because": "The probe showed each round's bound is the domain of the previous round's, and that the substitution route does not descend in that order.",
-     "why": "On paper it goes through for every instance whose targets have finite domain rank; the structural half is mechanized, the rank induction and the side condition at the points of a lifted chain are not. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
+     "why": "A plan, not a proof: the structural half is mechanized (Lemma 8e) and the recursion runs correctly on every instance tried; owed are the rank lemmas (invariance under ≡wf and along ≤*wf between applicable terms) and the side condition at the points of a lifted chain, which forces the lifting to stay in stack form and to be proved together with the well-formedness of its points. Unconditionally it needs the domain order well-founded on well-formed bounds, which MPSS's rules do not give: a well-formed T ≡wf λx≤T.⊤ would make the recursion loop. No such T is small, and a counterexample to the conjecture must contain one.",
      "change": "conj8-narrowing-agda"
     }
    ]

@@ -344,9 +344,17 @@ a citation is an obligation.
 4. *Narrowed leaf* `x ≡ α`, old bound `w`, stack `σ`: the chain `α ◁* w` at `σ` is the main
    statement at the target `w` for the spine `σ` in the narrowed context, by 2 at lower rank.
 5. *Side condition.* `P z` is well-formedness of the whole term with `z` in the hole. For the
-   points of a lifted chain it follows from `z ≤*wf w` and well-formedness at `w`, frame by frame:
-   `app-wf-mid` at an application frame, with `z v ≤*wf w v` from 2 at lower rank at the smaller
-   context; `Wf-Fun` at a binder, in the **un-narrowed** context, where 2 applies as well.
+   points of a lifted chain it should follow from `z ≤*wf w` and well-formedness at `w`, frame by
+   frame of the wrapper: `app-wf-mid` at an application frame, with `z v ≤*wf w v` from the lifted
+   chain at the smaller wrapper; `Wf-Fun` at a binder, in the **un-narrowed** context, where the
+   same lifting has to be available. **This is the least checked step.** It makes the induction
+   (rank of the bound, size of the wrapper, length of the chain), with the lifting and the
+   well-formedness of its points proved together; and the lifting must be kept in stack form
+   (`◁*` at a stack, as `⇛-push` returns it) all the way, because a chain of whole applied terms
+   cannot be taken apart again into steps at a stack, so `FunLift`/`FOpLift` as stated in
+   `MPSS/Conj8Push` — over spines at the empty stack — are the wrong interface for the recursion.
+   The probe checks the conclusion of this step (every wrapped point well-formed) on every
+   instance, not the argument.
 6. *The leaf's chain is ours to choose only below the first round.* The top chain is given; the
    chains at narrowed leaves come out of `Wf-App` premises (through `operand≤`), so they too are
    given. Step 4 needs nothing of them but the rank of their target.
@@ -360,6 +368,7 @@ well-formedness rules out such a `T` — contexts need only be prevalid, and `Wf
 the annotation's rank — and nothing small builds one: self-application at a bound `P` needs
 `P ≤*wf λd.⊤` and `P ≤*wf d`, which with invariant annotations is a recursive type.
 
-**Status.** Conjecture 8 is neither proved nor refuted. It is proved, on paper, for every
-instance whose targets have finite domain rank, with the structural half mechanized; and any
+**Status.** Conjecture 8 is neither proved nor refuted. There is a proof plan for every instance
+whose targets have finite domain rank — the structural half mechanized (`⇛-push`), the recursion
+validated by execution on 4.4 million instances, steps 1 and 5 above owed — and any
 counterexample has infinite domain rank.
