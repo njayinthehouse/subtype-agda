@@ -137,6 +137,22 @@ changes `⟶ᵉ`, so Lemma 1 and Lemma 2 would need rechecking against the repai
 
 ---
 
+### The assumed repair, refuted; the repair that holds (2026-09-13)
+
+`MPSS/Assumed` carried `Prop-17ʳ`, the printed statement with prevalidity, local closure and a
+scoping premise `fv u ⊆ dom Γ` on the subject, at every stack. `MPSS/Prop17Refuted` proves
+`¬ Prop-17ʳ` from both counterexamples above: the instance at the empty stack is `Prop-17` word
+for word, and the scoping premise constrains the redex, not the body that `Me-Bet` opens with a
+fresh name. So Lemma 6, Theorem 5, Proposition 27 and `type-safety` in `MPSS/Unconditional`, all
+proved from `Prop-17ʳ`, established nothing. The entry above that said postulating a refuted
+statement would make the assumption set inconsistent applied to the assumption actually made.
+
+The repair is to the statement, as a chain: `MPSS/Prop17Chain` proves `Prop-17ʷ` — for
+well-formed `u`, `v` with `u ↦ v`, a chain `Γ;nil ⊢ u ⟶≡ … ⟶≡ v` every term of which is
+well-formed — with nothing assumed, and `MPSS/Preservation17` re-derives the three consumers
+from it, so that type safety rests on Conjecture 8 alone. The rule repair (binding the parameter
+in `Me-Bet`) was not needed.
+
 ## Further defects, found while discharging the obligations
 
 These are not refutations — each statement below is true and is proved in this development. What

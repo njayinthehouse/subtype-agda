@@ -10,8 +10,8 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | --- | --- | --- | --- |
 | 3 | transitivity elimination | `Transitivity` | 1, 2 |
 | 4 | progress | `Progress` | 1, 2 |
-| 5 | preservation | `Preservation` | 1, 2, 17ʳ, Conj 8 |
-| 6 | evaluation preserves well-formedness | `Evaluation` | 1, 2, 17ʳ, Conj 8 |
+| 5 | preservation | `Preservation17` (`Thm-5ʷ`); earlier `Preservation`, from the refuted 17ʳ | Conj 8 |
+| 6 | evaluation preserves well-formedness | `Preservation17` (`Lem-6ʷ`); earlier `Evaluation`, from the refuted 17ʳ | Conj 8 |
 | 7 | substitution preserves well-formedness | `Lemma7` | Conj 8 |
 | 9 | promotion under substitution, statically | `Lemma9` | Conj 8 |
 | 10 | inversion | `Inversion` | 1, 2 |
@@ -27,7 +27,12 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | 24 | third conclusion | `CoNarrow`, `CoPromote` | — |
 | 25 | narrowing in equivalence reduction | `Narrowing` | — |
 | 26 | narrowing prevalidity | `Narrowing` | — |
-| 27 | reduction preserves subtyping | `Preservation` | 17ʳ |
+| 17ʷ | **repaired**: on well-formed terms an evaluation step is a chain of equivalence steps through well-formed terms | `Prop17Chain` | — |
+| 27 | reduction preserves subtyping | `Preservation17` (`Prop-27ʷ`); earlier `Preservation`, from the refuted 17ʳ | — |
+| — | renaming for the three well-formedness judgements | `WfRename` | — |
+| — | abstraction congruence of `≤*wf` from a cofinite family (`FunCongr`) | `CoFun` | — |
+| — | Conjecture 8 from `StepLift`, one promotion lifted under one application (`conj8`) | `Conj8Reduction` | `StepLift` |
+| — | Conjecture 8 from the two binding rules (`conj8-from-lifts`) | `Conj8Push` | `FunLift`, `FOpLift` |
 | 28 | substitution preserves prevalidity | `Subst28` | — |
 | 29, 30 | promotion under substitution | `Lemma2930` | — |
 | 31, 32 | reduction under substitution | `Subst`, `Open` | — |
@@ -45,6 +50,7 @@ taken as explicit arguments, so each result carries its dependencies in its own 
 | # | statement | module |
 | --- | --- | --- |
 | 17 | `u ↦ v` implies `Γ;s ⊢ u ⟶≡ v` | `BetaScope`, `BetaScopeWf` |
+| 17ʳ | the repaired statement `Assumed` carried: the same with a scoping premise on the redex | `Prop17Refuted` |
 | 18 | reflexivity, as printed | `ReflFails` |
 | — | `⟶≡` preserves well-formedness | `EqvWf` |
 | — | promotion is stack-monotone | `Diff` |
@@ -72,9 +78,12 @@ is not proved.
 
 | # | why |
 | --- | --- |
-| 1, 2 | commutation and the diamond; unproved here, and the printed induction is not well-founded (`AUDIT`) |
-| 8 | the paper's own conjecture |
-| 17ʳ | repaired form; the printed one is refuted |
+| 8 | the paper's own conjecture — the only assumption under type safety (`Preservation17`); reduced in Agda to the two binding rules, `FunLift` and `FOpLift` (`Conj8Push`, 2026-09-13; `CONJ8.md` §7) |
+
+No longer assumed by anything on the path to the paper's theorems: Lemmas 1 and 2 (the variant
+route, below) and `Prop-17ʳ`, which `Assumed` still declares for `Evaluation`, `Preservation`
+and `Unconditional` — modules kept in place, superseded by `Preservation17` — and which
+`Prop17Refuted` shows is uninhabited (2026-09-13).
 
 ## Defects recorded in `AUDIT.md`
 
@@ -164,3 +173,19 @@ Conjecture 8 and the repaired Proposition 17). **Lemmas 1 and 2 of `Assumed` are
 path to any of the paper's theorems.** The one-step diamond `Lem-2` for the original relation
 remains open as a statement about `⟶ᵉ` (see the mixed diamond above); the paper's metatheory no
 longer depends on it.
+
+## Proposition 17 repaired — 2026-09-13
+
+The assumed repair `Prop-17ʳ` was found to be refutable: its instance at the empty stack is the
+statement `BetaScope` refutes, so everything proved from it (Lemma 6, Theorem 5, Proposition 27,
+type safety in `Unconditional`) was proved from a false hypothesis (`Prop17Refuted`). The repair
+that holds is the chain form with well-formedness carried along, **`Prop-17ʷ`** (`Prop17Chain`):
+if `u` and `v` are well-formed and `u ↦ v`, then `Γ;nil ⊢ u ⟶ᵉ* v` through well-formed terms.
+The β case takes two steps — `Me-App` over `Me-FOp` binds the parameter to the operand and
+unfolds it (`unfold`), then `Me-Bet` contracts the closed body — and the intermediate
+`(λx≤t. u[x\v]) v` is well-formed because its body is the contractum. The congruence cases lift
+the chain: annotations by Lemma 23 step by step, applications by `push≡*wf` and `pushᵉ`, bodies
+by closing the chain at one fresh name and renaming, which needed renaming for the
+well-formedness judgements (`WfRename`, new). `Preservation17` re-derives Proposition 27, Lemma 6
+and Theorem 5 from it, and **type safety from Conjecture 8 alone**. Nothing existing was
+modified; the superseded modules stay.
