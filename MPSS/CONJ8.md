@@ -446,3 +446,33 @@ above has an analogue: `c_n c_{n+1}` diverges, is expected below `K`, and can re
 `⊤`. If MPSS's well-formedness admits those combinators, Conjecture 8 and preservation of
 well-formedness fail there; if Conjecture 8 holds, it does not admit them. Both are open; they
 are not independent.
+
+## 12. The proof of `Obligation`: work list — 2026-09-18, morning
+
+`Obligation` (`MPSS/Conj8FromLeaves`) is what is left. Facts live in two kinds of context and the
+proof has to keep them apart: **well-formedness and `≤*wf` facts live in the un-narrowed context
+`Γˢ`** (they come out of `Wf-App` and `Wf-Fun` premises), **the steps of the chain being built
+live in the narrowed context `Γᵉ`**, and `Γˢ ▶ᴸ Γᵉ` with its suppliers is the bridge — which is why
+`NewLeaf` now receives it.
+
+Done: `Wrapper` (a generated side condition is well-formedness of the closed-up term, both
+directions), `BelowWf` (`below-wf`: from Conjecture 8 at a target `t`, every `m ≤*wf t` is
+well-formed in every covariant context `t` is — the side condition at the points of a lifted
+chain, from the induction hypothesis at the bound).
+
+Owed, in dependency order:
+
+1. `⊒` as a prefix, and `≤*wf` weakened along it.
+2. The ranked layer walk: `walk`, `appcongr`, `conj8-n` of `MPSS/Conj8Reduction` with `StepLift`
+   asked only for steps below a target of bounded rank (they take it for all steps now).
+3. A generated wrapper read as a covariant context: `close ok z = plug C z′`, with the frame
+   variables of `z` closed at the right indices; then `below-wf` gives the side condition.
+4. The operand's chain when the abstraction was reached through an `Ms-FOp` frame,
+   `((λt₀.λt.u) α₀) α`: there `α ≤*wf t` holds only with `y ≡ α₀`, and comes from
+   `α ≤*wf d`, `(λt₀.λt.u′) α₀ ≤*wf λd.⊤` and an inversion of that chain through the β-step
+   (`t[α₀]` and `d` have a common reduct; `⟶ᵉ-subst≡` for the annotation). Without an `Ms-FOp`
+   frame in between it is `operand≤`.
+5. The numeric rank `Rank≤ n`, its invariance under `≡wf` and along `≤*wf` between applicable
+   terms, and the descent (`domain-step`, and its form under item 4).
+6. The induction on the rank bound `n`: `NewLeaf` at `n + 1` from the conjecture at rank `n`
+   (for `below-wf`) and `push-from-leaves` with `NewLeaf` at `n`.
