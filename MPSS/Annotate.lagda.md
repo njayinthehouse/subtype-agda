@@ -107,11 +107,14 @@ module _ (𝒫 : Ctx → Stack → (Tm → Set) → Set₁)
 ## The annotation
 
 The second supplier, `NewLeaf`, is asked when an abstraction meets an operand: the chain from that
-operand to the abstraction's annotation.
+operand to the abstraction's annotation. It is given everything in hand at that point — the
+narrowing so far with its suppliers, the step itself, the side condition at its two ends.
 
 ```agda
   NewLeaf : Set₁
-  NewLeaf = ∀ {Γᵉ α s′ P t u u′ x}
+  NewLeaf = ∀ {Γˢ Γᵉ α s′ P t u u′ x}
+          → Γˢ ▶ᴸ Γᵉ → Γˢ ∣ [] ⊢ lam t u ⟶ˢ lam t u′
+          → Γᵉ ∣ (α ∷ s′) prevalid
           → 𝒫 Γᵉ (α ∷ s′) P → P (lam t u) → P (lam t u′) → x ∉ dom Γᵉ
           → Supply ((x , eqv , α) ∷ Γᵉ) α t
 
@@ -194,7 +197,7 @@ operand to the abstraction's annotation.
         body : ∀ {x} → x ∉ (L₀ ++ L ++ dom Γᵉ ++ fv u ++ fv u′)
              → _ ∣ ((x , eqv , α) ∷ Γᵉ) ∣ [] ∣ s′ ⊢[ Fun P t x ] (u ^ fvar x) ⇛ (u′ ^ fvar x)
         body {x} x∉ =
-          annotate s′ (l-eqv n lα fα (new-leaf {u = u} {u′ = u′} ok pa pa′ x∉Γ))
+          annotate s′ (l-eqv n lα fα (new-leaf {u = u} {u′ = u′} n (Ms-Fun {u' = u′} L F) pvᵉ ok pa pa′ x∉Γ))
                    (F₀ x∉L₀) (fv-open-cons {b = u} x (fv-lam-body {t = t} {b = u} fa)) (F x∉L)
                    (𝒫-fop ok x∉Γ)
                    (prevalid-cons (prevalid-pop pvᵉ) x∉Γ lα fα)
