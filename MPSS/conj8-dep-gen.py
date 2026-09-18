@@ -85,7 +85,13 @@ while stats['instances'] < count and tries < count * 400:
             line = f"p = {show(p)} | p′ = {show(p2)} | stack {S.showS(S_)}"
             for route in ('subst', 'narrow'):
                 try:
-                    if route == 'subst': R, Z = run_instance(G, [('s', p, p2)], S_); bad = check0(G, Z)
+                    if route == 'subst':
+                        R, Z = run_instance(G, [('s', p, p2)], S_); bad = check0(G, Z)
+                        rank_descent(R, stats)
+                        for e in R.trace: stats['subst call: ' + e[1]] += 1
+                        if any(e[0] is not None for e in R.trace) and stats['nested_printed'] < 10:
+                            stats['nested_printed'] += 1
+                            print("NESTED:", line, "|", " / ".join(f"#{i}←{e[0]} [{e[1]}] {show(e[2])}≤{show(e[3])}" for i, e in enumerate(R.trace)))
                     else:
                         R = Run(); Z = lift(R, G, [('s', p, p2)], S_, 0, (p, p2)); bad = check(G, Z, S_, None)
                     bad = [b for b in bad if not ('not found wf' in b[0] and wf_strong(G, b[1] if ('from' in b[0] or 'turn' in b[0]) else b[2]))]

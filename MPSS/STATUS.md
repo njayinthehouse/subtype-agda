@@ -228,3 +228,10 @@ Full account in `CONJ8.md` §8–10. In short:
   `(λx≤R. (x δ) δ) δ ↦ (δ δ) δ` leaves well-formedness. Not MPSS — prevalidity forbids the entry —
   but it ties the conjecture to the absence of bounds of infinite domain rank, which a type-level
   looping combinator (the paper's §6) would supply.
+- **Correction, the morning of 2026-09-18 (`CONJ8.md` §13).** The narrowing route is wrong for
+  bounds that depend on a parameter an earlier operand instantiates: its intermediate point is
+  ill-formed, and `Conj8FromLeaves.Obligation` is false, though the conjecture holds at the
+  instance by contracting the redexes first. `PushWf`, `Annotate`, `Conj8FromLeaves` and
+  `Wrapper` typecheck and lead nowhere. The route that survives every instance, dependent bounds
+  included, is the paper's own — β first, then Lemmas 7 and 9 (`conj8-subst-probe.py`,
+  `conj8-dep-gen.py`; `FunLift0`, `Conj8Pair`, `BelowWf`, `RankedWalk`). Its measure is open.
