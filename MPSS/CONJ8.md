@@ -575,3 +575,22 @@ reduces to `W`, as `R` does), so is `g δ`, and `g δ ↦ (δ δ) δ`, which is 
   (`MPSS.DomainOrder.Ranked` is uninhabited at `T`). A proof under the repaired prevalidity would
   have to be by reducibility, with the instantiations of a parameter bounded by `⊤` interpreted by
   candidates — and that is exactly what type-level computation without a normal form would break.
+
+## 15. The repaired statements — 2026-09-18
+
+`MPSS/WfCtx`: `WfCtx Γ` — every annotation well-formed in the entries before it — and
+`Conj-8ʷᶜ`, `Lem-6ʷᶜ`, `Preservationʷᶜ`, the statements with `WfCtx Γ` as a hypothesis on the
+logical context. The premise is on the statement's context, not inside the reductions: a
+well-subtyping chain takes equivalence steps through ill-formed terms and `Me-FOp` binds a
+parameter to whatever operand is there, so a well-formedness premise in `Pv-EqA` itself would
+change `⟶ᵉ`, not just the statements. `¬WfCtx-Γ₀`: the context of §14 is excluded (`ω ω` is not
+well-formed — its annotation `s s` would need a variable bounded by `⊤` below an abstraction). So
+the three statements are **open**, and every theorem of the development holds over `WfCtx`
+contexts as it is.
+
+The probes' 133 contexts include 8 with an ill-formed annotation (`z ≤ y ⊤` or `z ≡ y ⊤` where `y`
+is not below an abstraction); 125 are `WfCtx`. Over those, the substitution route run as an
+algorithm (`conj8-subst-probe.py`): 3,190,343 instances at size 5 (7 of 8 shards), none invalid,
+none unresolved; sampled size 7 still running, none so far. The dependent-bound generator
+(`conj8-dep-gen.py`) works in the empty context, which is `WfCtx`: 800 of 800 valid by the
+substitution route.
