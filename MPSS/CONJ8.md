@@ -590,8 +590,12 @@ contexts as it is.
 
 The probes' 133 contexts include 8 with an ill-formed annotation (`z ≤ y ⊤` or `z ≡ y ⊤` where `y`
 is not below an abstraction); 125 are `WfCtx`. Over those, the substitution route run as an
-algorithm (`conj8-subst-probe.py`): 3,190,343 instances at size 5 (7 of 8 shards), none invalid,
-none unresolved; sampled size 7 still running, none so far. The dependent-bound generator
+algorithm (`conj8-subst-probe.py`): 3,190,343 instances at size 5 (7 of 8 shards done, one cut
+short, 5 contexts skipped on memory), none invalid, none unresolved; sampled size 7 with stacks of
+up to three operands, 1,567,796 instances (4 of 6 shards done, 24 contexts skipped), no invalid
+step, none unresolved, 847 with a promotion point the oracle cannot confirm (terms over its size
+cap). Over all contexts, every nested use of the conjecture (1,037) is at a bound of lower rank
+than the use it sits in. The dependent-bound generator
 (`conj8-dep-gen.py`) works in the empty context, which is `WfCtx`: 800 of 800 valid by the
 substitution route.
 
