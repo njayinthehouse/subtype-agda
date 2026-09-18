@@ -476,3 +476,41 @@ Owed, in dependency order:
    terms, and the descent (`domain-step`, and its form under item 4).
 6. The induction on the rank bound `n`: `NewLeaf` at `n + 1` from the conjecture at rank `n`
    (for `below-wf`) and `push-from-leaves` with `NewLeaf` at `n`.
+
+## 13. The narrowing route is wrong for dependent bounds; `Obligation` is false — 2026-09-18, morning
+
+`conj8-poly-instance.py`. Take `A = λ⊤.⊤` and
+
+    p  = λy≤⊤. λo≤y. λx≤(λz≤y.⊤). x o        p ⟶ˢ p′ = λy≤⊤. λo≤y. λx≤(λz≤y.⊤). (λz≤y.⊤) o
+
+under the context `((□ A) a) α` with `a = A` and `α = λz≤A.z`. Both plugs are well-formed and the
+conjecture **holds**: both sides β-reduce, by equivalence steps, to `α a` and `(λz≤A.⊤) a`, and
+`α ≤*wf λz≤A.⊤` lifts under `a`.
+
+The narrowing algorithm of §9 does something else. It keeps the three abstractions in place, binds
+`y ≡ A`, `o ≡ a`, `x ≡ α`, unfolds `x` to `α` and promotes — at the point
+
+    (λy≤⊤. λo≤y. λx≤(λz≤y.⊤). α o) A a α
+
+which is **not well-formed**: read as a term, its body has `α o` under the *abstract* `y`, where
+`o` is below `y` only and `α`'s domain is `A`. The probe's oracle does not find it well-formed at
+any chain length, and it is not. So:
+
+- **§9's "valid on every instance" was a statement about the instances tried.** None had a bound
+  that depends on a parameter instantiated by an earlier operand; the 542 "unconfirmed" points of
+  the sampled runs have to be re-read in this light.
+- **`Obligation` of `MPSS/Conj8FromLeaves` is false** at this instance: the chain `α ◁* t` it asks
+  for must start at `α` under the side condition "the closed-up term is well-formed", which fails
+  at `α`. `conj8-from-obligation` stays a theorem, with a hypothesis that does not hold.
+- **§10's step 5 is wrong**, not merely unchecked: the closed-up points of a lifted chain need not
+  be well-formed under the abstract binders.
+- What the instance shows is that `≤*wf`'s freedom to take equivalence steps through ill-formed
+  terms is essential: the chain that works β-reduces the consumed redexes **first**, so that
+  promotions happen on instantiated terms. That is the substitution route (`FunLift₀`, Lemmas 7
+  and 9), whose promotion points are reducts of well-formed terms.
+
+So §9's comparison of the two routes is reversed on this shape. What survives: the descent in the
+domain order (`domain-step`), `Conj8Pair`, `FunLift0`, `BelowWf`, `RankedWalk`, and §8, §11. What
+has to be redone: the measure for the substitution route, where §9 found calls to the conjecture
+at pairs `(o, A)` from redexes the body already contains — to be looked at again with the freedom
+to contract those redexes first.

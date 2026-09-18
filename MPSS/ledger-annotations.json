@@ -409,6 +409,15 @@
      "because": "The narrowing recursion descends in the domain order on bounds, and a bound whose domain is itself is the first thing that order does not handle.",
      "why": "No. Every hypothesis of the instance holds (fourteen machine steps, checked), and no chain exists: under the operand every abstraction on the head path is entered by Ms-FOp, so Ms-Pro never applies and the only promotion is Ms-Top, whose ⊤ stays; f′ δ reduces to R, an abstraction, and f δ to δ δ, which reduces to itself. 5,772 terms from f δ and 13,281 from f′ δ within length 6, none in common. Lemma 6 fails with it: (δ δ) δ is the contractum of a well-formed redex and is not well-formed. This is an extension of MPSS, not MPSS: it says the conjecture holds or fails with the existence of well-formed bounds of infinite domain rank — which the paper's §6 expects, through looping combinators.",
      "change": "conj8-rectype"
+    },
+    {
+     "what": "The narrowing plan on p = λy≤⊤. λo≤y. λx≤(λz≤y.⊤). x o under ((□ A) a) α, A = λ⊤.⊤, a = A, α = λz≤A.z.",
+     "outcome": "refuted",
+     "kind": "original",
+     "where": "MPSS/conj8-poly-instance.py; MPSS/CONJ8.md §13",
+     "because": "Working out the side condition at the points of a lifted chain showed that an operand's domain can depend on a parameter the abstract binders leave uninstantiated.",
+     "why": "The conjecture holds at the instance — both sides β-reduce to α a and (λz≤A.⊤) a — but the narrowing algorithm promotes at (λy≤⊤. λo≤y. λx≤(λz≤y.⊤). α o) A a α, which is not well-formed: α o sits under the abstract y, where o is below y only. So the Obligation of Lemma 8g is false, step 5 of the plan is wrong, and the route that works contracts the consumed redexes first — the substitution route. The implication of Lemma 8g stands; its hypothesis does not hold.",
+     "change": "conj8-narrowing-refuted"
     }
    ]
   },
@@ -1200,7 +1209,7 @@
    "account": "<code>Lem-9ᵖ</code> and <code>Lem-7ᵖ</code> with the hypothesis <code>C8At Γ₀ α t</code> — the conjecture for the one pair, in every context extending <code>Γ₀</code>. Not a result of the paper."
   },
   "8g": {
-   "account": "<code>conj8-from-obligation : Obligation → Conj-8</code>, with <code>Obligation = NewLeaf 𝒲 …</code>. Everything in the recursion of Conjecture 8 except the call back into it is machine-checked: <code>⇛-push</code> (Lemma 8e), <code>annotate</code>, <code>steplift</code>, and <code>conj8</code> of Lemma 8b. Not a result of the paper."
+   "account": "<code>conj8-from-obligation : Obligation → Conj-8</code>, with <code>Obligation = NewLeaf 𝒲 …</code>. Everything in the recursion of Conjecture 8 except the call back into it is machine-checked: <code>⇛-push</code> (Lemma 8e), <code>annotate</code>, <code>steplift</code>, and <code>conj8</code> of Lemma 8b. Not a result of the paper. <strong>Its hypothesis is false</strong> (<code>MPSS/CONJ8.md</code> §13): at a bound that depends on a parameter instantiated by an earlier operand, the closed-up point of the lifted chain is ill-formed. The implication stands and is of no use as it is."
   }
  },
  "deps": {
@@ -1954,6 +1963,12 @@
    "when": "2026-09-18",
    "title": "Conjecture 8 against a recursive function type",
    "summary": "In MPSS extended by the one definition R ≡ λx≤R.R, which prevalidity forbids, the conjecture fails at f = λx≤R. x δ, f′ = λx≤R. R δ, δ = λx≤R. x x under the operand δ, and evaluation stops preserving well-formedness. So the conjecture is tied to the absence of bounds of infinite domain rank, which a type-level looping combinator would supply."
+  },
+  {
+   "id": "conj8-narrowing-refuted",
+   "when": "2026-09-18",
+   "title": "The narrowing route fails on dependent bounds",
+   "summary": "An instance with a bound that mentions a parameter instantiated by an earlier operand: the conjecture holds, by β-reducing first, but the narrowing algorithm's intermediate point is ill-formed and the Obligation of Lemma 8g is false there."
   }
  ]
 }
