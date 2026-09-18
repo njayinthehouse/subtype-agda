@@ -621,7 +621,21 @@ substitutions of good terms.
 - `neutral-good`: a term that promotes to the target at every stack — a variable and its bound —
   is good at it. The base case.
 
-Owed: goodness closed under equivalence expansion on the left and under `≡wf` of the target; the
+- `good-expand`, `good-trans`, `good-reduct`, `good-join`: closed under equivalence expansion on
+  the left; composes (the `Ws-Trs` case); a well-formed reduct of the target is good at it; and the
+  chain form a layer needs — two well-formed terms that join by equivalence steps, through terms
+  that need not be well-formed.
+
+So every part of a well-subtyping derivation is covered except the promotion step itself. For a
+step `p ⟶ˢ p′` between well-formed terms, `Good p′ p` goes by the derivation: `Ms-Top` is vacuous
+(`⊤ v` is never well-formed), `Ms-Equ` is `good-join`, `Ms-Pro` is `neutral-good`, `Ms-App` is
+the same statement at the stack one operand deeper — and `Ms-Fun` under a good operand `v` is
+β-expansion to the body **with `v` substituted for the parameter**, where the induction hypothesis
+has to be available. That forces the statement to be about derivations under a simultaneous
+substitution of good terms (Tait's form), over the single-substitution lemmas the development has
+(`⟶ᵉ-drop`, `⟶ˢ-drop′`, `Lem-28-ctx`). That is the next module.
+
+Owed: the
 fundamental lemma (a well-formed `b` under good substitution is well-formed, and `a ≤*wf c` under
 good substitution is good), whose abstraction case is β-expansion with the body taken under the
 substitution extended by the operand; and Conjecture 8 from it, by filling the hole with a
