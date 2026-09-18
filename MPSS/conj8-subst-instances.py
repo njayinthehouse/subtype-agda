@@ -17,7 +17,7 @@ def run(name, G, p, p2, S_):
         print("   algorithm:", type(e).__name__, e); return
     bad = check0(G, Z)
     bad = [b for b in bad if not ('not found wf' in b[0] and wf_strong(G, b[1] if ('from' in b[0] or 'turn' in b[0]) else b[2]))]
-    print("   chain of", len(Z), "steps; calls:", [(d, o, show(a), show(b)) for (d, o, a, b, _) in R.trace])
+    print("   chain of", len(Z), "steps; uses of the conjecture (parent, origin, pair):", [(d, o, show(a), show(b)) for (d, o, a, b, _) in R.trace])
     for (k, a, b) in Z: print("      ", k, show(a), " → ", show(b))
     print("   RESULT:", "valid" if not bad else [(m, show(a), show(b)) for (m, a, b) in bad])
 

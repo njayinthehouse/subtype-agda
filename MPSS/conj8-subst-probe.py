@@ -56,11 +56,15 @@ def beta_head(G, X):
     for a in args[1:]: t2 = ('a', t2, a)
     return [X, rebuild(mid), t2]
 
-def diff(G, X, Y):
+def diff(G, X, Y, hole=None):
     """X and Y differ at one covariant position: the frames down to it (outermost first), the two
-    subterms, and the context extended by the binders passed"""
+    subterms, and the context extended by the binders passed. When the pair in the hole is known
+    (the operand and the annotation it was substituted for), stop there: the two may share
+    structure by accident, and the fact in hand is about them, not about their parts."""
     frames = []
     while True:
+        if hole is not None and (X, Y) == hole:
+            return frames, X, Y, G
         if X[0] == 'a' and Y[0] == 'a' and X[2] == Y[2] and X[1] != Y[1]:
             frames.append(('app', X[2])); X, Y = X[1], Y[1]
         elif X[0] == 'l' and Y[0] == 'l' and X[1] == Y[1] and X[2] != Y[2]:
@@ -70,18 +74,23 @@ def diff(G, X, Y):
         else:
             return frames, X, Y, G
 
-def pair(R, G, X, Y, depth, origin):
+def pair(R, G, X, Y, depth, origin, hole=None):
     if X == Y: return []
     if Y in sreds(G, (), X, K): return [('s', X, Y)]
-    frames, a, b, Gx = diff(G, X, Y)
+    frames, a, b, Gx = diff(G, X, Y, hole)
     if not frames:
         R.calls += 1; R.maxdepth = max(R.maxdepth, depth)
         if R.calls > BUDGET or depth > 30: raise Budget()
         D = chain(G, a, b, 8)
         if D is None: raise Unresolved(f"no chain {show(a)} ≤ {show(b)} in {showG(G)} ({origin})")
-        R.trace.append((depth, origin, a, b, G))
+        R.trace.append((getattr(R, 'parent', None), origin, a, b, G))
+        R.last = len(R.trace) - 1
         return D
-    Kc = pair(R, Gx, a, b, depth, origin)
+    R.last = None
+    Kc = pair(R, Gx, a, b, depth, origin, hole)
+    # the frames are lifted inside the use of the conjecture just made (if one was made)
+    saved = getattr(R, 'parent', None)
+    if R.last is not None: R.parent = R.last
     Gk = Gx
     for fr in reversed(frames):
         if fr[0] == 'app':
@@ -90,6 +99,7 @@ def pair(R, G, X, Y, depth, origin):
             _, x, ann = fr
             Kc = [(k, ('l', ann, closeRec(0, x, p)), ('l', ann, closeRec(0, x, q))) for (k, p, q) in Kc]
             Gk = Gk[1:]
+    R.parent = saved
     return Kc
 
 def under(R, G, A_, B_, v, depth):
@@ -101,7 +111,8 @@ def under(R, G, A_, B_, v, depth):
     left  = [('e', bx[0], bx[1]), ('e', bx[1], bx[2])]
     right = [('r', by[2], by[1]), ('r', by[1], by[0])]
     origin = 'operand meets abstraction' if A_[0] == 'l' else 'redex at the head'
-    return left + pair(R, G, bx[2], by[2], depth + 1, origin) + right
+    hole = (v, A_[1]) if A_[0] == 'l' else None      # the operand against the annotation
+    return left + pair(R, G, bx[2], by[2], depth + 1, origin, hole) + right
 
 def lift1(R, G, D, v, depth):
     out = []
@@ -124,6 +135,33 @@ def check0(G, Z):
         prev = k
     return bad
 
+_rank = {}
+def rank(G, t, fuel=6):
+    """domain rank of a bound: 0 if t is below no abstraction, else one more than the rank of the
+    domain of the first abstraction the search finds above it (unique up to ≡wf by Lemma 10)"""
+    key = (G, t)
+    if key in _rank: return _rank[key]
+    r = 0
+    if fuel > 0:
+        for a in fwd_(G, t, WD):
+            if a[0] == 'l':
+                r = 1 + rank(G, a[1], fuel - 1); break
+    _rank[key] = r
+    return r
+
+def rank_descent(R, stats):
+    """along a nesting path of uses of the conjecture, does the rank of the bound go down?"""
+    for (par, origin, a, b, Gc) in R.trace:
+        if par is not None:
+            _, _, _, pb, pG = R.trace[par]
+            rp, rc = rank(pG, pb), rank(Gc, b)
+            stats['nested_calls'] += 1
+            if rc < rp: stats['rank_lower'] += 1
+            else:
+                stats['RANK_NOT_LOWER'] += 1
+                if stats['RANK_NOT_LOWER'] <= 25:
+                    print(f"RANK NOT LOWER [{origin}]: parent bound {show(pb)} (rank {rp}) in {showG(pG)} → child bound {show(b)} (rank {rc}) in {showG(Gc)}")
+
 def run_instance(G, D, S_):
     R = Run(); Kc = D
     for v in S_: Kc = lift1(R, G, Kc, v, 0)
@@ -139,7 +177,7 @@ def main():
         if i % nshards != shard: continue
         if ONLY and i not in ONLY: continue
         try:
-            for m in (S._memo, _smemo, _wfd, _reach, _ecl, _fwd, _bwd): m.clear()
+            for m in (S._memo, _smemo, _wfd, _reach, _ecl, _fwd, _bwd, _rank): m.clear()
             gc.collect()
             dn = S.dom(G)
             wfs = [t for t in terms if S.fv(t) <= dn and wf_(G, t)]
@@ -176,6 +214,7 @@ def main():
                         print("BUDGET:", showG(G), "|", show(spine(u, S_)), "≤", show(spine(t, S_)))
                         continue
                     depthhist[R.maxdepth] += 1
+                    rank_descent(R, stats)
                     if R.trace: stats['with_a_call'] += 1
                     for (d, origin, a, b, Gc) in R.trace: stats['call: ' + origin] += 1
                     bad = check0(G, Z)
@@ -190,10 +229,10 @@ def main():
                         if stats[key] <= 40:
                             print("BAD STEP:" if hard else "WF NOT FOUND:", showG(G), "|", show(spine(u, S_)), "≤", show(spine(t, S_)),
                                   "|", "; ".join(f"{m}: {show(a)} → {show(b)}" for (m, a, b) in bad[:2]))
-                    if R.maxdepth >= 2 and stats['deep_printed'] < 20:
+                    if any(e[0] is not None for e in R.trace) and stats['deep_printed'] < 20:
                         stats['deep_printed'] += 1
                         print("NESTED:", showG(G), "|", show(spine(u, S_)), "≤", show(spine(t, S_)), "|",
-                              " / ".join(f"d{d} [{o}] {show(a)}≤{show(b)}" for (d, o, a, b, _) in R.trace))
+                              " / ".join(f"#{i}←{d} [{o}] {show(a)}≤{show(b)}" for i, (d, o, a, b, _) in enumerate(R.trace)))
         except (MemoryError, RecursionError) as e:
             print(f"SKIPPED ctx {showG(G)}: {type(e).__name__}"); stats['skipped'] += 1
         print(f"ctx {i} {showG(G)}: {dict(stats)} depth {dict(depthhist)}")
