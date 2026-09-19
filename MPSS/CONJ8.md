@@ -1121,3 +1121,60 @@ Nothing of candidates A, B or C has been written; no file was changed for them. 
 3. **Then Agda for A** as variant relations in new modules (`⟶ˢ` with the changed `Ms-FOp`, the
    judgements of Figure 4 over it), ending in type safety or a refuting module; then B; then C;
    then the argument for which change is least.
+
+## 26. Candidate A probed: it repairs both Hurkens instances, and it is Hutchins' rule — 2026-09-19
+
+`conj8-A-probe.py` (new; nothing existing edited): `Ms-FOp` binds the consumed parameter by an
+entry that `⟶ᵉ` reads as `x ≡ a` and `⟶ˢ` reads also as `x ≤ A`.
+
+**What A repairs (mode `hurkens`; goal-directed checker taught to promote through a redex; not
+mechanized).** `[L₀ R₀] ≤ (¬φ₀) R₀` — the instance of Conjecture 8 refuted in §22 — and
+`[L₀ R₀] ≤ ⊥` are derivable; `t₆` and its reduct `[L₀ R₀] ⊤` (§23) are well-formed; each of the
+first 13 head reducts of `[L₀ R₀]` is well-formed, below `⊥`, and well-formed applied to `⊤`.
+
+**What A does not disturb, as far as enumeration reaches.**
+
+- Mode `small 4`, 125 well-formed contexts, terms of size ≤ 4: the well-formed terms are the same
+  as printed (2,211); Theorem 11 over `≤*wf`, operational safety and Lemma 6 have no failure;
+  Conjecture 8: 539,329 instances, 539,093 by `≤*wf` and 236 by the machine relation only, none
+  failing; Theorem 3 on well-formed terms: 23,494 two-layer instances, none failing (14 needed
+  chains longer than 4).
+- Mode `safety 11`: the closed terms of size ≤ 11 found well-formed are the same as printed
+  (14,067 at size 11); none reaches `⊤` applied. Mode `validate 7`: the changed checker accepts
+  nothing the printed one rejects at that size, so **the enumeration does not exercise A**: A adds
+  judgements only where a redex has no abstraction among its reducts, and no well-formed closed
+  term of size ≤ 13 is like that (§21).
+
+**What A breaks — machine-checked, `MPSS/CandidateA`.** `¬Lem-1ᴬ`, `¬Thm-3ᴬ`, `¬Thm-11ᴬ` for the
+machine relation (no well-formedness): `m = (λx≤λ⊤.⊤. x) ⊤` reduces to `⊤` and promotes to
+`(λx≤λ⊤.⊤. λ⊤.⊤) ⊤ ⟶ᵉ λ⊤.⊤`, so `⊤ ≤ m ≤ λ⊤.⊤` in two layers and `⊤ ≤ λ⊤.⊤` in none (`Top≰ᴬlam`
+still holds). `m` is ill-formed, so this is not a counterexample to type safety of A. It closes
+the paper's route to progress (Lemma 1 → Theorem 3 → Lemma 10, Theorem 11): under A those have to
+be stated over `≤*wf`, where the unfolding `x ⟶ᵉ a` and the promotion `x ⟶ˢ A` join through the
+chain `a ≤*wf A`.
+
+**A is the rule the paper removed.** v2 §1 gives `(λx≤t.x) v ⟶≤ (λx≤t.t) v` as the elementary
+case on which Hutchins' commutativity proof fails, and says that in MPSS this step "doesn't
+exist … essentially disallowing premature promotion". Candidate A restores exactly that step. So:
+
+- preservation under A looks within reach syntactically (the one failing case of `MPSS/Push`
+  becomes verbatim; `Co[u]` well-formed follows from `Co[t]` well-formed for application
+  contexts), but
+- progress under A needs transitivity elimination over well-formed terms for a system with
+  Hutchins' rule, which is the problem Hutchins left open (thesis §2.7) and MPSS was built to
+  avoid. A is not a small change in proof terms even though it is one rule.
+
+**v1 (`PSS/`) for comparison, read not run.** `Srs-FunOp` binds the parameter *below the
+operand* (`x ≤ α`; v1 contexts have only `≤` entries) and `W-FunOp` checks the body of a consumed
+abstraction under `x ≤ δ`, the operand, at the remaining stack. Under that discipline `t₆` is
+not well-formed: its body `x R₀ ⊤` is checked under `x ≤ L₀`, and `L₀ R₀` reaches no abstraction.
+So v1 has type safety by rejecting the term that A accepts. This is candidate C, and it answers
+"minimum change" differently: A keeps ex falso in applied position and owes Hutchins'
+commutation; C gives it up and has a proof already.
+
+**Next.** (1) Candidate C made precise on MPSS's `≡`-contexts: `Wf-App`/`Wf-Fun` reading the
+stack, the body of a consumed abstraction checked under `x ≡ α`; which of `PSS/`'s preservation
+proof carries over. (2) B (Conjecture 8 as a rule) inherits A's problem for progress — Theorem 3
+is lost the same way — and is weaker than A on preservation; probe only if C fails. (3) For A,
+the restated Theorem 11: a well-formed term convertible with `⊤` is below no abstraction in
+`≤*wf`.
