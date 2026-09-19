@@ -338,7 +338,13 @@ def validate(maxsize):
             if old and not mine: n['PRINTED-NOT-A'] += 1; print("PRINTED NOT A:", env['showG'](G), H.show(t))
             if mine and not old: n['A-only'] += 1
             if mine and theirs: n['both'] += 1
-            elif mine: n['CHECKER-ONLY'] += 1; print("CHECKER ONLY:", env['showG'](G), H.show(t))
+            elif mine:
+                # the oracle's chains have length WD (4 by default): ask again with longer ones
+                wd = env['WD']; env['WD'] = 9; clear(env)
+                again = wfd(G, t, 8)
+                env['WD'] = wd; clear(env)
+                if again: n['oracle-with-longer-chains'] += 1
+                else: n['CHECKER-ONLY'] += 1; print("CHECKER ONLY:", env['showG'](G), H.show(t))
             elif theirs: n['oracle-only'] += 1
     print("validate:", dict(n))
 

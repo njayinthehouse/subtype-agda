@@ -1140,7 +1140,9 @@ first 13 head reducts of `[L₀ R₀]` is well-formed, below `⊥`, and well-for
   failing; Theorem 3 on well-formed terms: 23,494 two-layer instances, none failing (14 needed
   chains longer than 4).
 - Mode `safety 11`: the closed terms of size ≤ 11 found well-formed are the same as printed
-  (14,067 at size 11); none reaches `⊤` applied. Mode `validate 7`: the changed checker accepts
+  (14,067 at size 11); none reaches `⊤` applied. Mode `validate 7`: 93,962 terms found well-formed
+  by the checker and the oracle, 305 by the checker alone, **all 305 found by the oracle once its
+  chains may have length 9** (default 4) — no unsound answer. Also at `validate 7`: the changed checker accepts
   nothing the printed one rejects at that size, so **the enumeration does not exercise A**: A adds
   judgements only where a redex has no abstraction among its reducts, and no well-formed closed
   term of size ≤ 13 is like that (§21).
@@ -1226,6 +1228,12 @@ in applied position.
 `x ≤ ⊤`, where `x` is below no abstraction. So the two judgements are **incomparable**: C types a
 redex by what its body does with the actual operand (as v1 does); the declared bound is consulted
 for an abstraction that meets no operand and for the operand itself.
+
+**Agreement cannot be asked of all terms with a normal form** (`MPSS/StackWfRejectsNormalizing`):
+`(λz≤⊤. ⊤) t₆` is well-formed by Figure 4, reduces to `⊤` in one step, and is not `wfˢ`, since
+`Wc-App` asks the operand well-formed. Open: whether every *strongly normalizing* term that
+Figure 4 accepts is `wfˢ` — equivalently, whether Figure 4's preservation can only fail through
+a diverging subterm.
 
 **Where the question stands.** Minimum change giving type safety, among the candidates of §25:
 
