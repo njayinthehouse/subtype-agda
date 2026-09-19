@@ -1212,12 +1212,20 @@ empty stack include every term well-formed as printed; the few dozen more have t
 long-chain artefacts of the printed oracle (`z z ⊤` under `z ≤ y ≤ λ⊤.0`), not checked one by
 one; Lemma 6: 2,693 instances, no failure.
 
-**Not yet established.** That `t₆` (§23) is *not* `wfˢ`. On paper: its body `x R₀ ⊤` is checked
-under `x ≡ L₀`, which asks `[L₀ R₀]` below an abstraction at the stack `[⊤]`, and the derivation
-would follow head evaluation for ever. By `Lem-6ˢ` it is equivalent to `[L₀ R₀] ⊤` not being
-`wfˢ`. The mechanized "`[L₀ R₀]` reaches no abstraction" (`Lem6WfCtxRefuted.H-NoAbs`) is at the
-empty stack; the statement at `[⊤]` is the next module. Until then "C gives up ex falso in applied
-position" is an expectation, not a result.
+**C rejects `t₆` — machine-checked** (`MPSS/StackWfRejects`: `¬wfˢ-H⊤`, `¬wfˢ-t₆`). By `Lem-6ˢ`
+it is enough that `[L₀ R₀] ⊤` is not `wfˢ`, i.e. that `[L₀ R₀]` is below no abstraction at the
+stack `[⊤]`. `MPSS/KindingTop` extends the kinds of `MPSS/Kinding` by `⊤` at every kind, so that
+kinds are preserved by promotion too (`srˢ`, in contexts without `≤` entries, at stacks that give
+an arrow kind its operands — which excludes `Ms-Fun`) and not only by `⟶ᵉ` (`sr⁺`, at stacks that
+may carry further operands once the kind is `S`). `S-not-below-lam`: a locally closed term of
+kind `S` is below no abstraction in the machine relation, at any stack. So C gives up ex falso
+in applied position.
+
+**C accepts a term Figure 4 rejects — machine-checked** (`MPSS/StackWfAccepts`: `wfˢ-t`, `¬wf-t`):
+`(λx≤⊤. x ⊤) (λy≤⊤. y)`. The body is checked under `x ≡ λy≤⊤.y`; Figure 4 checks it under
+`x ≤ ⊤`, where `x` is below no abstraction. So the two judgements are **incomparable**: C types a
+redex by what its body does with the actual operand (as v1 does); the declared bound is consulted
+for an abstraction that meets no operand and for the operand itself.
 
 **Where the question stands.** Minimum change giving type safety, among the candidates of §25:
 
