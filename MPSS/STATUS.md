@@ -265,3 +265,17 @@ needs (a well-formed term behaving as `R`).
   six modules carried over (`CONJ8.md` §18). Which stratification is the user's choice.
 - Measure search for the substitution route: head-step and size measures all fail
   (`conj8-measure-probe.py`, `CONJ8.md` §19). Next: the route on Hurkens' paradox (`CONJ8.md` §20).
+
+## 2026-09-19, later — Hurkens' paradox is well-formed; candidate counterexample to `Conj-8ʷᶜ`
+
+- `conj8-hurkens-probe.py`: Hurkens' term `[L₀ R₀]` (2039 nodes, transcription checked against
+  his printed lengths), encoded as in `CONJ8.md` §20, is found well-formed in the empty context by
+  a goal-directed checker, validated against the enumerating oracle on 6,625 small terms.
+  `L₀ ≤*wf ¬φ₀`, `(¬φ₀) R₀ wf`, `(¬φ₀) R₀ ⟶ᵉ* ⊥`. The head of `[L₀ R₀]` is a redex after every
+  head step (Hurkens, Section 7), so its only supertypes are its own reducts and `⊤`, and the
+  instance `u = L₀`, `t = ¬φ₀`, context `□ R₀` of `Conj-8ʷᶜ` fails. **Checked by the probe and
+  argued on paper; not mechanized.**
+- `MPSS/Conj8NoAbstraction`, `refutes`: the term-independent part, mechanized — `¬ Conj-8ʷᶜ` from
+  five hypotheses about `f`, `q`, `A`, `B`, which for Hurkens' term are what the probe checks.
+- Lemma 6 and Theorem 5 over `WfCtx` are not refuted by this: the first 13 head reducts of the
+  paradox are found well-formed. Still open. `CONJ8.md` §21.

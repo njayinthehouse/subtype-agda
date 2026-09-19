@@ -800,3 +800,113 @@ term is to be taken from Hurkens' paper, not from memory.
 | step 2 fails: the checker cannot handle the size | nothing about the conjecture | a goal-directed checker, as in `conj8-illformed-ctx-probe.py` |
 | the route terminates and the chain checks | strong evidence for the conjecture | read off what made the nesting stop |
 | the nesting exceeds the budget | a candidate counterexample, not a refutation | find the repeating pattern of pairs; prove divergence as above; then `¬ Conj-8ʷᶜ` in Agda |
+
+## 21. Hurkens' paradox is well-formed in MPSS, and it is a candidate counterexample to `Conj-8ʷᶜ` — 2026-09-19
+
+Not mechanized beyond `MPSS/Conj8NoAbstraction`. What is checked, by what, and what is argued
+only on paper is stated item by item below.
+
+**The term.** Transcribed from Hurkens, Section 3 (p. 269) and Section 7 (p. 277);
+`refs/hurkens95tlca.pdf`. With the encoding of §20 (`Π ↦ λ`, `λ ↦ λ`, every sort `↦ ⊤`):
+
+    ℘S = λ_≤S.⊤        ⊥ = λp≤⊤.p        ¬φ = λ_≤φ.⊥
+    U  = λX≤⊤. λ_≤(λ_≤℘℘X. X). ℘℘X
+    τt = λX≤⊤. λf≤(λ_≤℘℘X.X). λp≤℘X. t (λx≤U. p (f (x X f)))
+    σs = s U (λt≤℘℘U. τt)
+    Δ  = λy≤U. ¬(λp≤℘U. λ_≤(σy p). p (τσy))
+    Ω  = the normal form of τ (λp≤℘U. λx≤U. λ_≤(σx p). p x)
+    φ₀ = λp≤℘U. λ_≤(λx≤U. λ_≤(σx p). p x). p Ω
+    R₀ = λp≤℘U. λ1≤(λx≤U. λ_≤(σx p). p x). 1 Ω (λx≤U. 1 (τσx))
+    M₀ = λx≤U. λ2≤(σx Δ). λ3≤(λp≤℘U. λ_≤(σx p). p (τσx)). 3 Δ 2 (λp≤℘U. 3 (λy≤U. p (τσy)))
+    L₀ = λ0≤φ₀. 0 Δ M₀ (λp≤℘U. 0 (λy≤U. p (τσy)))
+
+The transcription is checked against the lengths Hurkens prints: `⊥`, `U`, `Δ`, `Ω` and the whole
+term `[L₀ R₀]` have 3, 15, 241, 145 and 2039 nodes, as on p. 269; and `Ω` as he writes it out is
+the β-normal form of the `τ`-term.
+
+**The checker** (`conj8-hurkens-probe.py`). The enumerating oracles cannot take a term of this
+size, so the probe has a goal-directed one that follows the source typing derivation: `Wf-App` by
+promoting the head variable of the operator to its bound and contracting head redexes until an
+abstraction `λx≤d.b` appears (then `Ms-Fun` over `Ms-Top`), and the operand against `d` by one
+`Ws-Sub` layer — `⊤`, conversion, `Ms-Fun` under a binder with convertible annotations, or
+promotion of the head variable — with every promotion between terms it has itself found
+well-formed. Conversion is equality of β-normal forms (β anywhere is two `⟶ᵉ` steps,
+`MPSS/Prop17Chain`), asked only of type-level terms. Mode `validate` compares it with the oracle
+`wfd` of `conj8-depth-probe.py` on every locally closed term of size ≤ 5 in the 13 contexts with
+`≤` entries only: 6,622 terms found well-formed by both, none by the oracle alone, and 3 by the
+checker alone (`z z ⊤`, `z z y`, `z z z` in `y ≤ λ⊤.0, z ≤ y`), which the oracle also finds once
+its chains may have length 9 (the default is 4). So no unsound answer among 6,625.
+
+**Found (mode `check`), in the empty context.**
+
+- `U`, `⊥`, `Δ`, `Ω`, `φ₀`, `R₀`, `M₀`, `L₀`, `¬φ₀`, `[L₀ R₀]` and `(¬φ₀) R₀` are well-formed.
+  Outcome 1 of §20's table is excluded: MPSS's well-formedness does not reject the paradox.
+- `Δ ≤ ℘U`, `Ω ≤ U`, `R₀ ≤ φ₀`, `L₀ ≤ ¬φ₀`, each by one layer.
+- `(¬φ₀) R₀ ⟶ᵉ* ⊥`.
+- Mode `head`: the head of `[L₀ R₀]` is an abstraction with one to three operands after each of
+  40 head steps. This is Hurkens' Section 7: `[[Pₙ Mₙ] Rₙ] → [Lₙ Rₙ] → [[Qₙ Mₙ] Rₙ₊₁] → [[Pₙ₊₁ Mₙ₊₁] Rₙ₊₁]`,
+  every term of the cycle an application of an abstraction.
+- The first 13 head reducts of `[L₀ R₀]` are all found well-formed. So this term is **not** a
+  counterexample to Lemma 6 along head reduction; only to the conjecture.
+
+**The instance.** `u = L₀`, `t = ¬φ₀ = λ0≤φ₀.⊥`, covariant context `□ R₀`, empty context. The
+hypotheses of `Conj-8ʷᶜ` are the items above. Its conclusion is `[L₀ R₀] ≤*wf (¬φ₀) R₀`, that is,
+the application rule of the source: the paradox is a subtype of `⊥`.
+
+**Why the conclusion fails.** `(¬φ₀) R₀ ⟶ᵉ ⊥ = λp≤⊤.p`, an abstraction. From `[L₀ R₀]`, a
+promotion at the empty configuration walks down the head: `Ms-App` pushes `R₀`, `Ms-FOp` enters
+`L₀` with `0 ≡ R₀`, `Ms-App` pushes the three operands of the body, and the head is the variable
+`0`, which is bound by `≡`. `Ms-Pro` reads `≤` entries only, so what is left is `Ms-Top` and
+`Ms-Equ`: the term goes to `⊤` (or to `⊤` applied, which reduces to `⊤`), from where no abstraction
+is reached (Theorem 11), or it takes an equivalence step. The same holds of every reduct, because
+every binder on the head path of every reduct meets an operand (no weak head normal form), so
+every head variable is `≡`-bound. A real promotion needs `Ms-Pro` at a `≤`-bound variable, that
+is, `Ms-Fun`, that is, an abstraction on the head path with the stack empty — a weak head normal
+form. So `[L₀ R₀]` is below itself, its reducts and expansions, and `⊤`, and nothing else.
+
+This is the phenomenon of §14 without the ill-formed annotation: there the term without a weak
+head normal form was `δ δ`, made possible by `R ≡ ω ω`; here it is a well-formed closed term, made
+possible by impredicativity with `⊤` in place of every sort.
+
+**Mechanized.** `MPSS/Conj8NoAbstraction`, `refutes`: for any `f`, `q`, `A`, `B` in the empty
+context, `f ≤*wf λx≤A.B`, `f q wf`, `(λx≤A.B) q wf`, `(λx≤A.B) q ⟶ᵉ*` an abstraction, and "no chain
+of promotions from `f q` ends in an abstraction" together give `¬ Conj-8ʷᶜ` (Theorem 3, then
+confluence from `MPSS/Strip`, as in `Conj8Refuted`). The five hypotheses are arguments; no term is
+constructed in Agda.
+
+**Not mechanized, and what each would take.**
+
+1. The four well-formedness facts. The checker made 8,322 promotions and 118,783 well-formedness
+   judgements for them; a derivation by hand is out of the question. It needs a checker written
+   in Agda and proved sound (`check Γ t ≡ true → Γ ⊢ t wf`), run by the type checker on the term.
+2. "No chain of promotions from `[L₀ R₀]` ends in an abstraction." Two parts: (a) a promotion
+   from a closed term whose head path never empties the stack is `Ms-Top` or an equivalence
+   step — an induction on the promotion, in a context with `≡` entries only, of the kind
+   `MPSS/AppClass` does for its class; (b) no `⟶ᵉ*`-reduct of `[L₀ R₀]` is an abstraction, which
+   is Hurkens' Section 7 together with standardization (a reduct that is an abstraction would be
+   reached by head reduction). `AppClass`'s class `Bd` cannot be reused: it requires every
+   abstraction body to be an application or `⊤`, and `M₀`, `R₀`, `Δ`, `Ω` have abstractions as
+   bodies. A route that avoids formalizing the cycle: replace `⊥` by a variable `o ≤ ⊤` as Hurkens
+   notes is possible; then (b) is subject reduction plus the fact that no abstraction has type
+   `o` — but that is subject reduction for λ\*, which for MPSS is the open statement itself, so it
+   would have to come from `Spartan/Preservation` through an embedding that reflects reduction.
+
+**Why the substitution route was not run (§20, step 4).** Its first call at this instance is
+`under(L₀ ⟶ˢ …, R₀)`: contract both heads and ask for a chain from `L₀`'s body at `R₀` to `⊥`, at
+the root. That chain is what the argument above says does not exist, and the probe's chain search
+enumerates reducts, which it cannot do at this size. The route does not get to nest.
+
+**What this does and does not say about type safety.** `Conj-8ʷᶜ` is how the paper proves Lemma 7
+(substitution preserves well-formedness) and through it Lemma 6 and Theorem 5. If the instance
+stands, that proof route is closed over well-formed contexts as well. Lemma 6 and Theorem 5
+themselves are not touched by it: a redex `(λx≤A.b) a` has few supertypes in MPSS to begin with
+(its body is promoted under `x ≡ a`, where `x` cannot be promoted), so there is little for
+preservation to lose, and the head reducts checked are well-formed. A proof of type safety would
+have to go around Conjecture 8, not through it: Lemma 7 stated for the operand substituted, by a
+direct argument on well-formedness derivations.
+
+**Next.** (i) The sound checker in Agda, which discharges hypothesis group 1 and is reusable for
+any large instance. (ii) Part (a) of 2, which is term-independent. (iii) Part (b). Or, in place of
+(i)–(iii) for this term, a smaller well-formed closed term without a weak head normal form, if
+one exists: exhaustive search found none up to size 7 (§15), and none is known for λ\* below
+Hurkens' size.
