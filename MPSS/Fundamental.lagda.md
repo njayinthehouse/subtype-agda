@@ -281,3 +281,71 @@ STEP {Γᵉ} {Γˢ} {θ = θ} {Γ′} (Ms-Fun {t = t} {u} {u′} L F) mᵉ M lk
                     (STEP (F z∉L) mᵉ₂ M₂ (link-sub lk) (bp z∉p) (bp′ z∉p′)
                           (wf-sp (act θ₂ (u ^ fvar z)) [] refl (sym eqS₂) w′) (ops-sp refl (sym eqS₂) o′))
 ```
+
+## A layer under a good substitution
+
+Inside a layer only the ends and the promotion points are well-formed, so the image of a layer
+is kept as chains of equivalence steps between good promotions, and assembled once the ends are
+known well-formed.
+
+```agda
+data LayG (Γ : Ctx) : Tm → Tm → Set where
+  lg-join : ∀ {A B C} → Γ ∣ [] ⊢ A ⟶ᵉ* C → Γ ∣ [] ⊢ B ⟶ᵉ* C → LayG Γ A B
+  lg-prom : ∀ {A P P₀ B} → Γ ∣ [] ⊢ A ⟶ᵉ* P → G Γ P P₀ → LayG Γ P₀ B → LayG Γ A B
+
+lg-lf1 : ∀ {Γ A A₁ B} → Γ ∣ [] ⊢ A ⟶ᵉ A₁ → LayG Γ A₁ B → LayG Γ A B
+lg-lf1 e (lg-join L R)   = lg-join (e ◅ᵉ L) R
+lg-lf1 e (lg-prom L g r) = lg-prom (e ◅ᵉ L) g r
+
+lg-rgh : ∀ {Γ A B B₁} → LayG Γ A B₁ → Γ ∣ [] ⊢ B ⟶ᵉ B₁ → LayG Γ A B
+lg-rgh (lg-join L R)   e = lg-join L (e ◅ᵉ R)
+lg-rgh (lg-prom L g r) e = lg-prom L g (lg-rgh r e)
+
+assembleG : ∀ {Γ A B} → Γ ⊢ A wf → Γ ⊢ B wf → LayG Γ A B → G Γ A B
+assembleG wA wB (lg-join L R)   = G-join wA L R wB
+assembleG wA wB (lg-prom L g r) = G-expand* wA L (G-trans g (assembleG (G-wfʳ g) wB r))
+```
+
+## The fundamental lemma
+
+```agda
+FL-wf  : ∀ {Γ m} → Γ ⊢ m wf → SW Γ m
+FL-sub : ∀ {Γ a b} → Γ ⊢ a ≤*wf b → SW Γ a × Sem≤ Γ a b
+FL-lay : ∀ {Γ a b θ Γ′} → Γ ⊢ a ⊑wf[ sub-m ] b → Mor Γ θ Γ′ → LayG Γ′ (act θ a) (act θ b)
+
+FL-wf w@(Wf-PrS pv m)  = sw-var w (λ M → G-wf (subs M m))
+FL-wf w@(Wf-PrE pv m)  = sw-var w (λ M → eqvs M m)
+FL-wf (Wf-Top pv)      = sw-top pv
+FL-wf (Wf-Fun L F w)   = sw-lam L (FL-wf w) (λ z∉ → FL-wf (F z∉))
+FL-wf w@(Wf-App d₁ d₂) =
+  sw-app w (proj₁ (FL-sub d₁)) (proj₁ (FL-sub d₂)) (proj₂ (FL-sub d₁)) (proj₂ (FL-sub d₂))
+
+FL-sub (Ws-Sub wu d wv)  =
+  FL-wf wu , λ M → assembleG (img (FL-wf wu) M) (img (FL-wf wv) M) (FL-lay d M)
+FL-sub (Ws-Trs d₁ w d₂) =
+  proj₁ (FL-sub d₁) , λ M → G-trans (proj₂ (FL-sub d₁) M) (proj₂ (FL-sub d₂) M)
+
+FL-lay (Ws-Rfl pv) M = lg-join εᵉ εᵉ
+FL-lay {θ = θ} {Γ′} (Ws-Lf1 {v = v} {v' = v′} e d) M =
+  lg-lf1 (subst (λ q → Γ′ ∣ q ⊢ act θ v ⟶ᵉ act θ v′) (actS-nil θ) (m-e (mor M) e)) (FL-lay d M)
+FL-lay {θ = θ} {Γ′} (Ws-Rgh {t = t} {t' = t′} d e) M =
+  lg-rgh (FL-lay d M) (subst (λ q → Γ′ ∣ q ⊢ act θ t ⟶ᵉ act θ t′) (actS-nil θ) (m-e (mor M) e))
+FL-lay {a = a} {θ = θ} {Γ′} (Ws-Lf2 {v' = a₀} wa st wa₀ d) M =
+  lg-prom εᵉ
+    (G-sp (act θ a) (act θ a₀) (actS θ []) {S₁ = []} refl refl (actS-nil θ)
+          (STEP st (mor M) M link-id swa swa₀
+                (wf-sp (act θ a) [] refl (sym (actS-nil θ)) (img swa M))
+                (ops-sp refl (sym (actS-nil θ)) (o-nil (img swa₀ M)))))
+    (FL-lay d M)
+  where
+    swa  = FL-wf wa
+    swa₀ = FL-wf wa₀
+```
+
+## What this establishes
+
+Under the parameter that every well-formed term is ranked: a well-subtyping derivation
+`Γ ⊢ a ≤*wf b` gives, for every good substitution `θ : Γ ⇒ Γ′`, that `aθ` is good at `bθ` — in
+particular `Γ′ ⊢ aθ ≤*wf bθ`, and the same under any good operand, hereditarily — and a
+well-formedness derivation has a well-formed image (`img ∘ FL-wf`: Lemma 7 for good
+substitutions, with no appeal to Conjecture 8). `MPSS/Conj8Ranked` draws Conjecture 8 from it.
