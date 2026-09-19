@@ -1044,3 +1044,30 @@ context of `≡` entries — the operand kept in the context as `Ms-FOp` keeps i
 `Wf-Fun` gives the body at cofinitely many names under `x ≤ A` and the model needs it under
 `x ≡ w`; `↦`/`→h` as `⟶ᵉ*` on terms that are not well-formed (`β₁`, `β₂` of
 `MPSS/PromotionNoWhnf` do this).
+
+### §24, first design pass — where the index goes wrong (2026-09-19, night)
+
+Tested first: `conj8-safety-search.py` — of the 225,125 closed terms of size ≤ 13 the checker
+finds well-formed, none reaches `⊤` in operator position within 60 leftmost-outermost β-steps.
+
+The existing `MPSS/Morphism` (substitutions as lists, `m-e`, `up`, `inst`, `m-eqv`, `act-open…`)
+and the shape of `MPSS/Fundamental`'s `STEP` (a `Link` between the machine's context with `≡`
+entries and the well-formedness context with `≤` entries; `Ms-FOp` extends `θ` at the head,
+`Ms-Fun` instantiates) carry over unchanged: only the goodness predicate is to be replaced, the
+syntactic `G` (whose conclusion `m v ≤*wf T v` is false, §22) by the semantic `Supp`/`𝒯`.
+
+Four placements of the index were worked through on paper; each loses one index somewhere on
+the cycle `Ms-App → Ms-FOp/Ms-Fun → Ms-Pro`:
+
+| placement | breaks at |
+| --- | --- |
+| `Suppₖ t (w∷π)` asks `𝒯ⱼ w d` and `Suppⱼ (B[w]) π` for `j < k` (the canonical "later") | `Supp (t c) π` and `Supp t (c∷π)` differ by one index, so `Ms-Pro` under `n` operands needs the variable good at `k+n`; a parameter instantiated from a stack at `k` is good only below `k` |
+| index drops only inside `𝒯` (`𝒯ₖ₊₁ w d` = inclusion at `k`) | `Ms-Fun`: the instantiated operand has `𝒯ₖ`, `Ms-Pro` on it at `k` needs `𝒯ₖ₊₁` |
+| drop at each operand, none in `𝒯` | circular (`Supp` is contravariant in `𝒯`) |
+| supports by head reduction instead of all reducts | conversion invariance holds only up to one index, and both directions are needed (`Ws-Lf1`, `Ws-Rgh`) |
+
+In the limit (`Supp∞ = ∀k. Suppₖ`) every case of `STEP` is exact; what does not pass to the
+limit is `𝒯` itself, which asks inclusion *at each index* and is what `FL-sub` has to produce for
+operands. Open design question: a definition of `𝒯` for which inclusion of the limits is enough,
+or a bound on the loss by the size of the derivation with `𝒯` tolerant of it. Not yet resolved;
+nothing of the model is in Agda.
