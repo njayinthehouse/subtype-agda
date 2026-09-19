@@ -849,7 +849,8 @@ its chains may have length 9 (the default is 4). So no unsound answer among 6,62
 - Mode `head`: the head of `[L₀ R₀]` is an abstraction with one to three operands after each of
   40 head steps. This is Hurkens' Section 7: `[[Pₙ Mₙ] Rₙ] → [Lₙ Rₙ] → [[Qₙ Mₙ] Rₙ₊₁] → [[Pₙ₊₁ Mₙ₊₁] Rₙ₊₁]`,
   every term of the cycle an application of an abstraction.
-- The first 13 head reducts of `[L₀ R₀]` are all found well-formed. So this term is **not** a
+- The first 13 head reducts of `[L₀ R₀]` are all found well-formed (by the probe; this is not
+  in Agda). So this term is **not** a
   counterexample to Lemma 6 along head reduction; only to the conjecture.
 
 **The instance.** `u = L₀`, `t = ¬φ₀ = λ0≤φ₀.⊥`, covariant context `□ R₀`, empty context. The
@@ -865,7 +866,9 @@ is reached (Theorem 11), or it takes an equivalence step. The same holds of ever
 every binder on the head path of every reduct meets an operand (no weak head normal form), so
 every head variable is `≡`-bound. A real promotion needs `Ms-Pro` at a `≤`-bound variable, that
 is, `Ms-Fun`, that is, an abstraction on the head path with the stack empty — a weak head normal
-form. So `[L₀ R₀]` is below itself, its reducts and expansions, and `⊤`, and nothing else.
+form. So no chain of promotions from `[L₀ R₀]` ends in an abstraction. (It is not true that the term is
+below its reducts and `⊤` only: `Ms-Top` under `Ms-App` and `Ms-FOp` gives
+`[L₀ R₀] ⟶ˢ (λ0≤φ₀.⊤) R₀`, which is neither; it reduces to `⊤`.)
 
 This is the phenomenon of §14 without the ill-formed annotation: there the term without a weak
 head normal form was `δ δ`, made possible by `R ≡ ω ω`; here it is a well-formed closed term, made
@@ -911,7 +914,7 @@ enumerates reducts, which it cannot do at this size. The route does not get to n
 **What this does and does not say about type safety.** `Conj-8ʷᶜ` is how the paper proves Lemma 7
 (substitution preserves well-formedness) and through it Lemma 6 and Theorem 5. If the instance
 stands, that proof route is closed over well-formed contexts as well. Lemma 6 and Theorem 5
-themselves are not touched by it: a redex `(λx≤A.b) a` has few supertypes in MPSS to begin with
+themselves are not touched by it. As a heuristic only: a redex `(λx≤A.b) a` has few supertypes in MPSS to begin with
 (its body is promoted under `x ≡ a`, where `x` cannot be promoted), so there is little for
 preservation to lose, and the head reducts checked are well-formed. A proof of type safety would
 have to go around Conjecture 8, not through it: Lemma 7 stated for the operand substituted, by a
@@ -934,7 +937,7 @@ Everything §21 left to the probe or to paper is now in Agda.
 | --- | --- | --- |
 | the term | written with names and closed binder by binder, as in the probe | `HurkensTerm` |
 | `L₀ ≤*wf ¬φ₀`, `[L₀ R₀] wf`, `(¬φ₀) R₀ wf` | the probe's checker as Agda functions (`wf?`, `dom?`, `sub?`, with `hred`, `whnf`, `nf`, `conv`), run by the type checker on the term (`refl`), and a proof that what it accepts is derivable | `CheckerFns`, `NormalizeSound`, `CheckerSound` |
-| `(¬φ₀) R₀ ⟶ᵉ* λp≤⊤.p` | one head step | `Conj8WfCtxRefuted` |
+| `(¬φ₀) R₀ ⟶ᵉ* λp≤⊤.p` | one head contraction, which is two `⟶ᵉ` steps (`β₁`, `β₂`) | `Conj8WfCtxRefuted` |
 | no `⟶ᵉ*`-reduct of `[L₀ R₀]` is an abstraction | five kinds, preserved by `⟶ᵉ` at every configuration; the paradox has the kind `S`, which no abstraction has | `Kinding`, `HurkensTerm` |
 | so no chain of promotions from it ends in an abstraction | a promotion in a context without `≤` entries is an equivalence step, or goes to `⊤`, or its source reduces to an abstraction | `PromotionNoWhnf` |
 | so `[L₀ R₀] ≤*wf (¬φ₀) R₀` is not derivable | Theorem 3, confluence | `Conj8NoAbstraction` |
@@ -961,8 +964,9 @@ fresh name and the derivation is closed up by `wrap-wf` and `chain-fun`. The thr
 term take the type checker about half a minute together.
 
 **What is and is not refuted.** Well-subtyping in MPSS is not closed under covariant contexts,
-in any reading of "context" the paper could intend: prevalid (§14) or with well-formed
-annotations (here, and in the empty context). The conclusion that fails is the application rule
+in any reading of the *logical* context the paper could intend: prevalid (§14) or with
+well-formed annotations (here, and in the empty context). The covariant context used is `□ q`;
+nothing is shown about the shapes `λx≤t.Co` alone, and nothing is needed. The conclusion that fails is the application rule
 of the source calculus at a redex without a weak head normal form. `Lem-6ʷᶜ` and
 `Preservationʷᶜ` are **not** refuted by this instance and are open; a proof of them cannot go
 through Conjecture 8, and would have to establish Lemma 7 directly.

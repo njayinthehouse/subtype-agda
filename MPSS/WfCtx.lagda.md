@@ -3,7 +3,7 @@
 `MPSS/Conj8Refuted` refutes Conjecture 8, Lemmas 6 and 7 and Theorem 5 in a context that is
 prevalid and whose annotation is ill-formed. The repair that suggests itself is to ask, of the
 logical context a statement is about, that every annotation be well-formed in the entries before
-it. This module defines that, `WfCtx`, restates the four statements with it as a hypothesis, and
+it. This module defines that, `WfCtx`, restates the three statements with it as a hypothesis, and
 shows the counterexample's context is excluded.
 
 One choice is made here and should be read as a choice. The premise is put on the **logical
@@ -94,6 +94,7 @@ var≰lam (As-Right d (Me-FOp _ _ _))                   = var≰lam d
 
 ## What this establishes
 
-`WfCtx`, the four statements over it, and `¬WfCtx-Γ₀`: the context of `MPSS/Conj8Refuted` is not
-one of these, so `Conj-8ʷᶜ`, `Lem-6ʷᶜ` and `Preservationʷᶜ` are open. Every theorem of the
+`WfCtx`, the three statements over it, and `¬WfCtx-Γ₀`: the context of `MPSS/Conj8Refuted` is not
+one of these, so the three statements were open when this module was written. Since then `Conj-8ʷᶜ` has been
+refuted, in the empty context (`MPSS/Conj8WfCtxRefuted`); `Lem-6ʷᶜ` and `Preservationʷᶜ` are open. Every theorem of the
 development holds over `WfCtx` contexts a fortiori.

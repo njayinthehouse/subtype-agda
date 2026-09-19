@@ -1,8 +1,8 @@
 # MPSS: Conjecture 8 over well-formed contexts fails at a well-formed application that no machine chain takes to an abstraction
 
 `MPSS/Conj8Refuted` refutes Conjecture 8 in a context whose annotation is not well-formed.
-`MPSS/WfCtx` restates it over contexts with well-formed annotations (`Conj-8ʷᶜ`), and that
-statement is open. This module isolates, with no particular term in it, what a refutation of
+`MPSS/WfCtx` restates it over contexts with well-formed annotations (`Conj-8ʷᶜ`). This module
+isolates, with no particular term in it, what a refutation of
 `Conj-8ʷᶜ` in the **empty context** needs:
 
     f ≤*wf λx≤A.B,   f q wf,   (λx≤A.B) q wf,   (λx≤A.B) q ⟶ᵉ* an abstraction,
@@ -13,10 +13,8 @@ The instance is `u = f`, `t = λx≤A.B`, covariant context `□ q`. The conject
 side reduces to an abstraction, so by confluence (`MPSS/Strip`) `c` does, and `f q` reaches an
 abstraction by promotions (an equivalence step is a promotion, `Ms-Equ`).
 
-`MPSS/CONJ8.md` §21 gives the terms for which the five hypotheses have been checked outside Agda
-(`conj8-hurkens-probe.py`): `f q` is Hurkens' paradox `[L₀ R₀]`, a well-formed closed term whose
-head is a redex after every head step. The hypotheses are arguments here, so that what is proved
-and what is only checked by the probe stay apart.
+The terms are those of `MPSS/CONJ8.md` §21: `f q` is Hurkens' paradox `[L₀ R₀]`. The hypotheses
+are arguments here; they are discharged in `MPSS/Conj8WfCtxRefuted`.
 
 Nothing existing is modified.
 
@@ -92,7 +90,4 @@ refutes lf lt lq f≤t wf-fq wf-tq rt na c8 =
 `refutes`: in the empty context, `Conj-8ʷᶜ` is false as soon as there are `f`, `q`, `A`, `B`
 with `f ≤*wf λx≤A.B`, both applications to `q` well-formed, `(λx≤A.B) q` reducing to an
 abstraction, and no chain of promotions from `f q` ending in an abstraction. No such terms are
-constructed here. For Hurkens' paradox the first four hypotheses are found by the goal-directed
-checker of `conj8-hurkens-probe.py`, and the fifth rests on Hurkens' Section 7 (the head of the
-term is a redex after every head step) and on a standardization argument that is not mechanized;
-see `MPSS/CONJ8.md` §21.
+constructed here; `MPSS/Conj8WfCtxRefuted` supplies them, for Hurkens' paradox.

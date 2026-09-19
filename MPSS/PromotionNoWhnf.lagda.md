@@ -296,4 +296,5 @@ refutes-NR lf lt lq cl f≤t wf-fq wf-tq rt nr =
   `NR (f q)`.
 
 For Hurkens' paradox (`MPSS/CONJ8.md` §21) what is left is therefore: the four static facts, and
-that no `⟶ᵉ*`-reduct of `[L₀ R₀]` is an abstraction. Neither is mechanized.
+that no `⟶ᵉ*`-reduct of `[L₀ R₀]` is an abstraction. Both are in `MPSS/Conj8WfCtxRefuted`
+(`MPSS/CheckerSound`, `MPSS/Kinding`).

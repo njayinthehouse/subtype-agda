@@ -10,7 +10,7 @@ The instance (`MPSS/CONJ8.md` §21) is Hurkens' paradox `[L₀ R₀]` of `MPSS/H
 
 - `L₀ ≤*wf ¬φ₀`, and `L₀ R₀` and `(¬φ₀) R₀` are well-formed: found by the checker of
   `MPSS/CheckerFns`, run by the type checker, and turned into derivations by `MPSS/CheckerSound`.
-- `(¬φ₀) R₀ ⟶ᵉ* ⊥ = λp≤⊤.p`, an abstraction: one head step.
+- `(¬φ₀) R₀ ⟶ᵉ* ⊥ = λp≤⊤.p`, an abstraction: one head contraction (two `⟶ᵉ` steps).
 - No `⟶ᵉ*`-reduct of `L₀ R₀` is an abstraction: it has kind `S` (`MPSS/Kinding`,
   `MPSS/HurkensTerm`).
 - So no chain of promotions from `L₀ R₀` ends in an abstraction (`MPSS/PromotionNoWhnf`), and
@@ -20,7 +20,7 @@ The instance (`MPSS/CONJ8.md` §21) is Hurkens' paradox `[L₀ R₀]` of `MPSS/H
 The conclusion the conjecture would give is the application rule of the source calculus: the
 paradox has type `⊥`. MPSS does not derive it, because the only way up from an application of
 an abstraction is through its body with the parameter bound by `≡`, where `Ms-Pro` does not
-apply, and this term never stops being an application of an abstraction.
+apply, and no reduct of this term is an abstraction (every reduct has kind `S`).
 
 Nothing existing is modified.
 
