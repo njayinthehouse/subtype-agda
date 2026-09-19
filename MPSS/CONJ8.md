@@ -729,3 +729,37 @@ argument shape it:
   theorem is then type safety of kinded MPSS.
 
 Which stratification is wanted — simple kinds, or levels on `⊤` — is a choice about the calculus.
+
+## 19. No head-step measure for the substitution route; the recursion is cut elimination — 2026-09-19
+
+`conj8-measure-probe.py` records every lifting of one promotion `A ⟶ˢ B` under one operand `v`
+with the lifting it is nested in, and tests candidate measures on each nested pair. Seven shards
+of size-7 samples, about 13,000 nested pairs:
+
+| measure | result |
+| --- | --- |
+| head steps from `B v` to a head normal form | fails |
+| head steps from `A v` | fails (783 pairs) |
+| the larger of the two | fails |
+| size of `B v` | fails |
+
+The failures have one shape. The operand is a variable `y` whose bound is an abstraction: the
+parent `(λx≤t. x r) y` is one step from a head normal form, and the child lifts the *second*
+promotion of the chain `y ⟶ˢ (λ…) ⟶ˢ t` under `r`, from a term with a redex of its own. The
+points of the chain `v ≤*wf t` are unrelated, in head steps, to the term the chain is spliced into.
+
+**What the recursion is.** `Wf-App` on `(λx≤t.u) v` is a cut between the body's derivation under
+`x ≤ t` and the operand's derivation `v ≤*wf t`. Contracting it substitutes the second into the
+first at each use of `x` at the head of a spine `x r`, and each such use is a new cut, of `r[v]`
+against an abstraction of the chain, with formula the domain of `t`. That much descends — the
+domain is a subterm of `t`. What does not is the other direction: after `t r` the formula is the
+annotation of the head normal form of `body[r]`, and when the body's head is its parameter that
+annotation comes from the operand `r` (`T T = λx≤T.T`). This is impredicative instantiation, and
+the paper expects MPSS to encode System λ* (§6), where derivations do not normalize.
+
+Pure type systems prove subject reduction for λ* without normalization because their application
+rule is compositional: `N r` is typed from `N : Πy:S.B` as given. MPSS's well-subtyping is a chain
+of machine steps between well-formed terms, so `α r ≤*wf t r` has to be produced step by step, and
+producing it is normalizing the cut. If the canonical promotion line from `C[u]` does not reach
+`C[t]` in finitely many steps, the instance is a counterexample; so over `WfCtx`, Conjecture 8 is
+tied to whether a well-formed looping combinator exists, in both directions.
