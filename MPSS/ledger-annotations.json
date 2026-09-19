@@ -280,8 +280,20 @@
      "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
      "def": "¬Thm-5 : ¬ Preservation\n¬Thm-5 thm-5 = ¬wf-δδδ (⊑*wf⇒wfˡ (thm-5 (Ws-Sub w (Ws-Rfl pvΓ₀) w) (E-App lcg lcδ)))",
      "change": "conj8-refuted"
+    },
+    {
+     "what": "Theorem 5 with the premise that the logical context has well-formed annotations (WfCtx Γ), proved from Conjecture 8 under the same premise.",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS.WfCtxSafety (preservationʷᶜ, type-safetyʷᶜ)",
+     "because": "The refutation needs an ill-formed annotation in the context, and MPSS.WfCtx shows that context excluded; the question was whether the paper's chain of proofs survives the added premise, in particular whether Lemma 7's induction stays inside WfCtx.",
+     "why": "It does: the premise threads through the induction, and the conjecture is called only at WfCtx contexts. Conditional on Conj-8ʷᶜ, which is open.",
+     "change": "wfctx-safety"
     }
-   ]
+   ],
+   "repair": "with WfCtx Γ as a premise, from Conj-8ʷᶜ — MPSS.WfCtxSafety",
+   "repairKind": "variant",
+   "repairStatus": "open"
   },
   "6": {
    "name": "evaluation preserves wf",
@@ -335,8 +347,20 @@
      "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
      "def": "¬Lem-6 : ¬ Lem-6\n¬Lem-6 lem-6 = ¬wf-δδδ (lem-6 (G.wf-gδ pvΓ₀ (here refl)) (E-App lcg lcδ))",
      "change": "conj8-refuted"
+    },
+    {
+     "what": "Lemma 6 with the premise that the logical context has well-formed annotations (WfCtx Γ), proved from Conjecture 8 under the same premise.",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS.WfCtxSafety (lem-6ʷᶜ)",
+     "because": "The refutation needs an ill-formed annotation in the context, and MPSS.WfCtx shows that context excluded; the question was whether the paper's chain of proofs survives the added premise, in particular whether Lemma 7's induction stays inside WfCtx.",
+     "why": "It does: the premise threads through the induction, and the conjecture is called only at WfCtx contexts. Conditional on Conj-8ʷᶜ, which is open.",
+     "change": "wfctx-safety"
     }
-   ]
+   ],
+   "repair": "with WfCtx Γ as a premise, from Conj-8ʷᶜ — MPSS.WfCtxSafety",
+   "repairKind": "variant",
+   "repairStatus": "open"
   },
   "7": {
    "name": "substitution preserves wf",
@@ -378,9 +402,21 @@
      "why": "(δ δ) δ is not well-formed: Wf-App would put δ δ below an abstraction, and by Theorem 3 and the class of MPSS.AppClass it reaches none. Open for contexts with well-formed annotations.",
      "def": "¬Lem-7 : ¬ Lem-7₀\n¬Lem-7 lem-7 = ¬Lem-6 (Lem-6ʷ lem-7)",
      "change": "conj8-refuted"
+    },
+    {
+     "what": "Lemma 7 with the premise that the logical context has well-formed annotations (WfCtx Γ), proved from Conjecture 8 under the same premise.",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS.WfCtxSafety (Lem-7ʷ, Lem-7₀ʷᶜ)",
+     "because": "The refutation needs an ill-formed annotation in the context, and MPSS.WfCtx shows that context excluded; the question was whether the paper's chain of proofs survives the added premise, in particular whether Lemma 7's induction stays inside WfCtx.",
+     "why": "It does: the premise threads through the induction, and the conjecture is called only at WfCtx contexts. Conditional on Conj-8ʷᶜ, which is open.",
+     "change": "wfctx-safety"
     }
    ],
-   "status": "refuted"
+   "status": "refuted",
+   "repair": "with WfCtx Γ as a premise, from Conj-8ʷᶜ — MPSS.WfCtxSafety",
+   "repairKind": "variant",
+   "repairStatus": "open"
   },
   "8": {
    "name": "context independence",
@@ -2060,6 +2096,12 @@
    "when": "2026-09-18",
    "title": "Conjecture 8 over contexts with well-formed annotations, and the ranked variant",
    "summary": "MPSS.WfCtx restates Conjecture 8, Lemma 6 and preservation with well-formed context annotations (the counterexample's context is excluded); MPSS.Reducible begins a reducibility proof for targets accessible in the domain order: hereditary liftability, the base case, closure under equivalence expansion. The fundamental lemma is owed."
+  },
+  {
+   "id": "wfctx-safety",
+   "when": "2026-09-19",
+   "title": "Lemmas 7, 6 and Theorem 5 over contexts with well-formed annotations",
+   "summary": "MPSS.WfCtxSafety carries the paper's chain Conjecture 8 ⇒ Lemma 9 ⇒ Lemma 7 ⇒ Lemma 6 ⇒ Theorem 5 over to the statements with WfCtx Γ as a premise. The premise is threaded through Lemma 7's induction (the Wf-Fun case extends the context by a substituted annotation that the induction hypothesis shows well-formed), so type safety over such contexts rests on Conj-8ʷᶜ alone."
   }
  ]
 }
