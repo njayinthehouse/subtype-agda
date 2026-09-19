@@ -969,3 +969,15 @@ through Conjecture 8, and would have to establish Lemma 7 directly.
 
 **Reusable.** `wf-sound` and `sub-sound` give derivations for any term the checker accepts, at
 any size the type checker can evaluate; `Kinding.sr` applies to any term with a kinded skeleton.
+
+**Routes considered for "no reduct is an abstraction" and not taken** (so that they are not
+retried): `MPSS/AppClass`'s class `Bd` (it requires every abstraction body to be an application
+or `⊤`; `M₀`, `R₀`, `Δ`, `Ω` have abstractions as bodies); Hurkens' Section 7 cycle with a
+standardization theorem for `⟶ᵉ` (the cycle is only up to growing annotations, and `⟶ᵉ` unfolds
+`≡`-bound parameters partially, so its steps are not β-steps); typing the term in `Spartan/` and
+transferring subject reduction through an embedding that reflects reduction (it needs a second
+verified type checker and a simulation for `Me-FOp`'s partial unfolding); a syntactic class
+closed under parallel reduction written out shape by shape (it is the kind system of
+`MPSS/Kinding`, less uniformly). One thing to know about the kinds: with `O` read as a base type
+they look simply typed, which would make the skeleton normalizing; they are not, because `F`
+occurs in `T = F → G` and `T` in `F = O → T`.
