@@ -304,3 +304,21 @@ checked from outside in `MPSS/Conj8WfCtxRefutedCheck`. Empty context, `u = L₀`
 `(λx≤¬φ₀. x R₀ ⊤) L₀ ↦ [L₀ R₀] ⊤`, well-formed to ill-formed. Type safety in the paper's form is
 false. Open: operational safety (a well-formed term never head-evaluates to `⊤` applied);
 `CONJ8.md` §24 is the plan, a step-indexed model.
+
+## A type-safe variant (candidate C), and candidate A — 2026-09-19
+
+`CONJ8.md` §25–§27. All `--safe`, nothing assumed.
+
+- **Candidate A** (`Ms-FOp` keeps the bound). `conj8-A-probe.py`: both Hurkens instances become
+  derivable, 13 head reducts stay well-formed; enumeration finds no failure and no new well-formed
+  term. `CandidateA`: `¬Lem-1ᴬ`, `¬Thm-3ᴬ`, `¬Thm-11ᴬ` for the machine relation, at the
+  ill-formed `(λx≤λ⊤.⊤. x) ⊤`. It is the promotion v2 §1 says MPSS removed. Progress open.
+- **Candidate C** (v1's stack-indexed judgements over MPSS's machine): `StackWf` (judgements,
+  `Thm-3ˢ`, `Thm-11ˢ`, progress `Thm-4ˢ`), `EvalChain` (`↦⇒⟶ᵉ*`), `SubstEqvS` (`⟶ˢ-subst≡`,
+  `⊲-subst≡`), `MachineNarrow` (`⊲-↣`), `StackWfSubst`, `StackWfNarrow`, `StackWfPreservation`
+  (**`Lem-6ˢ`, `Thm-5ˢ`, `type-safetyˢ`**), `StackWfExample` (inhabited at a redex).
+- **C against Figure 4: incomparable.** `StackWfRejects` (`¬wfˢ-t₆`, by `KindingTop`: kinds with
+  `⊤` at every kind are preserved by promotion too; `S-not-below-lam` at any stack);
+  `StackWfAccepts` (`(λx≤⊤. x ⊤)(λy≤⊤. y)` is `wfˢ` and not well-formed by Figure 4).
+- **Open:** progress for A; whether Figure 4's terms with a normal form are all `wfˢ`; operational
+  safety of the calculus as printed (§24); candidate B not probed.
