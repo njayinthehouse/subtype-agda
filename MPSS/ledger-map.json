@@ -233,6 +233,18 @@
    "supports": [
     "8"
    ]
+  },
+  {
+   "id": "8n",
+   "ref": "Lemma 8n",
+   "names": [
+    "¬Lem-6ʷᶜ",
+    "¬Preservationʷᶜ"
+   ],
+   "supports": [
+    "5",
+    "6"
+   ]
   }
  ]
 }

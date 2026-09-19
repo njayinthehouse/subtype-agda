@@ -5,7 +5,7 @@
   "headline": "MPSS Proof Ledger",
   "standfirst": "",
   "footer": [
-   "133 modules"
+   "134 modules"
   ]
  },
  "nodes": [
@@ -431,6 +431,15 @@
    "module": "MPSS.Kinding",
    "defect": "",
    "origin": "development"
+  },
+  {
+   "id": "8n",
+   "ref": "Lemma 8n",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.Lem6WfCtxRefuted",
+   "defect": "",
+   "origin": "development"
   }
  ],
  "deps": {
@@ -458,7 +467,8 @@
    "6",
    "12",
    "27",
-   "8h"
+   "8h",
+   "8n"
   ],
   "6": [
    "7",
@@ -469,7 +479,8 @@
    "17",
    "23",
    "27",
-   "8h"
+   "8h",
+   "8n"
   ],
   "7": [
    "9",
@@ -4603,6 +4614,40 @@
      "decl": "data _∣_⊢_⟶ᵉ*_ : Ctx → Stack → Tm → Tm → Set where\n  ε   : ∀ {Γ s a} → Γ ∣ s prevalid → Γ ∣ s ⊢ a ⟶ᵉ* a\n  _◅_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c"
     }
    ]
+  },
+  "8n": {
+   "module": "MPSS.Lem6WfCtxRefuted",
+   "account": "",
+   "sig": "Preservationʷᶜ : Set\nPreservationʷᶜ = ∀ {Γ t t' u} → WfCtx Γ → Γ ⊢ t ⊑*wf[ sub-m ] u → t ↦ t' → Γ ⊢ t' ⊑*wf[ sub-m ] u\n\nLem-6ʷᶜ : Set\nLem-6ʷᶜ = ∀ {Γ t t'} → WfCtx Γ → Γ ⊢ t wf → t ↦ t' → Γ ⊢ t' wf\n\n¬Lem-6ʷᶜ : ¬ Lem-6ʷᶜ\n\n¬Preservationʷᶜ : ¬ Preservationʷᶜ",
+   "paper": [],
+   "faults": [],
+   "hyps": [],
+   "types": [
+    {
+     "name": "_⊢_⊑*wf[_]_",
+     "display": "Γ ⊢ t ⊑*wf[ m ] t′",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_⊑*wf[_]_ : Ctx → Tm → Mode → Tm → Set where\n\n  Ws-Sub : ∀ {Γ v t m}\n         → Γ ⊢ v wf\n         → Γ ⊢ v ⊑wf[ m ] t\n         → Γ ⊢ t wf\n         → Γ ⊢ v ⊑*wf[ m ] t\n\n  Ws-Trs : ∀ {Γ v u t m}\n         → Γ ⊢ v ⊑*wf[ m ] u\n         → Γ ⊢ u wf\n         → Γ ⊢ u ⊑*wf[ m ] t\n         → Γ ⊢ v ⊑*wf[ m ] t"
+    },
+    {
+     "name": "WfCtx",
+     "display": "WfCtx",
+     "module": "MPSS.WfCtx",
+     "decl": "data WfCtx : Ctx → Set where\n  wc-nil : WfCtx []\n  wc-sub : ∀ {Γ x t} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ t wf → WfCtx ((x , sub , t) ∷ Γ)\n  wc-eqv : ∀ {Γ x α} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ α wf → WfCtx ((x , eqv , α) ∷ Γ)"
+    },
+    {
+     "name": "_↦_",
+     "display": "t ↦ t′",
+     "module": "PSS.Reduction",
+     "decl": "data _↦_ : Tm → Tm → Set where\n\n  E-App    : ∀ {t u v} → LC (lam t u) → LC v → app (lam t u) v ↦ (u ^ v)\n\n  E-Lam-l  : ∀ {t t' u} → t ↦ t' → lam t u ↦ lam t' u\n\n  E-Lam-r  : ∀ {t u u'} (L : List Name)\n           → (∀ {x} → x ∉ L → (u ^ fvar x) ↦ (u' ^ fvar x))\n           → lam t u ↦ lam t u'\n\n  E-App-l  : ∀ {u u' v} → u ↦ u' → app u v ↦ app u' v\n\n  E-App-r  : ∀ {u v v'} → v ↦ v' → app u v ↦ app u v'"
+    },
+    {
+     "name": "_⊢_wf",
+     "display": "Γ ⊢ t wf",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_wf       : Ctx → Tm → Set where\n\n  Wf-PrS : ∀ {Γ x t}\n         → Γ prevalid → x ≤ t ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-PrE : ∀ {Γ x α}\n         → Γ prevalid → x ≐ α ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-Top : ∀ {Γ}\n         → Γ prevalid\n         → Γ ⊢ Top wf\n\n  Wf-Fun : ∀ {Γ t u} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , sub , t) ∷ Γ) ⊢ (u ^ fvar x) wf)\n         → Γ ⊢ t wf\n         → Γ ⊢ lam t u wf\n\n  Wf-App : ∀ {Γ u v t}\n         → Γ ⊢ u ⊑*wf[ sub-m ] lam t Top\n         → Γ ⊢ v ⊑*wf[ sub-m ] t\n         → Γ ⊢ app u v wf"
+    }
+   ]
   }
  },
  "types": [
@@ -5559,6 +5604,12 @@
    "T:_∣_⊢_⟶ᵉ*_",
    "T:_∣_⊢_⟶ᵉ_",
    "T:_⊢ᵏ_∶_"
+  ],
+  "8n": [
+   "T:WfCtx",
+   "T:_↦_",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
   ],
   "T:_∣_↣_∣_": [
    "T:Ctx",
