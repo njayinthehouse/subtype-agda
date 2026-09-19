@@ -1099,3 +1099,25 @@ rule of the static judgement, or the judgement's shape.
 **Order of work.** A first (smallest, and it attacks the diagnosed cause); each candidate gets a
 probe before any Agda, a new-file variant of the relation (nothing existing modified), and ends
 in a module that proves type safety for it or one that refutes it.
+
+### §25 — status: logged, not started (2026-09-19)
+
+Nothing of candidates A, B or C has been written; no file was changed for them. To do, in order:
+
+1. **Probe for A** (a new file beside `conj8-search.py`; nothing existing edited). A consumed
+   parameter needs an entry that `⟶ᵉ` reads as `x ≡ a` and `⟶ˢ` also reads as `x ≤ A`. The probes'
+   entries are triples used everywhere, so encode it as a third kind whose payload pairs the two
+   terms, with `lookup_eqv` returning the operand and `lookup_sub` the bound. Tests: `⊤ ≤ λ`
+   (Theorem 11), Conjecture 8, Lemma 6, transitivity elimination (Theorem 3), and the two Hurkens
+   instances with the goal-directed checker taught to promote through a redex.
+2. **What to expect of A**, from reading the rules, to be confirmed or refuted by the probe:
+   `[L₀ R₀] ≤ ⊥` and `[L₀ R₀] ⊤ wf` become derivable, because `L₀` is an abstraction whose body is
+   headed by its own parameter; the failing case of `MPSS/Push` (`Ms-Pro` on the narrowed name)
+   becomes verbatim, so Conjecture 8 should be provable syntactically. The risk is Lemma 1:
+   `x ⟶ᵉ a` against `x ⟶ˢ A` joins only through a *chain* `a ≤ A`, not one step, and only on
+   configurations where the operand is below the bound; Theorem 3, Lemma 10 and Theorem 11 rest
+   on it. Small-size search cannot show preservation failing (the known failure needs a term the
+   size of Hurkens'); it can show whether A introduces a new unsoundness.
+3. **Then Agda for A** as variant relations in new modules (`⟶ˢ` with the changed `Ms-FOp`, the
+   judgements of Figure 4 over it), ending in type safety or a refuting module; then B; then C;
+   then the argument for which change is least.
