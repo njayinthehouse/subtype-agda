@@ -3,12 +3,13 @@
   "title": "MPSS Proof Ledger",
   "eyebrow": "Pasquale &amp; García-Pérez · CSL 2026 · arXiv:2407.13882v2",
   "headline": "Type safety in MPSS, as stated, is false",
-  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. <strong>Conjecture 8 is also false once context annotations must be well-formed</strong>, in the empty context (<code>MPSS.Conj8WfCtxRefuted</code>): Hurkens' paradox is well-formed in MPSS, its head is a redex after every reduction, so no chain of promotions from it ends in an abstraction, and it is not below <code>⊥</code>, as the application rule would have it. <strong>Lemma 6 and preservation fail there too</strong> (<code>MPSS.Lem6WfCtxRefuted</code>): <em>ex falso</em> at the paradox, <code>(λx≤¬φ₀. x R₀ ⊤) L₀</code>, is well-formed and β-steps to the ill-formed <code>[L₀ R₀] ⊤</code>. What is open is operational safety: that a well-formed term never evaluates to <code>⊤</code> applied. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
+  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. <strong>Conjecture 8 is also false once context annotations must be well-formed</strong>, in the empty context (<code>MPSS.Conj8WfCtxRefuted</code>): Hurkens' paradox is well-formed in MPSS, its head is a redex after every reduction, so no chain of promotions from it ends in an abstraction, and it is not below <code>⊥</code>, as the application rule would have it. <strong>Lemma 6 and preservation fail there too</strong> (<code>MPSS.Lem6WfCtxRefuted</code>): <em>ex falso</em> at the paradox, <code>(λx≤¬φ₀. x R₀ ⊤) L₀</code>, is well-formed and β-steps to the ill-formed <code>[L₀ R₀] ⊤</code>. <strong>Type safety is proved for a changed static judgement</strong> (candidate C, <code>MPSS.StackWfPreservation</code>): the machine as printed, with Figure 4 replaced by v1's judgements indexed by the operand stack; it rejects that term, and is incomparable with Figure 4. Keeping the bound in <code>Ms-FOp</code> instead (candidate A) repairs both counterexamples in a probe, but Lemma 1 and Theorem 3 fail for its machine relation (<code>MPSS.CandidateA</code>) and its progress is open. For the calculus as printed, what is open is operational safety: that a well-formed term never evaluates to <code>⊤</code> applied. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "133 Agda modules",
+   "146 Agda modules",
    "--safe · 0 postulates · 0 holes",
    "Conjecture 8, Lemma 6, Theorem 5: refuted as stated (MPSS.Conj8Refuted) and over well-formed contexts, in the empty context (MPSS.Conj8WfCtxRefuted, MPSS.Lem6WfCtxRefuted)",
+   "Type safety for candidate C — stack-indexed judgements over the machine as printed — proved (MPSS.StackWfPreservation); C and Figure 4 are incomparable. Candidate A: Lemma 1 and Theorem 3 refuted for its machine relation (MPSS.CandidateA)",
    "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
    "Lemmas 1, 2 and 31: open as printed, a variant proved (↻)"
   ],
@@ -16,8 +17,8 @@
    "title": "Open threads",
    "items": [
     {
-     "anchor": "Operational safety · what is left",
-     "html": "<p>Refuted as stated (<code>MPSS.Conj8Refuted</code>), with Lemmas 6 and 7 and preservation: a prevalid context may define a recursive type, <code>R ≡ ω ω</code>, because prevalidity does not ask annotations to be well-formed.</p><p>The obvious repair is to ask that — <code>Pv-Ctx</code> and <code>Pv-EqA</code> with a well-formedness premise on the annotation. Whether the conjecture and type safety hold then is open. The same instance fails as soon as <em>any</em> well-formed term behaves as <code>R</code> does, which needs a type-level looping combinator (the paper's §6 expects term-level ones); and a proof cannot be a rank induction, since the domain order already cycles at the type of the polymorphic identity, <code>T = λy≤⊤. λx≤y. y</code>: <code>T T</code> is well-formed and its domain is <code>T</code>.</p><p>Recorded on the way, each with where it breaks: the nesting-depth measure, the narrowing route (its intermediate points are ill-formed at dependent bounds), the substitution route run as an algorithm (valid on every instance tried, measure not found).</p><p><strong>Refuted over well-formed contexts too</strong> (2026-09-19, <code>MPSS.Conj8WfCtxRefuted</code>, <code>MPSS/CONJ8.md</code> §22), in the empty context, nothing assumed. The looping term need not be at the type level: Hurkens' paradox <code>[L₀ R₀]</code>, encoded with <code>Π ↦ λ</code> and every sort <code>↦ ⊤</code>, is well-formed (a checker written in Agda and proved sound, Lemma 8l), <code>L₀ ≤*wf ¬φ₀</code>, and none of its reducts is an abstraction (subject reduction for five kinds on its proof-level skeleton, Lemma 8m). So no chain of promotions from it ends in an abstraction, and the conjecture at <code>u = L₀</code>, <code>t = ¬φ₀</code>, context <code>□ R₀</code> fails.</p><p><strong>Lemma 6 and Theorem 5 are false over well-formed contexts as well</strong> (<code>MPSS.Lem6WfCtxRefuted</code>, Lemma 8n): <code>(λx≤¬φ₀. x R₀ ⊤) L₀ ↦ [L₀ R₀] ⊤</code>, well-formed to ill-formed, in the empty context.</p><p><strong>Open: operational safety</strong> — a well-formed closed term never evaluates to <code>⊤</code> applied to an operand. None of 225,125 well-formed closed terms of size ≤ 13 does. The plan is a step-indexed model of bounds as sets of supported operand stacks, over <code>MPSS.Morphism</code>; four placements of the index each lose one on the cycle <code>Ms-App</code> → <code>Ms-FOp</code>/<code>Ms-Fun</code> → <code>Ms-Pro</code> (<code>MPSS/CONJ8.md</code> §24). Nothing of the model is in Agda yet.</p>"
+     "anchor": "Type safety · what is proved for a changed judgement, and what is left",
+     "html": "<p>Refuted as stated (<code>MPSS.Conj8Refuted</code>), with Lemmas 6 and 7 and preservation: a prevalid context may define a recursive type, <code>R ≡ ω ω</code>, because prevalidity does not ask annotations to be well-formed.</p><p>The obvious repair is to ask that — <code>Pv-Ctx</code> and <code>Pv-EqA</code> with a well-formedness premise on the annotation. Whether the conjecture and type safety hold then is open. The same instance fails as soon as <em>any</em> well-formed term behaves as <code>R</code> does, which needs a type-level looping combinator (the paper's §6 expects term-level ones); and a proof cannot be a rank induction, since the domain order already cycles at the type of the polymorphic identity, <code>T = λy≤⊤. λx≤y. y</code>: <code>T T</code> is well-formed and its domain is <code>T</code>.</p><p>Recorded on the way, each with where it breaks: the nesting-depth measure, the narrowing route (its intermediate points are ill-formed at dependent bounds), the substitution route run as an algorithm (valid on every instance tried, measure not found).</p><p><strong>Refuted over well-formed contexts too</strong> (2026-09-19, <code>MPSS.Conj8WfCtxRefuted</code>, <code>MPSS/CONJ8.md</code> §22), in the empty context, nothing assumed. The looping term need not be at the type level: Hurkens' paradox <code>[L₀ R₀]</code>, encoded with <code>Π ↦ λ</code> and every sort <code>↦ ⊤</code>, is well-formed (a checker written in Agda and proved sound, Lemma 8l), <code>L₀ ≤*wf ¬φ₀</code>, and none of its reducts is an abstraction (subject reduction for five kinds on its proof-level skeleton, Lemma 8m). So no chain of promotions from it ends in an abstraction, and the conjecture at <code>u = L₀</code>, <code>t = ¬φ₀</code>, context <code>□ R₀</code> fails.</p><p><strong>Lemma 6 and Theorem 5 are false over well-formed contexts as well</strong> (<code>MPSS.Lem6WfCtxRefuted</code>, Lemma 8n): <code>(λx≤¬φ₀. x R₀ ⊤) L₀ ↦ [L₀ R₀] ⊤</code>, well-formed to ill-formed, in the empty context.</p><p><strong>Open: operational safety</strong> — a well-formed closed term never evaluates to <code>⊤</code> applied to an operand. None of 225,125 well-formed closed terms of size ≤ 13 does. The plan is a step-indexed model of bounds as sets of supported operand stacks, over <code>MPSS.Morphism</code>; four placements of the index each lose one on the cycle <code>Ms-App</code> → <code>Ms-FOp</code>/<code>Ms-Fun</code> → <code>Ms-Pro</code> (<code>MPSS/CONJ8.md</code> §24). Nothing of the model is in Agda yet.</p><p><strong>Type safety for candidate C is proved</strong> (2026-09-19, <code>MPSS/CONJ8.md</code> §27; Lemmas 8p–8v), nothing assumed. The machine is kept as printed; Figure 4 is replaced by v1's judgements indexed by the operand stack, where <code>Wc-FOp</code> checks the body of an abstraction that meets an operand <code>δ</code> under <code>x ≡ δ</code>. Progress <code>Thm-4ˢ</code>, <code>Lem-6ˢ</code>, <code>Thm-5ˢ</code>, <code>type-safetyˢ</code>. The β case substitutes for a parameter bound by its own definition, so Conjecture 8 is not asked. C rejects <code>t₆</code> and <code>[L₀ R₀] ⊤</code> (Lemma 8x) and accepts <code>(λx≤⊤. x ⊤) (λy≤⊤. y)</code>, which Figure 4 rejects (Lemma 8y): the two judgements are incomparable.</p><p><strong>Candidate A</strong> (<code>Ms-FOp</code> keeps the bound; §25–§26, Lemma 8o) repairs both Hurkens instances in a probe, not mechanized. It is the promotion the paper's §1 says MPSS removes: <code>¬Lem-1ᴬ</code>, <code>¬Thm-3ᴬ</code>, <code>¬Thm-11ᴬ</code> for its machine relation, at an ill-formed term (<code>MPSS.CandidateA</code>).</p><p><strong>Open now.</strong> (i) Progress for candidate A over well-formed terms: transitivity elimination over <code>≤*wf</code> for a system with that promotion. (ii) Whether every strongly normalizing term that Figure 4 accepts is <code>wfˢ</code>; it cannot be asked of all terms with a normal form, since <code>(λz≤⊤. ⊤) t₆</code> is accepted by Figure 4, reduces to <code>⊤</code> and is not <code>wfˢ</code> (Lemma 8z). (iii) Operational safety of the calculus as printed, above.</p>"
     },
     {
      "anchor": "Lemma 2 and Lemma 1 · the diamond and commutation, as printed",
@@ -1170,6 +1171,186 @@
      "change": "lem6-wfctx-refuted"
     }
    ]
+  },
+  "8o": {
+   "name": "candidate A: with the bound kept by Ms-FOp, Lemma 1, Theorem 3 and Theorem 11 fail for the machine relation",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Ms-FOp changed so that the body of a consumed abstraction is promoted under x ≡ α and x ≤ t (the kept bounds travel in a separate list read by one new rule, Ms-ProKept; ⟶ᵉ is unchanged). m = (λx≤λ⊤.⊤. x) ⊤ reduces to ⊤ and promotes to (λx≤λ⊤.⊤. λ⊤.⊤) ⊤, which reduces to λ⊤.⊤: so ⊤ ≤ m ≤ λ⊤.⊤ in two layers and ⊤ ≤ λ⊤.⊤ in none.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.CandidateA (¬Lem-1ᴬ, ¬Thm-3ᴬ, ¬Thm-11ᴬ, Top≰ᴬlam)",
+     "because": "Ms-FOp forgets x ≤ A, which is why a v ≤ A v does not follow from a ≤ A (Conjecture 8) and why a β-step can replace a promotable x v by an unpromotable a v (Lemma 6). Keeping the bound is the smallest change that attacks that cause (CONJ8.md §25).",
+     "why": "Nothing assumed. m is ill-formed, so this is no counterexample to type safety under candidate A; it closes the paper's route to progress (Lemma 1, Theorem 3, Lemma 10, Theorem 11 on the machine relation), which would have to be restated over ≤*wf. The step candidate A adds, (λx≤t.x) v ⟶ˢ (λx≤t.t) v, is the one the paper's §1 says MPSS removes. Progress for candidate A over well-formed terms is open. The probe conj8-A-probe.py (not mechanized) finds both Hurkens instances repaired under A.",
+     "change": "candidate-a"
+    }
+   ]
+  },
+  "8p": {
+   "name": "candidate C: judgements indexed by the operand stack; Theorems 3, 11 and progress for them",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Figure 4 replaced by v1's static judgements over MPSS's machine, which is kept as printed: Wc-FOp checks the body of an abstraction that meets an operand δ under x ≡ δ at the remaining stack; Wc-App asks u ≤*wfˢ λt.⊤ at v ∷ s; a variable is well-formed at s when its annotation is; well-subtyping is the machine relation between terms well-formed at the same configuration. A chain is one layer (Thm-3ˢ, from Thm-3ᴸ), no abstraction is above ⊤ (Thm-11ˢ), and progress (Thm-4ˢ) holds at every configuration.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWf (Thm-3ˢ, Thm-11ˢ, Thm-4ˢ), MPSS.StackWfExample (wf-redex)",
+     "because": "Candidate A is the promotion the paper removed and its progress is open; v1 (PSS/) has type safety unconditionally under this discipline, where the term t₆ of Lemma 8n is checked with x ≡ L₀ and not under x ≤ ¬φ₀ alone (CONJ8.md §26).",
+     "why": "Nothing assumed. wf-redex: (λx≤⊤. x) ⊤ is wfˢ, so the preservation theorem of Lemma 8v applies to a term that steps.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8q": {
+   "name": "an evaluation step is a chain of equivalence steps at every configuration",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "For locally closed t with free variables in dom Γ and Γ ∣ s prevalid, t ↦ t′ gives Γ ∣ s ⊢ t ⟶ᵉ* t′. The β case is the two steps of MPSS.Prop17Chain: bind the parameter to the operand by Me-FOp under Me-App and unfold it throughout the body, then contract by Me-Bet. The congruence cases lift a chain through Me-App, Me-Fun and Me-FOp.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.EvalChain (↦⇒⟶ᵉ*, ↦⇒≥, ↦⇒≤)",
+     "because": "v1's preservation proof reads an evaluation step as one ⟶≡ step; in MPSS that is Proposition 17, which is false, and its repair in MPSS.Prop17Chain is at the empty stack and for well-formed terms only.",
+     "why": "No well-formedness hypothesis, any stack. ↦⇒≥ and ↦⇒≤: across an evaluation step the two terms are below each other in the machine relation.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8r": {
+   "name": "promotion and the machine relation under substitution for a name bound by ≡",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "If Γ, x ≡ v, Γ′; s ⊢ a ⟶ˢ b then Γ, Γ′[x\\v]; s[x\\v] ⊢ a[x\\v] ⟶ˢ b[x\\v], and the same for ⊲ in both modes. Each step maps to one step of the same rule. Ms-Pro cannot fire on x: it reads a ≤ entry, and prevalidity binds x once, by ≡. Ms-Equ is MPSS.SubstEqv's lemma at the reflexive step v ⟶ᵉ v.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.SubstEqvS (⟶ˢ-subst≡, ⊲-subst≡, ⟶ˢ-subst≡-head, ⊲-subst≡-head)",
+     "because": "The β case of preservation for candidate C substitutes the operand for a parameter bound by x ≡ δ; MPSS.SubstEqv has this for ⟶ᵉ only (Lemma 32).",
+     "why": "The only hypothesis is the derivation; local closure and scoping of v come from the prevalidity it carries. In MPSS.Lemma2930 the removed name is bound by ≤ and Ms-Pro on it is the case that does not transfer; here there is no such case.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8s": {
+   "name": "the machine relation is preserved when the configuration is reduced",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "If Γ ∣ s ⊢ u ⊲[ m ] t and Γ ∣ s ↣ Γ′ ∣ s′ then Γ′ ∣ s′ ⊢ u ⊲[ m ] t, for locally closed u and t with free variables in dom Γ. Proved in the variant relations: Lem-2′ with the same context reduction on both sides and one edge reflexive gives each step of the derivation a common reduct at the new configuration, ⊲′-trans joins them, a context reduction ↣ is cut into a sequence of variant ones (↣⊆↣′*), and the result is carried back to ⊲.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.MachineNarrow (⊲-↣, ≤-↣, ≋-↣, narrow′, narrow′*, ↣⊆↣′*)",
+     "because": "v1's ⊲-narrow reuses a residual step at the reduced configuration, which it may do because its ⟶≡ does not read the context; MPSS's ⟶ᵉ reads the x ≡ α entries, so a step made at Γ ∣ s is not a step at Γ′ ∣ s′.",
+     "why": "No well-formedness assumed; the scoping hypotheses are what reflexivity of ⟶ᵉ′ needs. Spends Lem-1′, Lem-2′, ⊲′-trans, the two inclusions between ⊲ and ⊲′, and ⟶ᵉ ⊆ ⟶ᵉ′*.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8t": {
+   "name": "candidate C's judgements under substitution for a name bound by ≡",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "wfˢ, ≤wfˢ and ≤*wfˢ are preserved when a name bound by x ≡ v is replaced by v, over a context split; wfˢ-subst≡-head is the instance at the head of the context in opened form, which the β case of preservation consumes. In the Wc-PrE case on x itself the variable's derivation already contains one for v.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfSubst (wfˢ-subst≡, ≤wfˢ-subst≡, ≤*wfˢ-subst≡, wfˢ-subst≡-head)",
+     "because": "Wc-FOp checks the body of a consumed abstraction under x ≡ δ and the reduct is the body with δ substituted: v1's Lemma B.5 with ≡ in place of ≤.",
+     "why": "Nothing assumed. No statement about δ against a bound is involved, which is where the printed Lemma 7 needed Conjecture 8.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8u": {
+   "name": "candidate C: well-formed terms are scoped; narrowing of the three judgements",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "wfˢ-fv: a term well-formed at Γ ∣ s has its free variables in dom Γ. wfˢ-narrow, ≤wfˢ-narrow, ≤*wfˢ-narrow: the judgements are preserved when annotations of the context and entries of the stack are reduced by chains of ⟶ᵉ steps, each chain carrying a witness (WfStep) that well-formedness is kept between its two ends. An annotation's chain is taken at the context below it and a stack entry's at the whole context, both at the empty stack, so a pair of reductions is a sequence of ↣ and the machine relation inside Wc-Rule follows it by ≤-↣ (Lemma 8s).",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfNarrow (wfˢ-fv, wfˢ-narrow, ≤wfˢ-narrow, ≤*wfˢ-narrow)",
+     "because": "v1's Lemmas B.11, B.12, B.17 and B.18 (PSS/Narrowing), needed by the congruence cases of preservation; in MPSS an evaluation step is a chain and not one step (Lemma 8q), and the terms inside the chain are not known to be well-formed.",
+     "why": "Nothing assumed.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8v": {
+   "name": "candidate C: Lemma 6, Theorem 5 and type safety",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Evaluation preserves wfˢ (Lem-6ˢ) and ≤*wfˢ (Thm-5ˢ) at every configuration; with progress (Thm-4ˢ, Lemma 8p) this is type safety (type-safetyˢ, wf-safetyˢ, closed-safetyˢ). v1's PSS/Preservation case by case: the β case is wfˢ-subst≡-head (Lemma 8t); an evaluation step is a chain of ⟶ᵉ steps at the configuration in hand and the reduct is below the redex (Lemma 8q), with scoping from wfˢ-fv; narrowing is Lemma 8u; where v1 appends by ⊲-trans, the redex is well-formed and Wc-Trs appends.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfPreservation (Lem-6ˢ, Thm-5ˢ, type-safetyˢ, wf-safetyˢ, closed-safetyˢ)",
+     "because": "Lemma 6 and Theorem 5 are false for Figure 4 in every reading of the context (Lemma 8n); the question was the least change that gives an MPSS-style calculus type safety (CONJ8.md §25).",
+     "why": "Nothing assumed beyond local closure of the term, which wfˢ⇒lc supplies. The β case substitutes for a parameter bound by its own definition, x ≡ δ, so nothing of the form \"δ v is below A v because δ is below A\" is asked; that was Conjecture 8. The price: an abstraction is checked again at each operand it meets, and well-formedness is not a judgement about a term in a context alone.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8w": {
+   "name": "the five kinds with ⊤ at every kind, preserved by promotion; a term of kind S is below no abstraction",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "MPSS.Kinding's relation with one more rule, k-top : Φ ⊢ᵏ⁺ Top ∶ κ, so that Ms-Top keeps the kind. sr⁺: ⟶ᵉ preserves the kinds at stacks that may carry further operands once the kind is S. srˢ: in a context without ≤ entries, ⟶ˢ preserves the kinds at stacks that give an arrow kind its operands, which excludes Ms-Fun. S-not-below-lam: a locally closed term of kind S is not below an abstraction in the machine relation, at any stack.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.KindingTop (sr⁺, srˢ, S-lam⁺, S-not-below-lam, S-not-below-lam[])",
+     "because": "Wc-App asks the operator to be below an abstraction at the stack holding the operand; for H ⊤ that is the stack ⊤ ∷ [], and Lemma 8m with MPSS.PromotionNoWhnf gives the fact only at the empty stack, from which it does not follow by wrapping in an application.",
+     "why": "Nothing assumed. Neither closedness of the term nor prevalidity of the stack is used.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8x": {
+   "name": "candidate C rejects t₆ and H ⊤",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "H ⊤ = [L₀ R₀] ⊤ is not wfˢ at the empty configuration: Wc-App asks H ≤*wfˢ λt.⊤ at the stack ⊤ ∷ [], which is one layer of the machine relation by Thm-3ˢ; H has kind S (Hᵏ), and a locally closed term of kind S is below no abstraction at any stack (Lemma 8w). t₆ = (λx≤¬φ₀. x R₀ ⊤) L₀ steps to H ⊤, so by Lem-6ˢ it is not wfˢ either.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfRejects (¬wfˢ-H⊤, ¬wfˢ-t₆)",
+     "because": "t₆ is the counterexample to Lemma 6 for Figure 4 (Lemma 8n); with Lem-6ˢ proved, t₆ and H ⊤ are wfˢ together or not at all.",
+     "why": "Nothing assumed. Candidate C gives up ex falso in applied position: the counterexample is rejected before it steps.",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8y": {
+   "name": "candidate C accepts a term Figure 4 rejects",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "(λx≤⊤. x ⊤) (λy≤⊤. y) is wfˢ: Wc-FOp checks the body under x ≡ λy≤⊤.y. Figure 4 checks the body under x ≤ ⊤, where x promotes to ⊤, which is below no abstraction, so the term is not well-formed there.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfAccepts (wfˢ-t, ¬wf-t)",
+     "because": "Lemma 8x shows Figure 4 accepts a term candidate C rejects; the question was whether C is a restriction of Figure 4.",
+     "why": "It is not: with Lemma 8x the two judgements are incomparable. Candidate C types a redex by what its body does with the actual operand, as v1 does; the declared bound is consulted for an abstraction that meets no operand (Wc-Fun) and for the operand itself (Wc-App's second premise).",
+     "change": "candidate-c"
+    }
+   ]
+  },
+  "8z": {
+   "name": "a term with a normal form that Figure 4 accepts and candidate C rejects",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "(λz≤⊤. ⊤) t₆ is well-formed by Figure 4 (t₆ is, and t₆ ≤ ⊤), reduces to ⊤ in one step, and is not wfˢ, since Wc-App asks the operand to be well-formed and t₆ is not (Lemma 8x).",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.StackWfRejectsNormalizing (wf-e, step-e, ¬wfˢ-e)",
+     "because": "t₆ has no normal form; one might hope the two judgements agree on terms that have one.",
+     "why": "They do not. The term is not strongly normalizing, since its operand t₆ diverges. Open: whether every strongly normalizing term that Figure 4 accepts is wfˢ.",
+     "change": "candidate-c"
+    }
+   ]
   }
  },
  "detail": {
@@ -1469,6 +1650,42 @@
   },
   "8n": {
    "account": "<code>¬Lem-6ʷᶜ</code>, <code>¬Preservationʷᶜ</code>, nothing assumed, empty context: a well-formed term β-steps to a term that is not well-formed. Not a result of the paper."
+  },
+  "8o": {
+   "account": "<code>¬Lem-1ᴬ</code>, <code>¬Thm-3ᴬ</code>, <code>¬Thm-11ᴬ</code>, nothing assumed: with the bound kept by <code>Ms-FOp</code>, commutation, transitivity elimination and \"no abstraction above <code>⊤</code>\" fail for the machine relation, at the ill-formed term <code>(λx≤λ⊤.⊤. x) ⊤</code>. The one-layer form <code>Top≰ᴬlam</code> still holds. Not a counterexample to type safety under that change. Not a result of the paper."
+  },
+  "8p": {
+   "account": "The judgements <code>wfˢ</code>, <code>≤wfˢ</code>, <code>≤*wfˢ</code> of candidate C: v1's stack-indexed judgements over MPSS's machine, which is kept as printed. <code>Thm-3ˢ</code>: a chain is one layer. <code>Thm-11ˢ</code>: no abstraction is above <code>⊤</code>. <code>Thm-4ˢ</code>: progress at every configuration. <code>wf-redex</code> (<code>MPSS.StackWfExample</code>): <code>(λx≤⊤. x) ⊤</code> is <code>wfˢ</code>. Nothing assumed. Not a result of the paper."
+  },
+  "8q": {
+   "account": "<code>↦⇒⟶ᵉ*</code>: an evaluation step is a chain of <code>⟶ᵉ</code> steps at every prevalid configuration, from local closure and scoping alone; the β case is two steps. <code>↦⇒≥</code>, <code>↦⇒≤</code>: across the step the two terms are below each other in the machine relation. Not a result of the paper."
+  },
+  "8r": {
+   "account": "<code>⟶ˢ-subst≡</code>, <code>⊲-subst≡</code>: promotion and the machine relation, in both modes, are preserved when a name bound by <code>x ≡ v</code> is replaced by <code>v</code>; one step to one step. The <code>-head</code> forms are the instances at the head of the context in opened form. Not a result of the paper."
+  },
+  "8s": {
+   "account": "<code>⊲-↣</code>: the machine relation, in both modes, is preserved by context reduction <code>↣</code>, for locally closed terms scoped in the context; from <code>Lem-1′</code> and <code>Lem-2′</code>. No well-formedness assumed. Not a result of the paper."
+  },
+  "8t": {
+   "account": "<code>wfˢ-subst≡</code>, <code>≤wfˢ-subst≡</code>, <code>≤*wfˢ-subst≡</code>: candidate C's three judgements are preserved when a name bound by <code>x ≡ v</code> is replaced by <code>v</code> (v1's Lemma B.5 with <code>≡</code>). <code>wfˢ-subst≡-head</code> is the form the β case of preservation consumes. Not a result of the paper."
+  },
+  "8u": {
+   "account": "<code>wfˢ-fv</code>: a term well-formed at <code>Γ ∣ s</code> has its free variables in <code>dom Γ</code>. <code>wfˢ-narrow</code>, <code>≤wfˢ-narrow</code>, <code>≤*wfˢ-narrow</code>: the judgements are preserved when annotations and stack entries are reduced by chains of <code>⟶ᵉ</code> steps that keep well-formedness (v1's Lemmas B.11, B.12, B.17, B.18). Not a result of the paper."
+  },
+  "8v": {
+   "account": "<code>Lem-6ˢ</code>: evaluation preserves <code>wfˢ</code>. <code>Thm-5ˢ</code>: evaluation preserves <code>≤*wfˢ</code>. <code>type-safetyˢ</code>, <code>closed-safetyˢ</code>: a well-formed term is a normal form or steps to a well-formed term. Every configuration, nothing assumed. This is type safety for candidate C, not for Figure 4, for which Lemma 6 and Theorem 5 are false (Lemma 8n). Not a result of the paper."
+  },
+  "8w": {
+   "account": "<code>sr⁺</code>, <code>srˢ</code>: with <code>⊤</code> at every kind, the kinds of Lemma 8m are preserved by <code>⟶ᵉ</code> and, in a context without <code>≤</code> entries, by <code>⟶ˢ</code>. <code>S-not-below-lam</code>: a locally closed term of kind <code>S</code> is below no abstraction in the machine relation, at any stack. Not a result of the paper."
+  },
+  "8x": {
+   "account": "<code>¬wfˢ-H⊤</code>, <code>¬wfˢ-t₆</code>: neither <code>[L₀ R₀] ⊤</code> nor <code>t₆ = (λx≤¬φ₀. x R₀ ⊤) L₀</code>, which Figure 4 accepts, is well-formed in candidate C. Nothing assumed. Not a result of the paper."
+  },
+  "8y": {
+   "account": "<code>wfˢ-t</code>, <code>¬wf-t</code>: candidate C accepts <code>(λx≤⊤. x ⊤) (λy≤⊤. y)</code> and Figure 4 does not. With Lemma 8x, the two judgements are incomparable. Not a result of the paper."
+  },
+  "8z": {
+   "account": "<code>wf-e</code>, <code>step-e</code>, <code>¬wfˢ-e</code>: <code>(λz≤⊤. ⊤) t₆</code> is well-formed by Figure 4, reduces to <code>⊤</code> in one step, and is not <code>wfˢ</code>. Agreement of the two judgements can only be asked of strongly normalizing terms. Not a result of the paper."
   }
  },
  "deps": {
@@ -2276,6 +2493,18 @@
    "when": "2026-09-19",
    "title": "Lemma 6 and Theorem 5 are false over well-formed contexts",
    "summary": "MPSS.Lem6WfCtxRefuted: (λx≤¬φ₀. x R₀ ⊤) L₀ ↦ H ⊤, well-formed to ill-formed, in the empty context. Preservation of Figure 4's judgements fails; progress holds. What is left to prove for the calculus as it stands is operational safety — a well-formed closed term never evaluates to ⊤ applied — tested on 225,125 well-formed terms with no failure; the plan is a step-indexed model, whose first design pass loses an index (CONJ8.md §23–§24)."
+  },
+  {
+   "id": "candidate-a",
+   "when": "2026-09-19",
+   "title": "Candidate A: Ms-FOp keeps the bound — Lemma 1 and Theorem 3 fail for the machine relation",
+   "summary": "CONJ8.md §25–§26. The least change to the machine that attacks the cause of the two refutations: the body of a consumed abstraction is promoted under x ≡ a and x ≤ A. conj8-A-probe.py (not mechanized): both Hurkens instances are repaired, and enumeration to the sizes reached finds nothing disturbed, but does not exercise the changed rule. MPSS.CandidateA: ¬Lem-1ᴬ, ¬Thm-3ᴬ, ¬Thm-11ᴬ for the machine relation, at an ill-formed term. The step added is the one the paper's §1 says MPSS removes; progress under A needs transitivity elimination over well-formed terms for a system with that step, and is open."
+  },
+  {
+   "id": "candidate-c",
+   "when": "2026-09-19",
+   "title": "Candidate C: stack-indexed judgements over MPSS's machine — type safety proved",
+   "summary": "CONJ8.md §27. The machine is kept as printed; Figure 4 is replaced by v1's judgements indexed by the operand stack (MPSS.StackWf). Proved with nothing assumed: progress (Thm-4ˢ), Lem-6ˢ, Thm-5ˢ, type-safetyˢ (MPSS.StackWfPreservation), from EvalChain, SubstEqvS, MachineNarrow, StackWfSubst, StackWfNarrow. C rejects t₆ and [L₀ R₀] ⊤ (StackWfRejects, from KindingTop) and accepts (λx≤⊤. x ⊤) (λy≤⊤. y), which Figure 4 rejects (StackWfAccepts): the two judgements are incomparable. (λz≤⊤. ⊤) t₆ is accepted by Figure 4, reduces to ⊤ and is rejected by C (StackWfRejectsNormalizing), so agreement is open only for strongly normalizing terms."
   }
  ]
 }

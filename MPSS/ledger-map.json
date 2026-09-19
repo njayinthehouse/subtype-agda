@@ -245,6 +245,142 @@
     "5",
     "6"
    ]
+  },
+  {
+   "id": "8o",
+   "ref": "Lemma 8o",
+   "names": [
+    "¬Lem-1ᴬ",
+    "¬Thm-3ᴬ",
+    "¬Thm-11ᴬ"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8p",
+   "ref": "Lemma 8p",
+   "names": [
+    "Thm-4ˢ",
+    "Thm-3ˢ",
+    "Thm-11ˢ",
+    "wf-redex"
+   ],
+   "supports": [
+    "8y"
+   ]
+  },
+  {
+   "id": "8q",
+   "ref": "Lemma 8q",
+   "names": [
+    "↦⇒⟶ᵉ*",
+    "↦⇒≥",
+    "↦⇒≤"
+   ],
+   "supports": [
+    "8v"
+   ]
+  },
+  {
+   "id": "8r",
+   "ref": "Lemma 8r",
+   "names": [
+    "⟶ˢ-subst≡",
+    "⊲-subst≡",
+    "⟶ˢ-subst≡-head",
+    "⊲-subst≡-head"
+   ],
+   "supports": []
+  },
+  {
+   "id": "8s",
+   "ref": "Lemma 8s",
+   "names": [
+    "⊲-↣"
+   ],
+   "supports": [
+    "8u"
+   ]
+  },
+  {
+   "id": "8t",
+   "ref": "Lemma 8t",
+   "names": [
+    "wfˢ-subst≡",
+    "≤wfˢ-subst≡",
+    "≤*wfˢ-subst≡",
+    "wfˢ-subst≡-head"
+   ],
+   "supports": [
+    "8v"
+   ]
+  },
+  {
+   "id": "8u",
+   "ref": "Lemma 8u",
+   "names": [
+    "wfˢ-fv",
+    "wfˢ-narrow",
+    "≤wfˢ-narrow",
+    "≤*wfˢ-narrow"
+   ],
+   "supports": [
+    "8v"
+   ]
+  },
+  {
+   "id": "8v",
+   "ref": "Lemma 8v",
+   "names": [
+    "Lem-6ˢ",
+    "Thm-5ˢ",
+    "type-safetyˢ",
+    "closed-safetyˢ"
+   ],
+   "supports": [
+    "5",
+    "6"
+   ]
+  },
+  {
+   "id": "8w",
+   "ref": "Lemma 8w",
+   "names": [
+    "sr⁺",
+    "srˢ",
+    "S-not-below-lam"
+   ],
+   "supports": []
+  },
+  {
+   "id": "8x",
+   "ref": "Lemma 8x",
+   "names": [
+    "¬wfˢ-H⊤",
+    "¬wfˢ-t₆"
+   ],
+   "supports": []
+  },
+  {
+   "id": "8y",
+   "ref": "Lemma 8y",
+   "names": [
+    "wfˢ-t",
+    "¬wf-t"
+   ],
+   "supports": []
+  },
+  {
+   "id": "8z",
+   "ref": "Lemma 8z",
+   "names": [
+    "wf-e",
+    "step-e",
+    "¬wfˢ-e"
+   ],
+   "supports": []
   }
  ]
 }
