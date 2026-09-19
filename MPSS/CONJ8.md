@@ -1071,3 +1071,31 @@ limit is `𝒯` itself, which asks inclusion *at each index* and is what `FL-sub
 operands. Open design question: a definition of `𝒯` for which inclusion of the limits is enough,
 or a bound on the loss by the size of the derivation with `𝒯` tolerant of it. Not yet resolved;
 nothing of the model is in Agda.
+
+## 25. Next steps: the least change that gives an MPSS-style calculus type safety — 2026-09-19
+
+The user's instruction: try each repair until it ends in a proof or a refutation; the goal is
+type safety (progress and preservation of the static judgement) for an MPSS-style calculus, and,
+since the calculus as printed does not have it (§22, §23), the *minimum* change that does.
+Stratification (kinds, levels) is excluded: it shrinks the calculus.
+
+**Diagnosis to repair.** `Ms-FOp` binds the parameter of a consumed abstraction by `x ≡ a` and
+forgets `x ≤ A`. So `(λx≤A.b) a` can be promoted only by reducing it, `a v ≤ A v` does not follow
+from `a ≤ A` (Conjecture 8), and a β-step can replace a promotable `x v` by an unpromotable `a v`
+(Lemma 6).
+
+**Candidates, in order of how little they change.**
+
+| | change | what has to be re-established | first test |
+| --- | --- | --- | --- |
+| A | `Ms-FOp` keeps the bound: the body is promoted under *both* `x ≡ a` and `x ≤ A`, and `Ms-Pro` may fire on such an `x`. One rule of `⟶ˢ` changes; `⟶ᵉ`, Figure 4 and `↦` do not. | the push theorem should become verbatim (the one failing case of `MPSS/Push` was `Ms-Pro` on the narrowed name), hence Conjecture 8, hence Lemmas 7, 6, Theorem 5 by `WfCtxSafety`'s argument; but Lemma 1 (commutation) meets `x ⟶ᵉ a` against `x ⟶ˢ A`, which needs `a ≤ A` — a coherence condition on configurations — and Theorem 3, Lemma 10, Theorem 11 rest on Lemma 1 | enumerate: Theorem 11 (`⊤ ≤ λ`?), Conjecture 8, Lemma 6 at small sizes, and the two Hurkens instances, under the changed rule |
+| B | Conjecture 8 as a rule of well-subtyping (`Ws-Co`). `⟶ˢ`, `⟶ᵉ` unchanged; Figure 4 gains one rule. | Lemmas 7, 6, Theorem 5 by the paper's argument redone over the new judgement; Theorem 3 is lost (`H ≤ ⊥` has no machine chain), so Lemma 10 and Theorem 11, which progress needs, want a new — probably semantic — proof | enumerate Theorem 11 and Lemma 10 under the rule |
+| C | v1's discipline: well-formedness that reads the operand stack (`PSS/` has type safety unconditionally) grafted onto MPSS's `≡`-contexts | what of MPSS's commutation survives | compare the two instances in `PSS/` |
+| — | operational safety for the calculus unchanged (§24) | the step-indexed model | kept as the fallback statement if no change is wanted |
+
+"Minimum" is to be argued at the end from what each candidate needed: a rule of the machine, a
+rule of the static judgement, or the judgement's shape.
+
+**Order of work.** A first (smallest, and it attacks the diagnosed cause); each candidate gets a
+probe before any Agda, a new-file variant of the relation (nothing existing modified), and ends
+in a module that proves type safety for it or one that refutes it.
