@@ -539,6 +539,24 @@
      "because": "A rank induction on the conjecture fails because the conjecture is used on the way at pairs of unrelated rank; a predicate defined by recursion on the rank can be used at any rank.",
      "why": "The argument closes: the fundamental lemma typechecks and gives Conj-8ʷᶜ. Its hypothesis is false in full MPSS, and the order behind Ranked is too strong — id ▷ id (T T) ▷ T ▷ T T ▷ T — so this is not yet a theorem about a calculus. Owed: kinded judgements, Good by recursion on the kind.",
      "change": "conj8-fundamental"
+    },
+    {
+     "what": "Candidate termination measures for the substitution route, tested on every nested call: head steps to a head normal form from the source, from the target, their maximum, and term size.",
+     "outcome": "experiment",
+     "kind": "variant",
+     "where": "MPSS/conj8-measure-probe.py; MPSS/CONJ8.md §19",
+     "because": "The reducibility proof needs a stratification full MPSS does not have; a measure on the algorithm itself would prove Conj-8ʷᶜ for the paper's calculus.",
+     "why": "Every candidate rises on some nested call — when the operand is a variable whose bound is an abstraction, the chain spliced in has points with redexes of their own. The route still terminated on every instance.",
+     "change": "conj8-measure-probe"
+    },
+    {
+     "what": "Plan: encode Hurkens' paradox by Hutchins' λ* encoding, check it is well-formed in MPSS, and run the substitution route on instances with the looping term as operand.",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS/CONJ8.md §20",
+     "because": "No instance tried contains a well-formed term without a normal form, and the way up from a term is nearly forced, so a nesting that never ends would point at a counterexample over WfCtx.",
+     "why": "Not yet run. Four outcomes and what each means are tabulated in §20.",
+     "change": "conj8-measure-probe"
     }
    ],
    "status": "refuted",
@@ -2162,6 +2180,12 @@
    "when": "2026-09-19",
    "title": "The reducibility argument for Conjecture 8 closes, under a hypothesis that is false in full MPSS",
    "summary": "MPSS.ReducibleMore, Morphism, GoodAt, GoodSubst, Fundamental, Conj8Ranked: substitutions as lists of single substitutions, good substitutions, the promotion lemma and the fundamental lemma, and from them Conj-8ʷᶜ, Lem-6ʷᶜ and preservation — under the module parameter that every well-formed term is ranked. The parameter is false in full MPSS, and Ranked as defined is too strong (λx≤⊤.x is not ranked, since the order ranges over every operand, T T included). A theorem about a calculus needs kinded judgements, with Good defined by recursion on the kind (CONJ8.md §18)."
+  },
+  {
+   "id": "conj8-measure-probe",
+   "when": "2026-09-19",
+   "title": "No head-step measure for the substitution route; plan to run it on a looping term",
+   "summary": "conj8-measure-probe.py tests head steps from either side and term size on about 13,000 nested calls of the substitution route; each fails. The recursion is cut elimination whose cut formula, after an application, can come from the operand (T T), so no simple measure is expected. CONJ8.md §20 plans the run on Hurkens' paradox under Hutchins' λ* encoding, with the expected outcomes."
   }
  ]
 }

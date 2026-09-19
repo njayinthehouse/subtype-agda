@@ -763,3 +763,40 @@ of machine steps between well-formed terms, so `α r ≤*wf t r` has to be produ
 producing it is normalizing the cut. If the canonical promotion line from `C[u]` does not reach
 `C[t]` in finitely many steps, the instance is a counterexample; so over `WfCtx`, Conjecture 8 is
 tied to whether a well-formed looping combinator exists, in both directions.
+
+## 20. Plan: run the substitution route on a well-formed looping term — 2026-09-19
+
+**Why.** §19: no measure is known that goes down along the nesting of the substitution route, and
+the calculus does not normalize. The route has terminated on every instance tried (§15), none of
+which contains a well-formed term without a normal form. Whether the nesting can go on forever
+has to be tested where terms loop.
+
+**Why this says something about the conjecture.** The way up from a term is nearly forced: reduce,
+promote the head variable to its bound, or go to `⊤`. If the route from `C[u]` never reaches
+`C[t]`, no other chain should — to be proved as in `MPSS/Conj8Refuted`: a class of terms that
+contains `C[u]`, is closed under both reductions and omits `C[t]`, with confluence for the
+backward equivalence steps.
+
+**The term.** Hurkens' paradox ("A simplification of Girard's paradox", 1995): a term without a
+normal form, typable in λU⁻ and so in λ*, about a page long. The looping combinator the paper
+cites ([16]) is over 40 pages. `T T` is well-formed and normalizes; `ω ω` loops and is not
+well-formed. Encoding: Hutchins' thesis p. 47 — `Πx:A.B ↦ λx≤A.B`, `* ↦ ⊤`, `M : A ↦ M ≤ A`. The
+term is to be taken from Hurkens' paper, not from memory.
+
+**Steps.**
+
+1. Encode the paradox: a term `M` and a bound `A` with `M ≤ A`, `M` without a normal form.
+2. Check `M wf`, `A wf`, `M ≤*wf A` in the empty context. The term has a few hundred nodes and
+   the probe's checkers were built for size 7, so this is where it may stop.
+3. Instances: `u = λx≤A. x r`, `t = λx≤A. A r`, both applied to `M` — the shape whose lifting
+   splices the chain `M ≤*wf A` under `r` — and variations of `r` and of the body.
+4. Run the substitution route (`conj8-subst-probe.py`) with a large budget and log the pairs.
+
+**Expected outcomes, and what each would mean.**
+
+| outcome | meaning | next |
+| --- | --- | --- |
+| step 2 fails: the encoding is not well-formed in MPSS | MPSS's well-formedness excludes the known looping terms — evidence for the conjecture, and a hint at the measure | find what the judgement rejects |
+| step 2 fails: the checker cannot handle the size | nothing about the conjecture | a goal-directed checker, as in `conj8-illformed-ctx-probe.py` |
+| the route terminates and the chain checks | strong evidence for the conjecture | read off what made the nesting stop |
+| the nesting exceeds the budget | a candidate counterexample, not a refutation | find the repeating pattern of pairs; prove divergence as above; then `¬ Conj-8ʷᶜ` in Agda |

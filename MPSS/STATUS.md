@@ -263,3 +263,5 @@ needs (a well-formed term behaving as `R`).
   `conj8-id-unranked.py`, not mechanized). `Conj-8ʷᶜ` is still open.
 - Owed for a theorem about a calculus: kinded judgements, `Good` by recursion on the kind, the
   six modules carried over (`CONJ8.md` §18). Which stratification is the user's choice.
+- Measure search for the substitution route: head-step and size measures all fail
+  (`conj8-measure-probe.py`, `CONJ8.md` §19). Next: the route on Hurkens' paradox (`CONJ8.md` §20).
