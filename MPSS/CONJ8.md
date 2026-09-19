@@ -874,6 +874,15 @@ of promotions from `f q` ends in an abstraction" together give `¬ Conj-8ʷᶜ` 
 confluence from `MPSS/Strip`, as in `Conj8Refuted`). The five hypotheses are arguments; no term is
 constructed in Agda.
 
+**Mechanized later the same day.** `MPSS/PromotionNoWhnf`: part (a) of item 2 below, and with
+it the contraction of the head path, so that standardization is not needed. In a context with no
+`≤` entry a promotion is an equivalence step, or its result has `⊤` at the end of its head path
+(and then reduces to `⊤`), or its source has an abstraction at the end of its head path with the
+stack empty (and then reduces to an abstraction, by β along the path). So for a closed term,
+"no `⟶ᵉ*`-reduct is an abstraction" (`NR`) is preserved by promotion and gives `NoAbs`.
+`refutes-NR`: `¬ Conj-8ʷᶜ` from the four static hypotheses and `NR (f q)`. What is left of item 2
+is `NR [L₀ R₀]`, a statement about equivalence reduction only.
+
 **Not mechanized, and what each would take.**
 
 1. The four well-formedness facts. The checker made 8,322 promotions and 118,783 well-formedness

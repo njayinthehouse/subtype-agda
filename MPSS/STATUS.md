@@ -279,3 +279,7 @@ needs (a well-formed term behaving as `R`).
   five hypotheses about `f`, `q`, `A`, `B`, which for Hurkens' term are what the probe checks.
 - Lemma 6 and Theorem 5 over `WfCtx` are not refuted by this: the first 13 head reducts of the
   paradox are found well-formed. Still open. `CONJ8.md` §21.
+- `MPSS/PromotionNoWhnf`: for a closed term, "no `⟶ᵉ*`-reduct is an abstraction" is preserved by
+  promotion (a promotion in a context without `≤` entries is an equivalence step, or goes to `⊤`,
+  or its source reduces to an abstraction). `refutes-NR`: `¬ Conj-8ʷᶜ` from the four static
+  hypotheses and that one. Left for Hurkens' term: the four static facts and `NR [L₀ R₀]`.
