@@ -1178,3 +1178,51 @@ proof carries over. (2) B (Conjecture 8 as a rule) inherits A's problem for prog
 is lost the same way — and is weaker than A on preservation; probe only if C fails. (3) For A,
 the restated Theorem 11: a well-formed term convertible with `⊤` is below no abstraction in
 `≤*wf`.
+
+## 27. Candidate C: type safety, machine-checked — 2026-09-19
+
+**The change.** MPSS's machine is kept as printed: `⟶ᵉ`, `⟶ˢ`, contexts with `≡` entries, the
+machine relation and everything proved about them (Lemmas 1 and 2 by the variant route, Theorem
+3). Figure 4 is replaced by v1's static judgements, indexed by the operand stack
+(`MPSS/StackWf`): `Wc-FOp` checks the body of an abstraction that meets an operand `δ` under
+`x ≡ δ` at the remaining stack; `Wc-App` asks `u ≤*wf λt.⊤` at `v ∷ s`; a variable is well-formed
+at `s` when its annotation is; well-subtyping is the machine relation between terms well-formed
+at the same configuration.
+
+**Proved, `--safe`, nothing assumed.**
+
+| module | result |
+| --- | --- |
+| `StackWf` | the judgements; `Thm-3ˢ`, `Thm-11ˢ`; **progress** `Thm-4ˢ` at every configuration |
+| `EvalChain` | `↦⇒⟶ᵉ*`: an evaluation step is a chain of `⟶ᵉ` steps at every configuration, from local closure and scoping alone (β is two steps) — the repaired Proposition 17 without well-formedness |
+| `SubstEqvS` | `⟶ˢ` and the machine relation under substitution for a name bound by `x ≡ v`: one step to one step |
+| `MachineNarrow` | `⊲-↣`: the machine relation, both modes, is preserved by context reduction, on locally closed scoped terms (from `Lem-1′`, `Lem-2′`) |
+| `StackWfSubst` | the three judgements under that substitution (v1's B.5 with `≡`) |
+| `StackWfNarrow` | `wfˢ-fv`; narrowing of the three judgements along reductions of annotations and stack entries that preserve well-formedness (v1's B.11, B.12, B.17, B.18) |
+| `StackWfPreservation` | **`Lem-6ˢ`** (evaluation preserves `wfˢ`), **`Thm-5ˢ`** (evaluation preserves `≤*wfˢ`), **`type-safetyˢ`**, `closed-safetyˢ` |
+| `StackWfExample` | `(λx≤⊤. x) ⊤` is `wfˢ` — the theorem is not vacuous |
+
+**Why it goes through where Figure 4 does not.** The β-case substitutes for a parameter bound by
+`x ≡ δ` — its own definition — so nothing of the form "`δ v` is below `A v` because `δ` is below
+`A`" is asked; that was Conjecture 8. The price is that an abstraction is checked again at each
+operand it meets, and well-formedness is not a judgement about a term in a context alone.
+
+**Probe** (`conj8-C-probe.py`): to size 6 in 125 well-formed contexts, the terms `wfˢ` at the
+empty stack include every term well-formed as printed; the few dozen more have the shape of the
+long-chain artefacts of the printed oracle (`z z ⊤` under `z ≤ y ≤ λ⊤.0`), not checked one by
+one; Lemma 6: 2,693 instances, no failure.
+
+**Not yet established.** That `t₆` (§23) is *not* `wfˢ`. On paper: its body `x R₀ ⊤` is checked
+under `x ≡ L₀`, which asks `[L₀ R₀]` below an abstraction at the stack `[⊤]`, and the derivation
+would follow head evaluation for ever. By `Lem-6ˢ` it is equivalent to `[L₀ R₀] ⊤` not being
+`wfˢ`. The mechanized "`[L₀ R₀]` reaches no abstraction" (`Lem6WfCtxRefuted.H-NoAbs`) is at the
+empty stack; the statement at `[⊤]` is the next module. Until then "C gives up ex falso in applied
+position" is an expectation, not a result.
+
+**Where the question stands.** Minimum change giving type safety, among the candidates of §25:
+
+- C — Figure 4's shape (stack-indexed judgements; one rule `Wc-FOp` added, `Wf-App` read at the
+  stack): **type safe, proved**; machine untouched.
+- A — one rule of the machine: repairs the two counterexamples, but it is the promotion the paper
+  removed, Lemma 1 and Theorem 3 fail for it (`CandidateA`), progress open (§26).
+- B — not probed; loses Theorem 3 as A does.
