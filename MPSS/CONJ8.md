@@ -908,5 +908,6 @@ direct argument on well-formedness derivations.
 **Next.** (i) The sound checker in Agda, which discharges hypothesis group 1 and is reusable for
 any large instance. (ii) Part (a) of 2, which is term-independent. (iii) Part (b). Or, in place of
 (i)–(iii) for this term, a smaller well-formed closed term without a weak head normal form, if
-one exists: exhaustive search found none up to size 7 (§15), and none is known for λ\* below
-Hurkens' size.
+one exists. `conj8-nowhnf-search.py` finds none: of the 1,246,341 closed terms of size ≤ 13, the
+checker finds 225,125 well-formed, and every one of them reaches a weak head normal form within
+400 head steps. None is known for λ\* below Hurkens' size.
