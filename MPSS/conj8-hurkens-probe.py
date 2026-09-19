@@ -161,12 +161,15 @@ class Checker:
 
     def promote_head(self, G, t):
         """t = x args with x ≤ b in G: the promotion x args ⟶ˢ b args (Ms-App over Ms-Pro), if
-        b args is well-formed; None otherwise"""
+        x args and b args are both well-formed; None otherwise"""
         h, args = unspine(t)
         if h[0] != 'f': return None
         kb = lookup(G, h[1])
         if kb is None or kb[0] != 's': return None
         p = A(kb[1], *args)
+        # Ws-Lf2 asks both ends of a promotion to be well-formed; the source may be an
+        # e-reduct of a well-formed term, which is not known to be well-formed (Lemma 6)
+        if not self.wf(G, t): return None
         if not self.wf(G, p): return None
         self.promotions += 1
         return p
