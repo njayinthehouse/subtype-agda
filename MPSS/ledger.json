@@ -5,7 +5,7 @@
   "headline": "MPSS Proof Ledger",
   "standfirst": "",
   "footer": [
-   "124 modules"
+   "126 modules"
   ]
  },
  "nodes": [
@@ -404,6 +404,15 @@
    "module": "MPSS.Conj8Ranked",
    "defect": "",
    "origin": "development"
+  },
+  {
+   "id": "8k",
+   "ref": "Lemma 8k",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.PromotionNoWhnf",
+   "defect": "",
+   "origin": "development"
   }
  ],
  "deps": {
@@ -462,7 +471,8 @@
    "8f",
    "8g",
    "8i",
-   "8j"
+   "8j",
+   "8k"
   ],
   "9": [
    "8",
@@ -543,6 +553,9 @@
   "8i": [
    "19",
    "8a"
+  ],
+  "8k": [
+   "3"
   ]
  },
  "detail": {
@@ -4437,6 +4450,58 @@
    "faults": [],
    "hyps": [],
    "types": []
+  },
+  "8k": {
+   "module": "MPSS.PromotionNoWhnf",
+   "account": "",
+   "sig": "Conj-8ʷᶜ : Set\nConj-8ʷᶜ = ∀ {Γ u t} (C : CoCtx) → WfCtx Γ\n         → LC u → LC t\n         → Γ ⊢ u ≤*wf t → Γ ⊢ plug C u wf → Γ ⊢ plug C t wf\n         → Γ ⊢ plug C u ≤*wf plug C t\n\nrefutes-NR : ∀ {f q A B}\n           → LC f → LC (lam A B) → LC q → Closed (app f q)\n           → [] ⊢ f ≤*wf lam A B\n           → [] ⊢ app f q wf\n           → [] ⊢ app (lam A B) q wf\n           → Reaches (app (lam A B) q)\n           → NR (app f q)\n           → ¬ Conj-8ʷᶜ\n\nNR⇒NoAbs : ∀ {t} → LC t → Closed t → NR t → NoAbs t\n\nrefutes : ∀ {f q A B}\n        → LC f → LC (lam A B) → LC q\n        → [] ⊢ f ≤*wf lam A B\n        → [] ⊢ app f q wf\n        → [] ⊢ app (lam A B) q wf\n        → Reaches (app (lam A B) q)\n        → NoAbs (app f q)\n        → ¬ Conj-8ʷᶜ",
+   "paper": [],
+   "faults": [],
+   "hyps": [],
+   "types": [
+    {
+     "name": "_⊢_⊑*wf[_]_",
+     "display": "Γ ⊢ t ⊑*wf[ m ] t′",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_⊑*wf[_]_ : Ctx → Tm → Mode → Tm → Set where\n\n  Ws-Sub : ∀ {Γ v t m}\n         → Γ ⊢ v wf\n         → Γ ⊢ v ⊑wf[ m ] t\n         → Γ ⊢ t wf\n         → Γ ⊢ v ⊑*wf[ m ] t\n\n  Ws-Trs : ∀ {Γ v u t m}\n         → Γ ⊢ v ⊑*wf[ m ] u\n         → Γ ⊢ u wf\n         → Γ ⊢ u ⊑*wf[ m ] t\n         → Γ ⊢ v ⊑*wf[ m ] t"
+    },
+    {
+     "name": "CoCtx",
+     "display": "CoCtx",
+     "module": "MPSS.Conjecture8",
+     "decl": "data CoCtx : Set where\n  ∙      : CoCtx\n  co-fun : Tm → CoCtx → CoCtx\n  co-app : CoCtx → Tm → CoCtx"
+    },
+    {
+     "name": "_⊢_wf",
+     "display": "Γ ⊢ t wf",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_wf       : Ctx → Tm → Set where\n\n  Wf-PrS : ∀ {Γ x t}\n         → Γ prevalid → x ≤ t ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-PrE : ∀ {Γ x α}\n         → Γ prevalid → x ≐ α ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-Top : ∀ {Γ}\n         → Γ prevalid\n         → Γ ⊢ Top wf\n\n  Wf-Fun : ∀ {Γ t u} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , sub , t) ∷ Γ) ⊢ (u ^ fvar x) wf)\n         → Γ ⊢ t wf\n         → Γ ⊢ lam t u wf\n\n  Wf-App : ∀ {Γ u v t}\n         → Γ ⊢ u ⊑*wf[ sub-m ] lam t Top\n         → Γ ⊢ v ⊑*wf[ sub-m ] t\n         → Γ ⊢ app u v wf"
+    },
+    {
+     "name": "WfCtx",
+     "display": "WfCtx",
+     "module": "MPSS.WfCtx",
+     "decl": "data WfCtx : Ctx → Set where\n  wc-nil : WfCtx []\n  wc-sub : ∀ {Γ x t} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ t wf → WfCtx ((x , sub , t) ∷ Γ)\n  wc-eqv : ∀ {Γ x α} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ α wf → WfCtx ((x , eqv , α) ∷ Γ)"
+    },
+    {
+     "name": "LC",
+     "display": "LC",
+     "module": "PSS.Syntax",
+     "decl": "data LC : Tm → Set where\n  lc-fvar : ∀ {x} → LC (fvar x)\n  lc-Top  : LC Top\n  lc-lam  : ∀ {t b} (L : List Name)\n          → LC t\n          → (∀ {x} → x ∉ L → LC (b ^ fvar x))\n          → LC (lam t b)\n  lc-app  : ∀ {f a} → LC f → LC a → LC (app f a)"
+    },
+    {
+     "name": "_∣_⊢_⟶ᵉ*_",
+     "display": "Γ ∣ s ⊢ t ⟶ᵉ* t′",
+     "module": "MPSS.Strip",
+     "decl": "data _∣_⊢_⟶ᵉ*_ : Ctx → Stack → Tm → Tm → Set where\n  ε   : ∀ {Γ s a} → Γ ∣ s prevalid → Γ ∣ s ⊢ a ⟶ᵉ* a\n  _◅_ : ∀ {Γ s a b c} → Γ ∣ s ⊢ a ⟶ᵉ b → Γ ∣ s ⊢ b ⟶ᵉ* c → Γ ∣ s ⊢ a ⟶ᵉ* c"
+    },
+    {
+     "name": "_⟶ˢ*_",
+     "display": "t ⟶ˢ* t′",
+     "module": "MPSS.Conj8NoAbstraction",
+     "decl": "data _⟶ˢ*_ : Tm → Tm → Set where\n  εˢ   : ∀ {a} → a ⟶ˢ* a\n  _◅ˢ_ : ∀ {a b c} → [] ∣ [] ⊢ a ⟶ˢ b → b ⟶ˢ* c → a ⟶ˢ* c"
+    }
+   ]
   }
  },
  "types": [
@@ -4467,6 +4532,13 @@
    "display": "𝒲",
    "module": "MPSS.Conj8FromLeaves",
    "decl": "data 𝒲 : Ctx → Stack → (Tm → Set) → Set₁ where\n  w-top : ∀ {Γ v} → Γ ⊢ v wf → 𝒲 Γ (v ∷ []) (App (Wf Γ) v)\n  w-app : ∀ {Γ s P v} → 𝒲 Γ s P → 𝒲 Γ (v ∷ s) (App P v)\n  w-fop : ∀ {Γ s P α t x} → 𝒲 Γ (α ∷ s) P → x ∉ dom Γ → 𝒲 ((x , eqv , α) ∷ Γ) s (Fun P t x)\n  w-fun : ∀ {Γ P t x} → 𝒲 Γ [] P → x ∉ dom Γ → 𝒲 ((x , sub , t) ∷ Γ) [] (Fun P t x)"
+  },
+  {
+   "id": "T:_⟶ˢ*_",
+   "name": "_⟶ˢ*_",
+   "display": "t ⟶ˢ* t′",
+   "module": "MPSS.Conj8NoAbstraction",
+   "decl": "data _⟶ˢ*_ : Tm → Tm → Set where\n  εˢ   : ∀ {a} → a ⟶ˢ* a\n  _◅ˢ_ : ∀ {a b c} → [] ∣ [] ⊢ a ⟶ˢ b → b ⟶ˢ* c → a ⟶ˢ* c"
   },
   {
    "id": "T:CoCtx",
@@ -4726,6 +4798,30 @@
  ],
  "functions": [
   {
+   "id": "F:Closed",
+   "name": "Closed",
+   "display": "Closed",
+   "module": "MPSS.Closed",
+   "sig": "Closed : Ctx → List Name → Set",
+   "body": "Closed Γ B = ∀ {y c α b} → (y , c , α) ∈ Γ → b ∈ B → b ∈ fv α → y ∈ B\n"
+  },
+  {
+   "id": "F:NoAbs",
+   "name": "NoAbs",
+   "display": "NoAbs",
+   "module": "MPSS.Conj8NoAbstraction",
+   "sig": "NoAbs : Tm → Set",
+   "body": "NoAbs v = ∀ {w b} → ¬ (v ⟶ˢ* lam w b)\n"
+  },
+  {
+   "id": "F:Reaches",
+   "name": "Reaches",
+   "display": "Reaches",
+   "module": "MPSS.Conj8NoAbstraction",
+   "sig": "Reaches : Tm → Set",
+   "body": "Reaches t = ∃[ w ] ∃[ b ] ([] ∣ [] ⊢ t ⟶ᵉ* lam w b)\n"
+  },
+  {
    "id": "F:C8At",
    "name": "C8At",
    "display": "C8At",
@@ -4828,6 +4924,14 @@
    "module": "MPSS.Narrowing24",
    "sig": "EStep : Tm → Tm → Ctx → Set",
    "body": "EStep t t′ Γ′ = Γ′ ∣ [] ⊢ t ⟶ᵉ t′\n"
+  },
+  {
+   "id": "F:NR",
+   "name": "NR",
+   "display": "NR",
+   "module": "MPSS.PromotionNoWhnf",
+   "sig": "NR : Tm → Set",
+   "body": "NR t = ∀ {w b} → ¬ ([] ∣ [] ⊢ t ⟶ᵉ* lam w b)\n"
   },
   {
    "id": "F:Good",
@@ -5270,6 +5374,21 @@
    "T:_⊢_⇒_",
    "T:_⊢_⊑*wf[_]_"
   ],
+  "8k": [
+   "F:Closed",
+   "F:NR",
+   "F:NoAbs",
+   "F:Reaches",
+   "F:_⊢_≤*wf_",
+   "F:plug",
+   "T:CoCtx",
+   "T:LC",
+   "T:WfCtx",
+   "T:_∣_⊢_⟶ᵉ*_",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_",
+   "T:_⟶ˢ*_"
+  ],
   "T:_∣_↣_∣_": [
    "T:Ctx",
    "T:Stack",
@@ -5537,6 +5656,10 @@
    "T:_⊢_wf",
    "T:_⊢_⊑*wf[_]_"
   ],
+  "T:_⟶ˢ*_": [
+   "T:Tm",
+   "T:_∣_⊢_⟶ˢ_"
+  ],
   "F:plug": [
    "T:CoCtx",
    "T:CoLC",
@@ -5659,6 +5782,22 @@
   "F:actS": [
    "F:substStack",
    "T:Stack"
+  ],
+  "F:Closed": [
+   "F:fv",
+   "T:Ctx"
+  ],
+  "F:NoAbs": [
+   "T:Tm",
+   "T:_⟶ˢ*_"
+  ],
+  "F:Reaches": [
+   "T:Tm",
+   "T:_∣_⊢_⟶ᵉ*_"
+  ],
+  "F:NR": [
+   "T:Tm",
+   "T:_∣_⊢_⟶ᵉ*_"
   ],
   "F:_≐_∈_": [
    "T:Ctx",

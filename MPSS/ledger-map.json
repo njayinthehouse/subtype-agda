@@ -196,6 +196,18 @@
    "supports": [
     "8"
    ]
+  },
+  {
+   "id": "8k",
+   "ref": "Lemma 8k",
+   "names": [
+    "refutes-NR",
+    "NR⇒NoAbs",
+    "refutes"
+   ],
+   "supports": [
+    "8"
+   ]
   }
  ]
 }
