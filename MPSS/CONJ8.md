@@ -985,3 +985,62 @@ closed under parallel reduction written out shape by shape (it is the kind syste
 `MPSS/Kinding`, less uniformly). One thing to know about the kinds: with `O` read as a base type
 they look simply typed, which would make the skeleton normalizing; they are not, because `F`
 occurs in `T = F → G` and `T` in `F = O → T`.
+
+## 23. Lemma 6 and Theorem 5 are false over well-formed contexts — machine-checked, 2026-09-19
+
+`MPSS/Lem6WfCtxRefuted`: `¬Lem-6ʷᶜ`, `¬Preservationʷᶜ`, nothing assumed, empty context. One more
+application around the term of §22, with `H = [L₀ R₀]`:
+
+    t₆ = (λx≤¬φ₀. x R₀ ⊤) L₀   ↦   L₀ R₀ ⊤ = H ⊤
+
+`t₆` is well-formed (the checker of §22): under `x ≤ ¬φ₀`, `x R₀` is promoted to `(¬φ₀) R₀`, which
+reduces to `⊥ = λp≤⊤.p`, so `x R₀` is below `λp≤⊤.⊤` and takes the operand `⊤`; and `L₀ ≤*wf ¬φ₀`.
+This is *ex falso* in the source calculus. `H ⊤` is not well-formed: `Wf-App` wants a chain of
+promotions from `H` to an abstraction, and §22 shows there is none.
+
+So **type safety of MPSS in the paper's form is false**: progress holds (Theorem 4), preservation
+of the judgements of Figure 4 does not, in any reading of the context. The reduct `H ⊤` is not
+stuck — it diverges. What the counterexamples leave untouched is safety in the operational
+sense: a well-formed term never evaluates to `⊤` applied to an operand. §24 is the plan for that.
+
+## 24. Plan: operational safety by a step-indexed model — 2026-09-19
+
+**Statement aimed at.** For `[] ⊢ t wf`: head evaluation of `t` (β at the head of the spine,
+deterministic) never reaches `⊤ v₁ … vₙ` with `n ≥ 1`. The calculus and its judgements are
+untouched; nothing is stratified.
+
+**Why a model.** Every syntactic invariant tried is either not preserved (Figure 4's own
+judgements, §23) or needs the statement itself (the class of reducts of well-formed terms). The
+fact to be transferred across a β-step is "the operand is below the bound, and the bound is below
+an abstraction, so the operand can be applied" — hereditarily, through applications. That is a
+logical relation. It cannot be defined by recursion on the bound (bounds are terms, `⊤` stands
+for every sort, and domains cycle: `T T` has domain `T`, §14), so it is indexed by a number that
+goes down at each operand.
+
+**The model** (closed terms; `π` a stack of closed terms; `⟶ᵉ*` at the empty configuration;
+`→h` head β):
+
+    Supp₀ t π,  Suppₖ t []                  hold
+    Suppₖ₊₁ t (w ∷ π)   iff   t does not reduce to ⊤ or to ⊤ applied, and for every reduct
+                              λx≤d.B of t:   w ∈ 𝒯ₖ d   and   Suppₖ (B[w]) π
+    w ∈ 𝒯ₖ d            iff   for j ≤ k:  Suppⱼ d ⊆ Suppⱼ w,  and  Goodⱼ w
+    Goodₖ w             iff   for j ≤ k and Suppⱼ w π:  w π is safe for j head steps
+
+The supports of a bound quantify over *all* its `⟶ᵉ*`-reducts, so invariance under `⟶ᵉ` on either
+side is confluence (`MPSS/Strip`), with no standardization. Safety is about the deterministic
+`→h`, so one β-step is one index. A term with no abstraction and no `⊤` among its reducts
+(Hurkens' paradox) supports every stack, which is what `H ⊤` needs.
+
+**Fundamental lemma.** (1) `Γ ⊢ t wf` gives `Good` of `t` under a good environment. (2)
+`Γ ⊢ u ≤*wf t` gives `Supp t ⊆ Supp u`; then `u ∈ 𝒯 t` follows from (1) and (2). (2) goes by
+induction on machine derivations at configurations: `Ms-Pro` is goodness of the environment;
+`Ms-Top` is vacuous (a `⊤` with operands supports nothing); `Ms-Equ`, `Ws-Lf1`, `Ws-Rgh` are
+confluence; `Ms-App` and `Ms-FOp` are the definition, read at the spine. The environment is a
+context of `≡` entries — the operand kept in the context as `Ms-FOp` keeps it (`relabelᵉ`,
+`unfold`) — not a substitution, for which the development has no lemma at a `≤`-bound name
+(Lemma 31 as printed is open).
+
+**Expected obstacles.** The spine/stack bookkeeping of `Ms-App`/`Ms-FOp` against `Supp`; that
+`Wf-Fun` gives the body at cofinitely many names under `x ≤ A` and the model needs it under
+`x ≡ w`; `↦`/`→h` as `⟶ᵉ*` on terms that are not well-formed (`β₁`, `β₂` of
+`MPSS/PromotionNoWhnf` do this).

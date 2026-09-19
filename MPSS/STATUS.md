@@ -297,3 +297,10 @@ checked from outside in `MPSS/Conj8WfCtxRefutedCheck`. Empty context, `u = L₀`
 - `PromotionNoWhnf`, `Conj8NoAbstraction`: from there to `¬Conj-8ʷᶜ`.
 - **Open:** `Lem-6ʷᶜ`, `Preservationʷᶜ` (`MPSS/WfCtx`). The instance does not touch them. A proof
   cannot go through Conjecture 8. `CONJ8.md` §22.
+
+## Lemma 6 and Theorem 5 refuted over well-formed contexts — 2026-09-19
+
+`MPSS/Lem6WfCtxRefuted`: `¬Lem-6ʷᶜ`, `¬Preservationʷᶜ`, nothing assumed, empty context:
+`(λx≤¬φ₀. x R₀ ⊤) L₀ ↦ [L₀ R₀] ⊤`, well-formed to ill-formed. Type safety in the paper's form is
+false. Open: operational safety (a well-formed term never head-evaluates to `⊤` applied);
+`CONJ8.md` §24 is the plan, a step-indexed model.
