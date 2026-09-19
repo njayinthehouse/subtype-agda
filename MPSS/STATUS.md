@@ -283,3 +283,17 @@ needs (a well-formed term behaving as `R`).
   promotion (a promotion in a context without `≤` entries is an equivalence step, or goes to `⊤`,
   or its source reduces to an abstraction). `refutes-NR`: `¬ Conj-8ʷᶜ` from the four static
   hypotheses and that one. Left for Hurkens' term: the four static facts and `NR [L₀ R₀]`.
+
+## Conjecture 8 refuted over well-formed contexts — 2026-09-19
+
+`MPSS/Conj8WfCtxRefuted`, `¬Conj-8ʷᶜ`, nothing assumed; the statement is written out in full and
+checked from outside in `MPSS/Conj8WfCtxRefutedCheck`. Empty context, `u = L₀`, `t = ¬φ₀`, context
+`□ R₀`, `[L₀ R₀]` Hurkens' paradox (its lengths checked against the ones he prints).
+
+- `CheckerFns`, `NormalizeSound`, `CheckerSound`: a fuel-bounded checker for `wf` and `≤*wf`, sound,
+  not complete; the three static facts are its runs on the term (`refl`, about half a minute).
+- `Kinding`, `HurkensTerm`: five kinds preserved by `⟶ᵉ` at every configuration; the paradox has
+  kind `S`, which no abstraction has, so none of its reducts is an abstraction.
+- `PromotionNoWhnf`, `Conj8NoAbstraction`: from there to `¬Conj-8ʷᶜ`.
+- **Open:** `Lem-6ʷᶜ`, `Preservationʷᶜ` (`MPSS/WfCtx`). The instance does not touch them. A proof
+  cannot go through Conjecture 8. `CONJ8.md` §22.

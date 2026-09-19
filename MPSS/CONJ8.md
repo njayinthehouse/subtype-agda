@@ -803,6 +803,9 @@ term is to be taken from Hurkens' paper, not from memory.
 
 ## 21. Hurkens' paradox is well-formed in MPSS, and it is a candidate counterexample to `Conj-8ʷᶜ` — 2026-09-19
 
+**Superseded the same day by §22: the instance is machine-checked.** This section is kept as the
+record of how it was found; its "not mechanized" list is what §22 discharges.
+
 Not mechanized beyond `MPSS/Conj8NoAbstraction`. What is checked, by what, and what is argued
 only on paper is stated item by item below.
 
@@ -920,3 +923,49 @@ any large instance. (ii) Part (a) of 2, which is term-independent. (iii) Part (b
 one exists. `conj8-nowhnf-search.py` finds none: of the 1,246,341 closed terms of size ≤ 13, the
 checker finds 225,125 well-formed, and every one of them reaches a weak head normal form within
 400 head steps. None is known for λ\* below Hurkens' size.
+
+## 22. Conjecture 8 is false over well-formed contexts — machine-checked, 2026-09-19
+
+`MPSS/Conj8WfCtxRefuted`, `¬Conj-8ʷᶜ`, under `--safe`, nothing assumed. The instance is §21's, in
+the empty context: `u = L₀`, `t = ¬φ₀`, covariant context `□ R₀`, with `[L₀ R₀]` Hurkens' paradox.
+Everything §21 left to the probe or to paper is now in Agda.
+
+| what | how | module |
+| --- | --- | --- |
+| the term | written with names and closed binder by binder, as in the probe | `HurkensTerm` |
+| `L₀ ≤*wf ¬φ₀`, `[L₀ R₀] wf`, `(¬φ₀) R₀ wf` | the probe's checker as Agda functions (`wf?`, `dom?`, `sub?`, with `hred`, `whnf`, `nf`, `conv`), run by the type checker on the term (`refl`), and a proof that what it accepts is derivable | `CheckerFns`, `NormalizeSound`, `CheckerSound` |
+| `(¬φ₀) R₀ ⟶ᵉ* λp≤⊤.p` | one head step | `Conj8WfCtxRefuted` |
+| no `⟶ᵉ*`-reduct of `[L₀ R₀]` is an abstraction | five kinds, preserved by `⟶ᵉ` at every configuration; the paradox has the kind `S`, which no abstraction has | `Kinding`, `HurkensTerm` |
+| so no chain of promotions from it ends in an abstraction | a promotion in a context without `≤` entries is an equivalence step, or goes to `⊤`, or its source reduces to an abstraction | `PromotionNoWhnf` |
+| so `[L₀ R₀] ≤*wf (¬φ₀) R₀` is not derivable | Theorem 3, confluence | `Conj8NoAbstraction` |
+
+**The kinds.** Hurkens' Section 7 and standardization are not used. Hurkens remarks that `⊥` can
+be replaced by a variable of type `*`; a closed term whose type is a variable has no weak head
+normal form, by subject reduction — which MPSS does not have. But the argument needs only the
+proof-level skeleton of the term, with every object and annotation left unexamined:
+
+    O  anything     F = O → T     T = F → G     G = F → S     S  a finished proof
+
+`R₀`, `M₀` and every `let p. …` have kind `F`, `L₀` has kind `G`, `[L₀ R₀]` has kind `S`. `F` occurs
+in its own definition, so this is not a normalization argument. `sr`: the kinds are preserved by
+`⟶ᵉ` at a configuration whose stack and `≡`-definitions are kinded as the subject's kind says
+(`Me-FOp` binds the parameter to an operand of the binder's kind; `Me-Pro` unfolds a name to a
+term of its kind). `S` is only ever the kind of an application.
+
+**The checker.** Fuel-bounded, sound, not complete. `sub-sound` carries the `Ws-Sub` layer built
+so far as a function, because a head step leaves a term not known to be well-formed (that is
+Lemma 6, which is open), and `Ws-Lf2` wants both ends of a promotion well-formed; the checker
+checks the ends it does not know. The first version of the probe did not check the source of a
+promotion; it does now, and its results are unchanged. Under a binder the checker works at one
+fresh name and the derivation is closed up by `wrap-wf` and `chain-fun`. The three runs on the
+term take the type checker about half a minute together.
+
+**What is and is not refuted.** Well-subtyping in MPSS is not closed under covariant contexts,
+in any reading of "context" the paper could intend: prevalid (§14) or with well-formed
+annotations (here, and in the empty context). The conclusion that fails is the application rule
+of the source calculus at a redex without a weak head normal form. `Lem-6ʷᶜ` and
+`Preservationʷᶜ` are **not** refuted by this instance and are open; a proof of them cannot go
+through Conjecture 8, and would have to establish Lemma 7 directly.
+
+**Reusable.** `wf-sound` and `sub-sound` give derivations for any term the checker accepts, at
+any size the type checker can evaluate; `Kinding.sr` applies to any term with a kinded skeleton.
