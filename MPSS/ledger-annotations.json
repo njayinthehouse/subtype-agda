@@ -3,12 +3,12 @@
   "title": "MPSS Proof Ledger",
   "eyebrow": "Pasquale &amp; García-Pérez · CSL 2026 · arXiv:2407.13882v2",
   "headline": "Type safety in MPSS, as stated, is false",
-  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. Whether they hold once context annotations must be well-formed is open. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
+  "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. <strong>Conjecture 8 is also false once context annotations must be well-formed</strong>, in the empty context (<code>MPSS.Conj8WfCtxRefuted</code>): Hurkens' paradox is well-formed in MPSS, its head is a redex after every reduction, and so it is below its own reducts and <code>⊤</code> only — not below <code>⊥</code>, as the application rule would have it. Whether Lemma 6 and preservation hold over such contexts is open. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "125 Agda modules",
+   "132 Agda modules",
    "--safe · 0 postulates · 0 holes",
-   "Conjecture 8, Lemmas 6 and 7, Theorem 5: refuted as stated, in a prevalid context with an ill-formed annotation (MPSS.Conj8Refuted)",
+   "Conjecture 8: refuted as stated (MPSS.Conj8Refuted) and over well-formed contexts, in the empty context (MPSS.Conj8WfCtxRefuted). Lemmas 6 and 7, Theorem 5: refuted as stated; open over well-formed contexts",
    "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
    "Lemmas 1, 2 and 31: open as printed, a variant proved (↻)"
   ],
@@ -16,8 +16,8 @@
    "title": "Open threads",
    "items": [
     {
-     "anchor": "Conjecture 8 and type safety · what is left",
-     "html": "<p>Refuted as stated (<code>MPSS.Conj8Refuted</code>), with Lemmas 6 and 7 and preservation: a prevalid context may define a recursive type, <code>R ≡ ω ω</code>, because prevalidity does not ask annotations to be well-formed.</p><p>The obvious repair is to ask that — <code>Pv-Ctx</code> and <code>Pv-EqA</code> with a well-formedness premise on the annotation. Whether the conjecture and type safety hold then is open. The same instance fails as soon as <em>any</em> well-formed term behaves as <code>R</code> does, which needs a type-level looping combinator (the paper's §6 expects term-level ones); and a proof cannot be a rank induction, since the domain order already cycles at the type of the polymorphic identity, <code>T = λy≤⊤. λx≤y. y</code>: <code>T T</code> is well-formed and its domain is <code>T</code>.</p><p>Recorded on the way, each with where it breaks: the nesting-depth measure, the narrowing route (its intermediate points are ill-formed at dependent bounds), the substitution route run as an algorithm (valid on every instance tried, measure not found).</p><p><strong>Candidate counterexample over well-formed contexts, not mechanized</strong> (2026-09-19, <code>MPSS/CONJ8.md</code> §21). The looping term need not be at the type level: Hurkens' paradox <code>[L₀ R₀]</code>, encoded with <code>Π ↦ λ</code> and every sort <code>↦ ⊤</code>, is found well-formed in the empty context by a goal-directed checker, and <code>L₀ ≤*wf ¬φ₀</code>. Its head is a redex after every head step, so its only supertypes are its reducts and <code>⊤</code> (<code>MPSS.PromotionNoWhnf</code>), and the conjecture at <code>u = L₀</code>, <code>t = ¬φ₀</code>, context <code>□ R₀</code> — the application rule of the source calculus — fails. Mechanized: <code>¬ Conj-8ʷᶜ</code> from four well-formedness facts and “no reduct of <code>f q</code> is an abstraction” (Lemma 8k). Left: those hypotheses for a term of 2039 nodes. Lemma 6 and Theorem 5 over well-formed contexts are not refuted by it.</p>"
+     "anchor": "Type safety over well-formed contexts · what is left",
+     "html": "<p>Refuted as stated (<code>MPSS.Conj8Refuted</code>), with Lemmas 6 and 7 and preservation: a prevalid context may define a recursive type, <code>R ≡ ω ω</code>, because prevalidity does not ask annotations to be well-formed.</p><p>The obvious repair is to ask that — <code>Pv-Ctx</code> and <code>Pv-EqA</code> with a well-formedness premise on the annotation. Whether the conjecture and type safety hold then is open. The same instance fails as soon as <em>any</em> well-formed term behaves as <code>R</code> does, which needs a type-level looping combinator (the paper's §6 expects term-level ones); and a proof cannot be a rank induction, since the domain order already cycles at the type of the polymorphic identity, <code>T = λy≤⊤. λx≤y. y</code>: <code>T T</code> is well-formed and its domain is <code>T</code>.</p><p>Recorded on the way, each with where it breaks: the nesting-depth measure, the narrowing route (its intermediate points are ill-formed at dependent bounds), the substitution route run as an algorithm (valid on every instance tried, measure not found).</p><p><strong>Refuted over well-formed contexts too</strong> (2026-09-19, <code>MPSS.Conj8WfCtxRefuted</code>, <code>MPSS/CONJ8.md</code> §22), in the empty context, nothing assumed. The looping term need not be at the type level: Hurkens' paradox <code>[L₀ R₀]</code>, encoded with <code>Π ↦ λ</code> and every sort <code>↦ ⊤</code>, is well-formed (a checker written in Agda and proved sound, Lemma 8l), <code>L₀ ≤*wf ¬φ₀</code>, and none of its reducts is an abstraction (subject reduction for five kinds on its proof-level skeleton, Lemma 8m). So its only supertypes are its reducts and <code>⊤</code>, and the conjecture at <code>u = L₀</code>, <code>t = ¬φ₀</code>, context <code>□ R₀</code> fails.</p><p><strong>Open:</strong> Lemma 6 and Theorem 5 over well-formed contexts. The instance does not refute them; a proof has to establish Lemma 7 without the conjecture.</p>"
     },
     {
      "anchor": "Lemma 2 and Lemma 1 · the diamond and commutation, as printed",
@@ -1112,17 +1112,47 @@
    ]
   },
   "8k": {
-   "name": "Conjecture 8 over WfCtx fails at a well-formed application that reduces to no abstraction (hypotheses checked outside Agda for Hurkens' paradox)",
+   "name": "Conjecture 8 is false over well-formed contexts",
    "defect": "",
    "attempts": [
     {
-     "what": "In the empty context: f ≤*wf λx≤A.B, f q and (λx≤A.B) q well-formed, (λx≤A.B) q reducing to an abstraction, and no ⟶ᵉ*-reduct of f q an abstraction, together give ¬ Conj-8ʷᶜ. A promotion in a context without ≤ entries is an equivalence step, or its result reduces to ⊤, or its source reduces to an abstraction by β along its head path; so reducing to no abstraction is preserved by promotion. Then Theorem 3 and confluence, as in Conj8Refuted.",
+     "what": "The instance: u = L₀, t = ¬φ₀, context □ R₀, in the empty context, [L₀ R₀] Hurkens' paradox. Term-independent part (Conj8NoAbstraction, PromotionNoWhnf): a promotion in a context without ≤ entries is an equivalence step, or its result reduces to ⊤, or its source reduces to an abstraction by β along its head path; so a closed term none of whose reducts is an abstraction is promoted to no abstraction, and Theorem 3 with confluence finishes. The static facts are runs of a checker written in Agda and proved sound (Lemma 8l); that no reduct is an abstraction is subject reduction for five kinds on the proof-level skeleton (Lemma 8m).",
      "outcome": "proved",
      "kind": "original",
-     "where": "MPSS.Conj8NoAbstraction (refutes), MPSS.PromotionNoWhnf (promotion-is-e, NR-step, NR⇒NoAbs, refutes-NR)",
-     "because": "Hurkens' paradox [L₀ R₀], encoded with Π ↦ λ and every sort ↦ ⊤, is found well-formed in the empty context by conj8-hurkens-probe.py, and its head is a redex after every head step.",
-     "why": "The five hypotheses are arguments. For Hurkens' term the four static ones are checked by a goal-directed checker in Python (validated on 6,625 small terms against the enumerating oracle) and the fifth rests on Hurkens' Section 7; none is mechanized, so Conj-8ʷᶜ is not refuted in Agda.",
-     "change": "conj8-hurkens"
+     "where": "MPSS.Conj8WfCtxRefuted (¬Conj-8ʷᶜ), over MPSS.Conj8NoAbstraction and MPSS.PromotionNoWhnf; checked from outside in MPSS.Conj8WfCtxRefutedCheck",
+     "because": "Hurkens' paradox, encoded with Π ↦ λ and every sort ↦ ⊤, was found well-formed by a Python probe, and its head is a redex after every head step.",
+     "why": "Nothing assumed. The conclusion that fails is the application rule of the source calculus at a redex without a weak head normal form. Lemma 6 and Theorem 5 over well-formed contexts are not refuted by it.",
+     "change": "conj8-wfctx-refuted"
+    }
+   ]
+  },
+  "8l": {
+   "name": "a sound checker for well-formedness and well-subtyping",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "wf?, dom?, sub? with hred, whnf, nf, conv as fuel-bounded functions; whatever they accept is derivable. Under a binder the checker works at one fresh name and the derivation is closed up by wrap-wf and chain-fun; a head step leaves a term not known well-formed, so the layer built so far is carried as a function and both ends of each promotion are checked.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.CheckerFns, MPSS.NormalizeSound, MPSS.CheckerSound",
+     "because": "The well-formedness of a 2039-node term needs about 160,000 judgements; no derivation by hand.",
+     "why": "Sound, not complete. The three runs on Hurkens' term take the type checker about half a minute.",
+     "change": "conj8-wfctx-refuted"
+    }
+   ]
+  },
+  "8m": {
+   "name": "five kinds preserved by equivalence reduction; the paradox reduces to no abstraction",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Kinds O (anything), F = O → T, T = F → G, G = F → S, S, assigned to the proof-level skeleton only, objects and annotations unexamined. Preserved by ⟶ᵉ at every configuration whose stack and ≡-definitions are kinded as the subject's kind says. No abstraction has kind S; Hurkens' paradox has kind S.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.Kinding (sr, S⇒NR), MPSS.HurkensTerm (Hᵏ, H-NR)",
+     "because": "Hurkens remarks that ⊥ can be a variable; a closed term whose type is a variable has no weak head normal form by subject reduction, which MPSS does not have for its own judgements.",
+     "why": "Replaces Hurkens' Section 7 and a standardization argument. F occurs in its own definition, so this is not a normalization argument.",
+     "change": "conj8-wfctx-refuted"
     }
    ]
   }
@@ -1414,7 +1444,13 @@
    "account": "<code>conj8-from-obligation : Obligation → Conj-8</code>, with <code>Obligation = NewLeaf 𝒲 …</code>. Everything in the recursion of Conjecture 8 except the call back into it is machine-checked: <code>⇛-push</code> (Lemma 8e), <code>annotate</code>, <code>steplift</code>, and <code>conj8</code> of Lemma 8b. Not a result of the paper. <strong>Its hypothesis is false</strong> (<code>MPSS/CONJ8.md</code> §13): at a bound that depends on a parameter instantiated by an earlier operand, the closed-up point of the lifted chain is ill-formed. The implication stands and is of no use as it is."
   },
   "8k": {
-   "account": "<code>refutes-NR</code>: <code>¬ Conj-8ʷᶜ</code> from four static hypotheses about <code>f</code>, <code>q</code>, <code>A</code>, <code>B</code> and <code>NR (f q)</code> — no <code>⟶ᵉ*</code>-reduct of <code>f q</code> is an abstraction. Not a result of the paper. The instance in view is Hurkens' paradox, <code>u = L₀</code>, <code>t = ¬φ₀</code>, context <code>□ R₀</code> (<code>MPSS/CONJ8.md</code> §21); its hypotheses are checked outside Agda only."
+   "account": "<code>¬Conj-8ʷᶜ : ¬ Conj-8ʷᶜ</code>, nothing assumed. Not a result of the paper: it refutes the paper's Conjecture 8 restricted to contexts whose annotations are well-formed, in the empty context. <code>[L₀ R₀]</code> is well-formed, <code>L₀ ≤*wf ¬φ₀</code>, and <code>[L₀ R₀] ≤*wf (¬φ₀) R₀</code> is not derivable: every binder on the head path of every reduct meets an operand and binds its parameter by <code>≡</code>, so <code>Ms-Pro</code> never applies."
+  },
+  "8l": {
+   "account": "<code>wf-sound</code>, <code>dom-sound</code>, <code>sub-sound</code>: for a prevalid context, a <code>true</code> from the checker of <code>MPSS.CheckerFns</code> is a derivation. Not a result of the paper."
+  },
+  "8m": {
+   "account": "<code>sr</code>: the kinds are preserved by <code>⟶ᵉ</code>. <code>H-NR</code>: no <code>⟶ᵉ*</code>-reduct of Hurkens' paradox is an abstraction. Not a result of the paper."
   }
  },
  "deps": {
@@ -2210,6 +2246,12 @@
    "when": "2026-09-19",
    "title": "Hurkens' paradox is well-formed in MPSS: a candidate counterexample to Conjecture 8 over well-formed contexts",
    "summary": "conj8-hurkens-probe.py transcribes Hurkens' term (2039 nodes, checked against his printed lengths), encodes it with Π ↦ λ and every sort ↦ ⊤, and finds it and its parts well-formed in the empty context with L₀ ≤*wf ¬φ₀. Its head is a redex after every head step, so by MPSS.PromotionNoWhnf its only supertypes are its reducts and ⊤, and the instance u = L₀, t = ¬φ₀, context □ R₀ fails. Mechanized: the term-independent part (Conj8NoAbstraction, PromotionNoWhnf). Not mechanized: the four well-formedness facts and that no reduct of [L₀ R₀] is an abstraction. Lemma 6 and Theorem 5 over WfCtx are not refuted by the instance. CONJ8.md §21."
+  },
+  {
+   "id": "conj8-wfctx-refuted",
+   "when": "2026-09-19",
+   "title": "Conjecture 8 is false over well-formed contexts, machine-checked",
+   "summary": "MPSS.Conj8WfCtxRefuted proves ¬ Conj-8ʷᶜ with nothing assumed, in the empty context, at Hurkens' paradox. New: a checker for wf and ≤*wf written in Agda and proved sound (CheckerFns, NormalizeSound, CheckerSound), run on the 2039-node term by the type checker; a five-kind system on the proof-level skeleton with subject reduction for ⟶ᵉ (Kinding), under which the paradox has a kind no abstraction has. Lemma 6 and Theorem 5 over well-formed contexts stay open and can no longer be approached through the conjecture. CONJ8.md §22."
   }
  ]
 }

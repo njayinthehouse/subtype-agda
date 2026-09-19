@@ -201,9 +201,34 @@
    "id": "8k",
    "ref": "Lemma 8k",
    "names": [
+    "¬Conj-8ʷᶜ",
     "refutes-NR",
     "NR⇒NoAbs",
     "refutes"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8l",
+   "ref": "Lemma 8l",
+   "names": [
+    "wf-sound",
+    "sub-sound",
+    "dom-sound"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8m",
+   "ref": "Lemma 8m",
+   "names": [
+    "sr",
+    "S⇒NR",
+    "H-NR"
    ],
    "supports": [
     "8"
