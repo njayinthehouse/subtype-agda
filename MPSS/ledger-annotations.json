@@ -6,7 +6,7 @@
   "standfirst": "Every numbered result in the paper's metatheory, machine-checked in Agda under <code>--safe</code> — no postulates, no holes, no termination pragmas. Colour is the verdict; hover a result and everything it rests on lights up, <em>what its proof cites and what its statement is built from</em>. Transitivity elimination and progress hold for the paper's calculus with nothing assumed. <strong>Conjecture 8 is false as stated, and so are Lemmas 6 and 7 and preservation</strong> (<code>MPSS.Conj8Refuted</code>): contexts need only be prevalid, so a context may define <code>R ≡ ω ω</code> with <code>ω = λs≤⊤. λx≤(s s). (s s)</code>, where <code>R</code> is well-formed and behaves as the recursive type <code>R ≡ λx≤R.R</code>; with <code>δ = λx≤R. x x</code>, the divergent <code>δ δ</code> is expected below <code>R</code> and is below nothing but <code>⊤</code>. Whether they hold once context annotations must be well-formed is open. Two more of the paper's propositions are false; one is repaired and proved, the other repaired in a different form and proved.",
   "prover": "Agda",
   "footer": [
-   "116 Agda modules",
+   "124 Agda modules",
    "--safe · 0 postulates · 0 holes",
    "Conjecture 8, Lemmas 6 and 7, Theorem 5: refuted as stated, in a prevalid context with an ill-formed annotation (MPSS.Conj8Refuted)",
    "Propositions 17 and 18: refuted as printed, repaired forms proved (↻)",
@@ -530,6 +530,15 @@
      "because": "The refutation needs an ill-formed annotation, and the conjecture is what preservation rests on, so the question is which variant is both true and enough.",
      "why": "Conj-8ʷᶜ is open: the refuting context is excluded and the substitution route is valid on all 3.2 million size-5 instances over the 125 probe contexts with well-formed annotations. For ranked targets the reducibility proof is begun — definition, independence of the accessibility proof, the base case, closure under equivalence expansion — and its fundamental lemma is owed. Which syntactic stratification makes every well-formed term ranked is a choice about the calculus.",
      "change": "conj8-repaired"
+    },
+    {
+     "what": "Reducibility in Tait's form: goodness under good substitutions, by induction on derivations, with the hypothesis that every well-formed term is ranked taken as a module parameter.",
+     "outcome": "open",
+     "kind": "variant",
+     "where": "MPSS.Fundamental (STEP, FL-wf, FL-sub), MPSS.Conj8Ranked (conj-8ʷᶜ); MPSS/CONJ8.md §17–18; MPSS/conj8-id-unranked.py",
+     "because": "A rank induction on the conjecture fails because the conjecture is used on the way at pairs of unrelated rank; a predicate defined by recursion on the rank can be used at any rank.",
+     "why": "The argument closes: the fundamental lemma typechecks and gives Conj-8ʷᶜ. Its hypothesis is false in full MPSS, and the order behind Ranked is too strong — id ▷ id (T T) ▷ T ▷ T T ▷ T — so this is not yet a theorem about a calculus. Owed: kinded judgements, Good by recursion on the kind.",
+     "change": "conj8-fundamental"
     }
    ],
    "status": "refuted",
@@ -1036,6 +1045,51 @@
      "because": "FunLift and FOpLift over spines cannot be called recursively: a chain of whole applied terms cannot be taken apart into steps at a stack. The push in stack form can.",
      "why": "conj8-from-obligation : Obligation → Conj-8. The annotation of a plain derivation is structural and carries the side condition down unchanged; an abstraction already entered under an operand needs nothing (FOpLift disappears); the obligation is Conjecture 8 at the pair (operand, annotation) in stack form, which is what an induction on the rank of the annotation needs.",
      "change": "conj8-narrowing-agda"
+    }
+   ]
+  },
+  "8h": {
+   "name": "type safety over WfCtx, from Conjecture 8 over WfCtx",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Lemmas 7 and 6 and Theorem 5 with WfCtx Γ as a premise, from Conj-8ʷᶜ: the premise threads through Lemma 7's induction, whose Wf-Fun case extends the context by a substituted annotation that the induction hypothesis shows well-formed.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.WfCtxSafety",
+     "because": "The refutation of Conjecture 8 needs an ill-formed annotation; the question was whether the paper's chain of proofs survives the premise that excludes it.",
+     "why": "It does, with no separate lemma that substitution preserves WfCtx.",
+     "change": "wfctx-safety"
+    }
+   ]
+  },
+  "8i": {
+   "name": "the fundamental lemma, if every well-formed term is ranked",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "Under a good substitution the spine of a promotion's source is good at the spine of its target (STEP, by induction on the promotion); a well-subtyping derivation gives goodness under every good substitution, and a well-formedness derivation has a well-formed image (FL-sub, FL-wf, by induction on derivations).",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.Fundamental, over MPSS.Morphism, MPSS.GoodAt, MPSS.GoodSubst, MPSS.ReducibleMore",
+     "because": "Tait's form is what lets the abstraction case go through a β-step with the body under the substitution extended by the operand.",
+     "why": "Typechecks under --safe, termination included. It is a lemma under a module parameter — every well-formed term is ranked — that is false in full MPSS; see Conjecture 8's log.",
+     "change": "conj8-fundamental"
+    }
+   ]
+  },
+  "8j": {
+   "name": "Conjecture 8 over WfCtx, if every well-formed term is ranked",
+   "defect": "",
+   "attempts": [
+    {
+     "what": "By induction on the covariant context: the hole by the fundamental lemma at the identity substitution (good because the annotations are well-formed), an operand by application of a good term to a good operand, an abstraction by FunCongr and the fundamental lemma again.",
+     "outcome": "proved",
+     "kind": "original",
+     "where": "MPSS.Conj8Ranked (conj-8ʷᶜ, lemma-6ʷᶜ, theorem-5ʷᶜ)",
+     "because": "The fundamental lemma makes every well-subtyping derivation good, and goodness is Conjecture 8 for spines made hereditary.",
+     "why": "Follows in a few lines. The module parameter is false in full MPSS, so this does not settle Conj-8ʷᶜ.",
+     "change": "conj8-fundamental"
     }
    ]
   }
@@ -2102,6 +2156,12 @@
    "when": "2026-09-19",
    "title": "Lemmas 7, 6 and Theorem 5 over contexts with well-formed annotations",
    "summary": "MPSS.WfCtxSafety carries the paper's chain Conjecture 8 ⇒ Lemma 9 ⇒ Lemma 7 ⇒ Lemma 6 ⇒ Theorem 5 over to the statements with WfCtx Γ as a premise. The premise is threaded through Lemma 7's induction (the Wf-Fun case extends the context by a substituted annotation that the induction hypothesis shows well-formed), so type safety over such contexts rests on Conj-8ʷᶜ alone."
+  },
+  {
+   "id": "conj8-fundamental",
+   "when": "2026-09-19",
+   "title": "The reducibility argument for Conjecture 8 closes, under a hypothesis that is false in full MPSS",
+   "summary": "MPSS.ReducibleMore, Morphism, GoodAt, GoodSubst, Fundamental, Conj8Ranked: substitutions as lists of single substitutions, good substitutions, the promotion lemma and the fundamental lemma, and from them Conj-8ʷᶜ, Lem-6ʷᶜ and preservation — under the module parameter that every well-formed term is ranked. The parameter is false in full MPSS, and Ranked as defined is too strong (λx≤⊤.x is not ranked, since the order ranges over every operand, T T included). A theorem about a calculus needs kinded judgements, with Good defined by recursion on the kind (CONJ8.md §18)."
   }
  ]
 }

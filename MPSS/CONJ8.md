@@ -685,3 +685,47 @@ relativized to a class closed under what the proof uses; the places the paramete
 the list of closure properties. A class that should satisfy them: terms whose erasure is simply
 kinded (`⊤` at every kind, `x ≤ t` at the kind of `t`), which excludes `T T` and is preserved by
 substitution and by both reductions.
+
+## 18. The reducibility argument closes; `Ranked`, as defined, is too strong — 2026-09-19
+
+**Mechanized.** `MPSS/ReducibleMore`, `MPSS/Morphism`, `MPSS/GoodAt`, `MPSS/GoodSubst`,
+`MPSS/Fundamental`, `MPSS/Conj8Ranked`, all `--safe`, as designed in §17:
+
+- `STEP` (the promotion lemma) and `FL-wf`/`FL-sub` (the fundamental lemma) typecheck, termination
+  included. `img ∘ FL-wf` is Lemma 7 for good substitutions with no appeal to Conjecture 8.
+- `conj-8ʷᶜ : Conj-8ʷᶜ`, and through `MPSS/WfCtxSafety`, `Lem-6ʷᶜ` and `Preservationʷᶜ` — under
+  the module parameter `rk : ∀ Γ T. Γ ⊢ T wf → Ranked Γ T`.
+
+So the part that was in doubt — whether a reducibility argument closes, given that the conjecture
+is used on the way at pairs of unrelated rank — is settled: it does. `rk` is false in full MPSS,
+so this is a statement about the argument and not yet a theorem about a calculus.
+
+**`Ranked` is too strong, not only at `T`.** The order `▷ᵈ` lets a target step to itself applied
+to *any* operand that makes the application well-formed. With `T = λy≤⊤.λx≤y.y` and
+`id = λx≤⊤.x`: `id (T T)` is well-formed, `id (T T) ≤*wf λx≤T.⊤`, and `(id (T T)) T` is
+well-formed (`MPSS/conj8-id-unranked.py`, by the probe's checker — not mechanized). So
+
+    id  ▷  id (T T)  ▷  T  ▷  T T  ▷  T  ▷  …
+
+and `id` is not `Ranked`. The same goes for every abstraction whose bound admits `T T`. The
+variant of §16 ("targets accessible in the domain order") therefore covers very little of full
+MPSS, and relativizing `rk` to a class of *targets* cannot work: the order itself has to range
+over operands of the class only.
+
+**What a theorem about a calculus needs.** A sub-calculus whose derivations mention only terms of
+a stratified class — simply-kinded terms are the candidate: `⊤` at every kind, a name at the kind
+the context assigns it, `λx≤t.u : κ₁ → κ₂` with `t : κ₁`. Two observations from the mechanized
+argument shape it:
+
+- With kinds, `Good` is defined by recursion on the **kind** (Tait's definition), not on an
+  accessibility proof. The kind is only the measure: neither term needs to be kinded for the
+  definition to make sense, `⊤` is a target at every kind, and `rk`, `good-irr` and the order
+  disappear. The six modules carry over with a kind where they have an accessibility proof.
+- Kinding of the *terms* of a statement is not enough: `Wf-App` quantifies existentially over the
+  domain `d`, and a well-formed derivation of a kinded term can pass through an unkinded `d` that
+  is equivalent to a kinded one (`d = (λy≤⊤.⊤)(T T)`). The fundamental lemma recurses on every
+  derivation it meets, so the judgements themselves have to be the kinded ones (`wfᴷ`, `≤*wfᴷ`:
+  every term mentioned is kinded), with subject reduction for kinding under `⟶ᵉ` and `⟶ˢ`. The
+  theorem is then type safety of kinded MPSS.
+
+Which stratification is wanted — simple kinds, or levels on `⊤` — is a choice about the calculus.

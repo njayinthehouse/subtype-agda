@@ -250,3 +250,16 @@ from `Conj-8`, a false hypothesis.
 `CONJ8.md` §8–14 record what a proof there cannot be (depth measure, narrowing, rank induction —
 the domain order cycles at the type of the polymorphic identity) and what a counterexample there
 needs (a well-formed term behaving as `R`).
+
+## 2026-09-19 — type safety over `WfCtx` from `Conj-8ʷᶜ`; the reducibility argument closes
+
+- `MPSS/WfCtxSafety`: Lemmas 7 and 6 and Theorem 5 over contexts with well-formed annotations,
+  from `Conj-8ʷᶜ` alone. Type safety over `WfCtx` now rests on exactly that statement.
+- `MPSS/ReducibleMore`, `Morphism`, `GoodAt`, `GoodSubst`, `Fundamental`, `Conj8Ranked`: the
+  fundamental lemma of the reducibility argument, and from it `Conj-8ʷᶜ`, `Lem-6ʷᶜ`,
+  `Preservationʷᶜ` — under the module parameter that every well-formed term is ranked.
+- That parameter is false in full MPSS, and `Ranked` as defined is too strong: `λx≤⊤.x` is not
+  ranked, because the order ranges over every operand (`id ▷ id (T T) ▷ T ▷ T T ▷ T`; checked by
+  `conj8-id-unranked.py`, not mechanized). `Conj-8ʷᶜ` is still open.
+- Owed for a theorem about a calculus: kinded judgements, `Good` by recursion on the kind, the
+  six modules carried over (`CONJ8.md` §18). Which stratification is the user's choice.

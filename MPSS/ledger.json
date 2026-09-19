@@ -5,7 +5,7 @@
   "headline": "MPSS Proof Ledger",
   "standfirst": "",
   "footer": [
-   "118 modules"
+   "124 modules"
   ]
  },
  "nodes": [
@@ -377,6 +377,33 @@
    "module": "MPSS.Conj8FromLeaves",
    "defect": "",
    "origin": "development"
+  },
+  {
+   "id": "8h",
+   "ref": "Lemma 8h",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.WfCtxSafety",
+   "defect": "",
+   "origin": "development"
+  },
+  {
+   "id": "8i",
+   "ref": "Lemma 8i",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.Fundamental",
+   "defect": "",
+   "origin": "development"
+  },
+  {
+   "id": "8j",
+   "ref": "Lemma 8j",
+   "name": "",
+   "status": "proved",
+   "module": "MPSS.Conj8Ranked",
+   "defect": "",
+   "origin": "development"
   }
  ],
  "deps": {
@@ -403,7 +430,8 @@
   "5": [
    "6",
    "12",
-   "27"
+   "27",
+   "8h"
   ],
   "6": [
    "7",
@@ -413,14 +441,16 @@
    "16",
    "17",
    "23",
-   "27"
+   "27",
+   "8h"
   ],
   "7": [
    "9",
    "12",
    "19",
    "28",
-   "31"
+   "31",
+   "8h"
   ],
   "8": [
    "4",
@@ -430,7 +460,9 @@
    "8d",
    "8e",
    "8f",
-   "8g"
+   "8g",
+   "8i",
+   "8j"
   ],
   "9": [
    "8",
@@ -501,6 +533,16 @@
   ],
   "8f": [
    "29"
+  ],
+  "8h": [
+   "10",
+   "15",
+   "16",
+   "27"
+  ],
+  "8i": [
+   "19",
+   "8a"
   ]
  },
  "detail": {
@@ -4280,6 +4322,121 @@
      "decl": "Obligation : Set₁\nObligation = NewLeaf 𝒲 w-app w-fop w-fun"
     }
    ]
+  },
+  "8h": {
+   "module": "MPSS.WfCtxSafety",
+   "account": "",
+   "sig": "  Lem-7ʷ : ∀ (Δ : Ctx) {u} → WfCtx (Sub Δ) → Old Δ ⊢ u wf → Sub Δ ⊢ (u [ x := α ]) wf\n\n  lem-6ʷᶜ : Lem-6ʷᶜ\n\n  preservationʷᶜ : Preservationʷᶜ",
+   "paper": [],
+   "faults": [],
+   "hyps": [
+    "Conj-8ʷᶜ"
+   ],
+   "types": [
+    {
+     "name": "_⊢_wf",
+     "display": "Γ ⊢ t wf",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_wf       : Ctx → Tm → Set where\n\n  Wf-PrS : ∀ {Γ x t}\n         → Γ prevalid → x ≤ t ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-PrE : ∀ {Γ x α}\n         → Γ prevalid → x ≐ α ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-Top : ∀ {Γ}\n         → Γ prevalid\n         → Γ ⊢ Top wf\n\n  Wf-Fun : ∀ {Γ t u} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , sub , t) ∷ Γ) ⊢ (u ^ fvar x) wf)\n         → Γ ⊢ t wf\n         → Γ ⊢ lam t u wf\n\n  Wf-App : ∀ {Γ u v t}\n         → Γ ⊢ u ⊑*wf[ sub-m ] lam t Top\n         → Γ ⊢ v ⊑*wf[ sub-m ] t\n         → Γ ⊢ app u v wf"
+    },
+    {
+     "name": "WfCtx",
+     "display": "WfCtx",
+     "module": "MPSS.WfCtx",
+     "decl": "data WfCtx : Ctx → Set where\n  wc-nil : WfCtx []\n  wc-sub : ∀ {Γ x t} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ t wf → WfCtx ((x , sub , t) ∷ Γ)\n  wc-eqv : ∀ {Γ x α} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ α wf → WfCtx ((x , eqv , α) ∷ Γ)"
+    },
+    {
+     "name": "Ctx",
+     "display": "Ctx",
+     "module": "MPSS.Context",
+     "decl": "Ctx : Set\nCtx = List (Name × Ann × Tm)"
+    }
+   ]
+  },
+  "8i": {
+   "module": "MPSS.Fundamental",
+   "account": "",
+   "sig": "STEP : ∀ {Γᵉ Γˢ s p p′ θ Γ′}\n     → Γᵉ ∣ s ⊢ p ⟶ˢ p′\n     → (mᵉ : Γᵉ ⊢ θ ⇒ Γ′) (M : Mor Γˢ θ Γ′) → Link Γᵉ Γˢ\n     → SW Γˢ p → SW Γˢ p′\n     → Γ′ ⊢ app* (act θ p) (actS θ s) wf → Ops Γ′ (act θ p′) (actS θ s)\n     → G Γ′ (app* (act θ p) (actS θ s)) (app* (act θ p′) (actS θ s))\n\nFL-wf  : ∀ {Γ m} → Γ ⊢ m wf → SW Γ m\n\nFL-sub : ∀ {Γ a b} → Γ ⊢ a ≤*wf b → SW Γ a × Sem≤ Γ a b",
+   "paper": [],
+   "faults": [],
+   "hyps": [],
+   "types": [
+    {
+     "name": "_⊢_⊑*wf[_]_",
+     "display": "Γ ⊢ t ⊑*wf[ m ] t′",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_⊑*wf[_]_ : Ctx → Tm → Mode → Tm → Set where\n\n  Ws-Sub : ∀ {Γ v t m}\n         → Γ ⊢ v wf\n         → Γ ⊢ v ⊑wf[ m ] t\n         → Γ ⊢ t wf\n         → Γ ⊢ v ⊑*wf[ m ] t\n\n  Ws-Trs : ∀ {Γ v u t m}\n         → Γ ⊢ v ⊑*wf[ m ] u\n         → Γ ⊢ u wf\n         → Γ ⊢ u ⊑*wf[ m ] t\n         → Γ ⊢ v ⊑*wf[ m ] t"
+    },
+    {
+     "name": "_⊢_wf",
+     "display": "Γ ⊢ t wf",
+     "module": "MPSS.WellFormed",
+     "decl": "data _⊢_wf       : Ctx → Tm → Set where\n\n  Wf-PrS : ∀ {Γ x t}\n         → Γ prevalid → x ≤ t ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-PrE : ∀ {Γ x α}\n         → Γ prevalid → x ≐ α ∈ Γ\n         → Γ ⊢ fvar x wf\n\n  Wf-Top : ∀ {Γ}\n         → Γ prevalid\n         → Γ ⊢ Top wf\n\n  Wf-Fun : ∀ {Γ t u} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , sub , t) ∷ Γ) ⊢ (u ^ fvar x) wf)\n         → Γ ⊢ t wf\n         → Γ ⊢ lam t u wf\n\n  Wf-App : ∀ {Γ u v t}\n         → Γ ⊢ u ⊑*wf[ sub-m ] lam t Top\n         → Γ ⊢ v ⊑*wf[ sub-m ] t\n         → Γ ⊢ app u v wf"
+    },
+    {
+     "name": "Ctx",
+     "display": "Ctx",
+     "module": "MPSS.Context",
+     "decl": "Ctx : Set\nCtx = List (Name × Ann × Tm)"
+    },
+    {
+     "name": "Link",
+     "display": "Link",
+     "module": "MPSS.Fundamental",
+     "decl": "record Link (Γᵉ Γˢ : Ctx) : Set where\n  field\n    link≤   : ∀ {x t} → x ≤ t ∈ Γᵉ → x ≤ t ∈ Γˢ\n    linkdom : dom Γᵉ ⊑ dom Γˢ"
+    },
+    {
+     "name": "Ops",
+     "display": "Ops",
+     "module": "MPSS.GoodAt",
+     "decl": "data Ops (Γ : Ctx) : Tm → Stack → Set where\n  o-nil  : ∀ {H} → Γ ⊢ H wf → Ops Γ H []\n  o-cons : ∀ {H v d s} → Γ ⊢ H ≤*wf lam d Top → G Γ v d → Ops Γ (app H v) s → Ops Γ H (v ∷ s)"
+    },
+    {
+     "name": "Mor",
+     "display": "Mor",
+     "module": "MPSS.GoodSubst",
+     "decl": "record Mor (Γ : Ctx) (θ : Sub) (Γ′ : Ctx) : Set where\n  field\n    mor  : Γ ⊢ θ ⇒ Γ′\n    pvs  : Γ prevalid\n    subs : ∀ {x t} → x ≤ t ∈ Γ → G Γ′ (act θ (fvar x)) (act θ t)\n    eqvs : ∀ {x β} → x ≐ β ∈ Γ → Γ′ ⊢ act θ (fvar x) wf\n\n  pvt : Γ′ prevalid\n  pvt = prevalid-ctx (m-pv mor (Pv-Nil pvs))"
+    },
+    {
+     "name": "SW",
+     "display": "SW",
+     "module": "MPSS.GoodSubst",
+     "decl": "data SW (Γ : Ctx) : Tm → Set where\n  sw-var : ∀ {x} → Γ ⊢ fvar x wf\n         → (∀ {θ Γ′} → Mor Γ θ Γ′ → Γ′ ⊢ act θ (fvar x) wf) → SW Γ (fvar x)\n  sw-top : Γ prevalid → SW Γ Top\n  sw-lam : ∀ {t u} (L : List Name) → SW Γ t\n         → (∀ {z} → z ∉ L → SW ((z , sub , t) ∷ Γ) (u ^ fvar z)) → SW Γ (lam t u)\n  sw-app : ∀ {f v d} → Γ ⊢ app f v wf → SW Γ f → SW Γ v\n         → Sem≤ Γ f (lam d Top) → Sem≤ Γ v d → SW Γ (app f v)"
+    },
+    {
+     "name": "_⊢_⇒_",
+     "display": "Γ ⊢ s ⇒ Γ′",
+     "module": "MPSS.Morphism",
+     "decl": "data _⊢_⇒_ : Ctx → Sub → Ctx → Set where\n\n  m-id  : ∀ {Γ} → Γ ⊢ [] ⇒ Γ\n\n  m-sub : ∀ (Δ : Ctx) {Γ x t α θ Γ′}\n        → LC α → fv α ⊑ dom Γ\n        → (substCtx x α Δ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ (x , sub , t) ∷ Γ) ⊢ (x , α) ∷ θ ⇒ Γ′\n\n  m-eqv : ∀ (Δ : Ctx) {Γ x α θ Γ′}\n        → LC α → fv α ⊑ dom Γ\n        → (substCtx x α Δ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ (x , eqv , α) ∷ Γ) ⊢ (x , α) ∷ θ ⇒ Γ′\n\n  m-wk  : ∀ (Δ Θ : Ctx) {Γ θ Γ′}\n        → (Δ ++ Θ ++ Γ) prevalid\n        → (Δ ++ Θ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ Γ) ⊢ θ ⇒ Γ′"
+    },
+    {
+     "name": "_∣_⊢_⟶ˢ_",
+     "display": "Γ ∣ s ⊢ t ⟶ˢ t′",
+     "module": "MPSS.Reduction",
+     "decl": "data _∣_⊢_⟶ˢ_ : Ctx → Stack → Tm → Tm → Set where\n\n  Ms-Pro : ∀ {Γ s x t}\n         → Γ ∣ s prevalid\n         → x ≤ t ∈ Γ\n         → Γ ∣ s ⊢ fvar x ⟶ˢ t\n\n  Ms-Top : ∀ {Γ s u}\n         → Γ ∣ s prevalid\n         → Γ ∣ s ⊢ u ⟶ˢ Top\n\n  Ms-Equ : ∀ {Γ s u v}\n         → Γ ∣ s prevalid\n         → Γ ∣ s ⊢ u ⟶ᵉ v\n         → Γ ∣ s ⊢ u ⟶ˢ v\n\n  Ms-App : ∀ {Γ s u u' v}\n         → Γ ∣ (v ∷ s) ⊢ u ⟶ˢ u'\n         → Γ ∣ s ⊢ app u v ⟶ˢ app u' v\n\n  Ms-Fun : ∀ {Γ t u u'} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , sub , t) ∷ Γ) ∣ [] ⊢ (u ^ fvar x) ⟶ˢ (u' ^ fvar x))\n         → Γ ∣ [] ⊢ lam t u ⟶ˢ lam t u'\n\n  Ms-FOp : ∀ {Γ s α t u u'} (L : List Name)\n         → (∀ {x} → x ∉ L → ((x , eqv , α) ∷ Γ) ∣ s ⊢ (u ^ fvar x) ⟶ˢ (u' ^ fvar x))\n         → Γ ∣ (α ∷ s) ⊢ lam t u ⟶ˢ lam t u'"
+    },
+    {
+     "name": "_prevalid",
+     "display": "Γ prevalid",
+     "module": "MPSS.Context",
+     "decl": "data _prevalid : Ctx → Set where\n\n  Pv-Emp : [] prevalid\n\n  Pv-Ctx : ∀ {Γ x t}\n         → Γ prevalid → x ∉ dom Γ → LC t → fv t ⊑ dom Γ\n         → ((x , sub , t) ∷ Γ) prevalid\n\n  Pv-EqA : ∀ {Γ x α}\n         → Γ prevalid → x ∉ dom Γ → LC α → fv α ⊑ dom Γ\n         → ((x , eqv , α) ∷ Γ) prevalid"
+    },
+    {
+     "name": "Tm",
+     "display": "Tm",
+     "module": "PSS.Syntax",
+     "decl": "data Tm : Set where\n  bvar : ℕ    → Tm          -- bound variable, de Bruijn index\n  fvar : Name → Tm          -- free variable, named\n  Top  : Tm\n  lam  : Tm → Tm → Tm       -- λ _ ≤ annotation . body\n  app  : Tm → Tm → Tm"
+    }
+   ]
+  },
+  "8j": {
+   "module": "MPSS.Conj8Ranked",
+   "account": "",
+   "sig": "conj-8ʷᶜ : Conj-8ʷᶜ",
+   "paper": [],
+   "faults": [],
+   "hyps": [],
+   "types": []
   }
  },
  "types": [
@@ -4390,6 +4547,41 @@
    "decl": "data _∣_⊢[_]_◁_ (Γ : Ctx) (s : Stack) (P : Tm → Set) : Tm → Tm → Set where\n\n  c-refl : ∀ {a}\n         → Γ ∣ s prevalid\n         → Γ ∣ s ⊢[ P ] a ◁ a\n\n  c-lf1  : ∀ {a a′ c}\n         → Γ ∣ s ⊢ a ⟶ᵉ a′\n         → Γ ∣ s ⊢[ P ] a′ ◁ c\n         → Γ ∣ s ⊢[ P ] a ◁ c\n\n  c-lf2  : ∀ {a a′ c}\n         → P a\n         → Γ ∣ s ⊢ a ⟶ˢ a′\n         → P a′\n         → Γ ∣ s ⊢[ P ] a′ ◁ c\n         → Γ ∣ s ⊢[ P ] a ◁ c\n\n  c-rgh  : ∀ {a c c′}\n         → Γ ∣ s ⊢[ P ] a ◁ c′\n         → Γ ∣ s ⊢ c ⟶ᵉ c′\n         → Γ ∣ s ⊢[ P ] a ◁ c"
   },
   {
+   "id": "T:Link",
+   "name": "Link",
+   "display": "Link",
+   "module": "MPSS.Fundamental",
+   "decl": "record Link (Γᵉ Γˢ : Ctx) : Set where\n  field\n    link≤   : ∀ {x t} → x ≤ t ∈ Γᵉ → x ≤ t ∈ Γˢ\n    linkdom : dom Γᵉ ⊑ dom Γˢ"
+  },
+  {
+   "id": "T:Ops",
+   "name": "Ops",
+   "display": "Ops",
+   "module": "MPSS.GoodAt",
+   "decl": "data Ops (Γ : Ctx) : Tm → Stack → Set where\n  o-nil  : ∀ {H} → Γ ⊢ H wf → Ops Γ H []\n  o-cons : ∀ {H v d s} → Γ ⊢ H ≤*wf lam d Top → G Γ v d → Ops Γ (app H v) s → Ops Γ H (v ∷ s)"
+  },
+  {
+   "id": "T:Mor",
+   "name": "Mor",
+   "display": "Mor",
+   "module": "MPSS.GoodSubst",
+   "decl": "record Mor (Γ : Ctx) (θ : Sub) (Γ′ : Ctx) : Set where\n  field\n    mor  : Γ ⊢ θ ⇒ Γ′\n    pvs  : Γ prevalid\n    subs : ∀ {x t} → x ≤ t ∈ Γ → G Γ′ (act θ (fvar x)) (act θ t)\n    eqvs : ∀ {x β} → x ≐ β ∈ Γ → Γ′ ⊢ act θ (fvar x) wf\n\n  pvt : Γ′ prevalid\n  pvt = prevalid-ctx (m-pv mor (Pv-Nil pvs))"
+  },
+  {
+   "id": "T:SW",
+   "name": "SW",
+   "display": "SW",
+   "module": "MPSS.GoodSubst",
+   "decl": "data SW (Γ : Ctx) : Tm → Set where\n  sw-var : ∀ {x} → Γ ⊢ fvar x wf\n         → (∀ {θ Γ′} → Mor Γ θ Γ′ → Γ′ ⊢ act θ (fvar x) wf) → SW Γ (fvar x)\n  sw-top : Γ prevalid → SW Γ Top\n  sw-lam : ∀ {t u} (L : List Name) → SW Γ t\n         → (∀ {z} → z ∉ L → SW ((z , sub , t) ∷ Γ) (u ^ fvar z)) → SW Γ (lam t u)\n  sw-app : ∀ {f v d} → Γ ⊢ app f v wf → SW Γ f → SW Γ v\n         → Sem≤ Γ f (lam d Top) → Sem≤ Γ v d → SW Γ (app f v)"
+  },
+  {
+   "id": "T:_⊢_⇒_",
+   "name": "_⊢_⇒_",
+   "display": "Γ ⊢ s ⇒ Γ′",
+   "module": "MPSS.Morphism",
+   "decl": "data _⊢_⇒_ : Ctx → Sub → Ctx → Set where\n\n  m-id  : ∀ {Γ} → Γ ⊢ [] ⇒ Γ\n\n  m-sub : ∀ (Δ : Ctx) {Γ x t α θ Γ′}\n        → LC α → fv α ⊑ dom Γ\n        → (substCtx x α Δ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ (x , sub , t) ∷ Γ) ⊢ (x , α) ∷ θ ⇒ Γ′\n\n  m-eqv : ∀ (Δ : Ctx) {Γ x α θ Γ′}\n        → LC α → fv α ⊑ dom Γ\n        → (substCtx x α Δ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ (x , eqv , α) ∷ Γ) ⊢ (x , α) ∷ θ ⇒ Γ′\n\n  m-wk  : ∀ (Δ Θ : Ctx) {Γ θ Γ′}\n        → (Δ ++ Θ ++ Γ) prevalid\n        → (Δ ++ Θ ++ Γ) ⊢ θ ⇒ Γ′\n        → (Δ ++ Γ) ⊢ θ ⇒ Γ′"
+  },
+  {
    "id": "T:_⊢_⟶ᵉ*wf_",
    "name": "_⊢_⟶ᵉ*wf_",
    "display": "Γ ⊢ t ⟶ᵉ*wf t′",
@@ -4490,6 +4682,13 @@
    "decl": "data _⊢_⊑wf[_]_  : Ctx → Tm → Mode → Tm → Set where\n\n  Ws-Rfl : ∀ {Γ t m}\n         → Γ prevalid\n         → Γ ⊢ t ⊑wf[ m ] t\n\n  Ws-Lf1 : ∀ {Γ v v' t m}\n         → Γ ∣ [] ⊢ v ⟶ᵉ v'\n         → Γ ⊢ v' ⊑wf[ m ] t\n         → Γ ⊢ v  ⊑wf[ m ] t\n\n  Ws-Lf2 : ∀ {Γ v v' t}\n         → Γ ⊢ v wf\n         → Γ ∣ [] ⊢ v ⟶ˢ v'\n         → Γ ⊢ v' wf\n         → Γ ⊢ v' ⊑wf[ sub-m ] t\n         → Γ ⊢ v  ⊑wf[ sub-m ] t\n\n  Ws-Rgh : ∀ {Γ v t t' m}\n         → Γ ⊢ v ⊑wf[ m ] t'\n         → Γ ∣ [] ⊢ t ⟶ᵉ t'\n         → Γ ⊢ v ⊑wf[ m ] t"
   },
   {
+   "id": "T:WfCtx",
+   "name": "WfCtx",
+   "display": "WfCtx",
+   "module": "MPSS.WfCtx",
+   "decl": "data WfCtx : Ctx → Set where\n  wc-nil : WfCtx []\n  wc-sub : ∀ {Γ x t} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ t wf → WfCtx ((x , sub , t) ∷ Γ)\n  wc-eqv : ∀ {Γ x α} → WfCtx Γ → x ∉ dom Γ → Γ ⊢ α wf → WfCtx ((x , eqv , α) ∷ Γ)"
+  },
+  {
    "id": "T:NF",
    "name": "NF",
    "display": "NF",
@@ -4583,12 +4782,60 @@
    "body": "Wf Γ a = Γ ⊢ a wf\n"
   },
   {
+   "id": "F:G",
+   "name": "G",
+   "display": "G",
+   "module": "MPSS.GoodAt",
+   "sig": "G : Ctx → Tm → Tm → Set",
+   "body": "G Γ m T = Σ (Γ ⊢ T wf) (λ w → Good (rk w) m)\n"
+  },
+  {
+   "id": "F:app*",
+   "name": "app*",
+   "display": "app*",
+   "module": "MPSS.GoodAt",
+   "sig": "app* : Tm → Stack → Tm",
+   "body": "app* u []      = u\napp* u (v ∷ s) = app* (app u v) s\n"
+  },
+  {
+   "id": "F:Sem≤",
+   "name": "Sem≤",
+   "display": "Sem≤",
+   "module": "MPSS.GoodSubst",
+   "sig": "Sem≤ : Ctx → Tm → Tm → Set",
+   "body": "Sem≤ Γ a b = ∀ {θ Γ′} → Mor Γ θ Γ′ → G Γ′ (act θ a) (act θ b)\n\ndata SW (Γ : Ctx) : Tm → Set where\n  sw-var : ∀ {x} → Γ ⊢ fvar x wf\n         → (∀ {θ Γ′} → Mor Γ θ Γ′ → Γ′ ⊢ act θ (fvar x) wf) → SW Γ (fvar x)\n  sw-top : Γ prevalid → SW Γ Top\n  sw-lam : ∀ {t u} (L : List Name) → SW Γ t\n         → (∀ {z} → z ∉ L → SW ((z , sub , t) ∷ Γ) (u ^ fvar z)) → SW Γ (lam t u)\n  sw-app : ∀ {f v d} → Γ ⊢ app f v wf → SW Γ f → SW Γ v\n         → Sem≤ Γ f (lam d Top) → Sem≤ Γ v d → SW Γ (app f v)\n"
+  },
+  {
+   "id": "F:act",
+   "name": "act",
+   "display": "act",
+   "module": "MPSS.Morphism",
+   "sig": "act : Sub → Tm → Tm",
+   "body": "act []            u = u\nact ((x , α) ∷ θ) u = act θ (u [ x := α ])\n"
+  },
+  {
+   "id": "F:actS",
+   "name": "actS",
+   "display": "actS",
+   "module": "MPSS.Morphism",
+   "sig": "actS : Sub → Stack → Stack",
+   "body": "actS []            s = s\nactS ((x , α) ∷ θ) s = actS θ (substStack x α s)\n"
+  },
+  {
    "id": "F:EStep",
    "name": "EStep",
    "display": "EStep",
    "module": "MPSS.Narrowing24",
    "sig": "EStep : Tm → Tm → Ctx → Set",
    "body": "EStep t t′ Γ′ = Γ′ ∣ [] ⊢ t ⟶ᵉ t′\n"
+  },
+  {
+   "id": "F:Good",
+   "name": "Good",
+   "display": "Good",
+   "module": "MPSS.Reducible",
+   "sig": "Good : ∀ {p : Ctx × Tm} → Acc _◁ᵈ_ p → Tm → Set",
+   "body": "Good {Γ , T} (acc rs) m =\n    (Γ ⊢ m wf)\n  × (Γ ⊢ m ≤*wf T)\n  × (∀ (Δ : Ctx) {v d}\n       (w : (Δ ++ Γ) ⊢ app T v wf) (e : (Δ ++ Γ) ⊢ T ≤*wf lam d Top)\n     → Good (rs (▷-dom Δ w e)) v\n     → ((Δ ++ Γ) ⊢ app m v ≤*wf app T v) × Good (rs (▷-app Δ w)) (app m v))\n"
   },
   {
    "id": "F:substCtx",
@@ -4629,6 +4876,22 @@
    "module": "MPSS.Subtyping",
    "sig": "_∣_⊢_≤_ : Ctx → Stack → Tm → Tm → Set",
    "body": "Γ ∣ s ⊢ v ≤ t = Γ ∣ s ⊢ v ⊲[ sub-m ] t\n"
+  },
+  {
+   "id": "F:rs",
+   "name": "rs",
+   "display": "rs",
+   "module": "MPSS.VariantMeasure",
+   "sig": "rs : Ctx → List Name → ℕ",
+   "body": "rs []                N = 0\nrs ((y , _ , w) ∷ Γ) N with y ∈? N\n... | yes _ = tsize w + rs Γ (fv w ++ N)\n... | no  _ = rs Γ N\n"
+  },
+  {
+   "id": "F:tsize",
+   "name": "tsize",
+   "display": "tsize",
+   "module": "MPSS.VariantMeasure",
+   "sig": "tsize : Tm → ℕ",
+   "body": "tsize (bvar _)  = 1\ntsize (fvar _)  = 1\ntsize Top       = 1\ntsize (lam t u) = 1 + tsize t + tsize u\ntsize (app u v) = 1 + tsize u + tsize v\n"
   },
   {
    "id": "F:_⊢_≤*wf_",
@@ -4983,6 +5246,30 @@
   "8g": [
    "T:Obligation"
   ],
+  "8h": [
+   "T:Ctx",
+   "T:WfCtx",
+   "T:_⊢_wf"
+  ],
+  "8i": [
+   "F:G",
+   "F:Sem≤",
+   "F:_⊢_≤*wf_",
+   "F:act",
+   "F:actS",
+   "F:app*",
+   "T:Ctx",
+   "T:Link",
+   "T:Mor",
+   "T:Ops",
+   "T:SW",
+   "T:Tm",
+   "T:_prevalid",
+   "T:_∣_⊢_⟶ˢ_",
+   "T:_⊢_wf",
+   "T:_⊢_⇒_",
+   "T:_⊢_⊑*wf[_]_"
+  ],
   "T:_∣_↣_∣_": [
    "T:Ctx",
    "T:Stack",
@@ -5199,6 +5486,57 @@
    "T:Tm",
    "T:_⊢_wf"
   ],
+  "T:WfCtx": [
+   "F:dom",
+   "T:Ctx",
+   "T:_⊢_wf"
+  ],
+  "T:Link": [
+   "F:_≤_∈_",
+   "F:_⊑_",
+   "F:dom",
+   "T:Ctx"
+  ],
+  "T:Ops": [
+   "F:G",
+   "F:_⊢_≤*wf_",
+   "T:Ctx",
+   "T:Stack",
+   "T:Tm",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
+  ],
+  "T:Mor": [
+   "F:G",
+   "F:_≐_∈_",
+   "F:_≤_∈_",
+   "F:act",
+   "T:Ctx",
+   "T:_prevalid",
+   "T:_⊢_wf",
+   "T:_⊢_⇒_",
+   "T:_⊢_⊑*wf[_]_"
+  ],
+  "T:_⊢_⇒_": [
+   "F:_⊑_",
+   "F:dom",
+   "F:fv",
+   "F:substCtx",
+   "T:Ctx",
+   "T:LC",
+   "T:_prevalid"
+  ],
+  "T:SW": [
+   "F:Sem≤",
+   "F:_^_",
+   "F:act",
+   "T:Ctx",
+   "T:Mor",
+   "T:Tm",
+   "T:_prevalid",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
+  ],
   "F:plug": [
    "T:CoCtx",
    "T:CoLC",
@@ -5276,6 +5614,52 @@
    "T:_⊢_wf",
    "T:_⊢_⊑*wf[_]_"
   ],
+  "F:G": [
+   "F:Good",
+   "T:Ctx",
+   "T:Tm",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
+  ],
+  "F:Good": [
+   "F:_⊢_≤*wf_",
+   "F:rs",
+   "T:Ctx",
+   "T:Tm",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
+  ],
+  "F:rs": [
+   "F:fv",
+   "F:tsize",
+   "T:Ctx"
+  ],
+  "F:tsize": [
+   "T:Tm"
+  ],
+  "F:app*": [
+   "T:Stack",
+   "T:Tm"
+  ],
+  "F:Sem≤": [
+   "F:G",
+   "F:_^_",
+   "F:act",
+   "T:Ctx",
+   "T:Mor",
+   "T:SW",
+   "T:Tm",
+   "T:_prevalid",
+   "T:_⊢_wf",
+   "T:_⊢_⊑*wf[_]_"
+  ],
+  "F:act": [
+   "T:Tm"
+  ],
+  "F:actS": [
+   "F:substStack",
+   "T:Stack"
+  ],
   "F:_≐_∈_": [
    "T:Ctx",
    "T:Tm"
@@ -5312,6 +5696,13 @@
    "members": [
     "T:NF",
     "T:Neutral"
+   ]
+  },
+  {
+   "id": "G:F:Sem≤+T:SW",
+   "members": [
+    "F:Sem≤",
+    "T:SW"
    ]
   }
  ]

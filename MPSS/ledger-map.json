@@ -160,6 +160,42 @@
    "supports": [
     "8"
    ]
+  },
+  {
+   "id": "8h",
+   "ref": "Lemma 8h",
+   "names": [
+    "Lem-7ʷ",
+    "lem-6ʷᶜ",
+    "preservationʷᶜ"
+   ],
+   "supports": [
+    "5",
+    "6",
+    "7"
+   ]
+  },
+  {
+   "id": "8i",
+   "ref": "Lemma 8i",
+   "names": [
+    "STEP",
+    "FL-wf",
+    "FL-sub"
+   ],
+   "supports": [
+    "8"
+   ]
+  },
+  {
+   "id": "8j",
+   "ref": "Lemma 8j",
+   "names": [
+    "conj-8ʷᶜ"
+   ],
+   "supports": [
+    "8"
+   ]
   }
  ]
 }
