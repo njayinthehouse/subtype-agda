@@ -1242,3 +1242,49 @@ a diverging subterm.
 - A — one rule of the machine: repairs the two counterexamples, but it is the promotion the paper
   removed, Lemma 1 and Theorem 3 fail for it (`CandidateA`), progress open (§26).
 - B — not probed; loses Theorem 3 as A does.
+
+## 28. Does Figure 4 agree with the stack-reading judgement on strongly normalizing terms? — 2026-09-19
+
+**Question.** If `Γ ⊢ t wf` (Figure 4) and `t` is strongly normalizing, is `Γ ∣ [] ⊢ t wfˢ`? The
+two known terms Figure 4 accepts and `wfˢ` rejects (`t₆`, `(λz≤⊤.⊤) t₆`) contain a diverging
+subterm (§27).
+
+**Search** (`conj8-C-agree.py`; closed terms; Figure 4 by the goal-directed checker of §21, `wfˢ`
+by a goal-directed checker in substituted form — sound for rejection by `MPSS/StackWfSubst`, up
+to the checker's own incompleteness):
+
+| size | closed terms | Figure 4 | also `wfˢ` | `wfˢ` only | Figure 4 only | out of fuel |
+| --- | --- | --- | --- | --- | --- | --- |
+| 9 | 3,374 | 1,092 | 1,092 | 7 | 0 | 0 |
+| 11 | 58,222 | 14,067 | 14,067 | 170 | 0 | 0 |
+| 13 | 1,184,480 | 209,850 | 209,850 | 3,978 | 0 | 18 |
+
+No counterexample, normalizing or not, up to size 13.
+
+**What a proof has to show.** By induction on the Figure 4 derivation every case is immediate
+except the two where `wfˢ` reads an operand where Figure 4 reads a bound:
+
+- (L) *from the bound to the operand*: `x≤t,Γ ∣ s ⊢ B wfˢ` and `Γ ∣ [] ⊢ v ≤*wfˢ t` give
+  `x≡v,Γ ∣ s ⊢ B wfˢ`;
+- (D) *down a well-subtyping*: `Γ ∣ [] ⊢ v ≤*wfˢ t` and `Γ ∣ s ⊢ t wfˢ` give `Γ ∣ s ⊢ v wfˢ` and
+  `Γ ∣ s ⊢ v ≤ t` — Conjecture 8 for application contexts, in the stack-indexed form.
+
+(L) at an occurrence of `x` under a stack is (D); (D) at an abstraction `v = λz≤t′.b` meeting the
+operand `w` is (L) for `b` and `w` (Lemma 10 gives `w` below `t′`); (D) at a neutral `v = q r̄`
+passes to the bound of `q`. Both are false without a termination hypothesis (`t₆`). Each round of
+the recursion follows a β-step of the term (`(λz.b) w` to `b[w]`) or a promotion of a head
+variable to its bound, so the natural measure is the length of reductions by **β together with
+promotion** (`x ⟶ bound of x`), not β alone: `A_q r̄` is not a β-reduct of `q r̄`. So the statement
+to aim at:
+
+> if `Γ ⊢ t wf` and `t` is strongly normalizing for β and promotion in `Γ`, then `Γ ∣ [] ⊢ t wfˢ`.
+
+Whether strong normalization for β alone gives it for β with promotion, on Figure 4's terms, is a
+separate question. This is the recursion §19 found no *syntactic* measure for; the hypothesis
+supplies the measure. Consequence if proved: Figure 4's preservation fails only through a term
+that does not terminate, and MPSS as printed is type safe on its terminating fragment (by
+`type-safetyˢ`, since `wfˢ` is preserved and the reducts of a strongly normalizing term are).
+
+**Status.** Statement and plan only; nothing mechanized. First module to write: (D) and (L) by
+well-founded induction on the reduction relation, with `MPSS/MachineNarrow` and `MPSS/SubstEqvS`
+for the machine-relation parts.
