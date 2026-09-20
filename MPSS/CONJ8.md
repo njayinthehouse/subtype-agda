@@ -1315,3 +1315,49 @@ domain it meets — which is what `spine t s wfˢ` at the empty stack says.
 module parameters) are being written. `C8ˢ` itself is the open part: by well-founded induction
 on reduction by β together with promotion of a head variable, mutually (D) and (L), with
 `MPSS/MachineNarrow`, `MPSS/SubstEqvS` and `MPSS/Push` for the machine relation.
+
+## 30. `C8ˢ`: what is done around it, and the design of its proof — 2026-09-19
+
+**Done (`--safe`, nothing assumed beyond what is named).**
+
+- `MPSS/StackWfPromotion`: `⟶ᵉ-wfˢ` — `⟶ᵉ` preserves `wfˢ`, proved simultaneously with a context
+  reduction (`⟶ᵉ-wfˢ-↣`); `¬⟶ˢ-wfˢ` — promotion does **not** preserve `wfˢ`
+  (`(λx≤⊤.x) ⊤ ⟶ˢ ⊤ ⊤` by `Ms-App` over `Ms-Top`); the weaker `wf⁻` (nothing asked of a body under
+  `Ms-Fun`, nor of an annotation under `Ms-FOp`) is preserved by both, and gives `reach-lam-wfˢ`:
+  the abstraction a `wfˢ` term reaches has a `wfˢ` annotation.
+- `MPSS/Fig4ToStackWf`: weakening for `wfˢ`; **`fig4⇒wfˢ : WfCtxˢ Γ → SN Γ t → Γ ⊢ t wf →
+  Γ ∣ [] ⊢ t wfˢ`**, with module parameters `SN` (closed under immediate subterms) and `C8ˢ`.
+
+**Design for `C8ˢ`** (not started). Generalize over the spine. With `σ` a stack and `h` a head:
+
+> (S) if `Γ ∣ σ ⊢ h wfˢ`, `Γ ∣ [] ⊢ spine h σ ≤ λd.⊤` holds at `[a]`, `Γ ∣ [] ⊢ a ≤*wfˢ d`, and
+> `spine h σ a` terminates, then `Γ ∣ σ ++ [a] ⊢ h wfˢ`.
+
+`C8ˢ` is (S) at `σ = []` plus the machine relation at `[a]`. By induction on (the termination
+measure of the spine, then the size of `h`):
+
+- `h = g r`: invert `Wc-App` at `σ`; (S) for `g` at `r ∷ σ` — same spine, smaller head; rebuild
+  `Wc-App` at the longer stack with target `λd₁.⊤`, which needs the machine fact (M1) below.
+- `h = λy≤d₁.b`, `σ = r ∷ σ′`: (S) for `b` in the context `y ≡ r` — the spine took a β-step.
+- `h = λy≤A.b`, `σ = []`: the operand is `a` itself; `b` is known under `y ≤ A` and wanted under
+  `y ≡ a`: lemma (L) of §28, by induction on `b`'s derivation, whose `Wc-App` nodes with `y` at
+  the head come back to (S) for `a` at the stack found there (a β-step later in the measure).
+- `h` a variable: pass to its annotation — a promotion or an unfolding, which the measure must
+  count.
+- `h = ⊤`: excluded by Theorem 11 (`Thm-11ˢ`), since the spine is below an abstraction.
+
+Machine facts needed:
+
+- (M1) `Γ ∣ σ ⊢ g ≤ λd₁.c` gives `Γ ∣ σ ++ [a] ⊢ g ≤ λd₁.⊤`. Promotion is not monotone in the
+  stack (`MPSS/Diff`, `push-is-false`), but the failing rule is `Ms-Fun` promoting a parameter in
+  a body, and with the body of the target sent to `⊤` no such step is needed.
+- (M2) the machine relation from `y ≤ A` to `y ≡ a`: `MPSS/Push` (`⇒-push`), whose `Reach`
+  obligation is what (S) supplies.
+
+Termination: a relation on configurations containing β, unfolding of a `≡` entry and promotion
+of a head variable, with `Acc`; closure under subterms and under the binder cases (a body in the
+context `y ≡ r` against the reduct `b[r]`) is where the bookkeeping will be.
+
+This is the Conjecture 8 programme of §7–§13 again, with a measure supplied by hypothesis where
+§19 found none. It is several modules; the order to write them: (M1), the termination relation
+and its closure properties, (L) and (S) together.
