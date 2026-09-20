@@ -1288,3 +1288,30 @@ that does not terminate, and MPSS as printed is type safe on its terminating fra
 **Status.** Statement and plan only; nothing mechanized. First module to write: (D) and (L) by
 well-founded induction on the reduction relation, with `MPSS/MachineNarrow` and `MPSS/SubstEqvS`
 for the machine-relation parts.
+
+## 29. The proof of §28, laid out — 2026-09-19
+
+**Reduction to one statement.** By induction on the term, using the induction hypothesis on
+subterms only (termination is known for those), Figure 4 gives `wfˢ` provided, at `Wf-App` for
+`f a` with `f ≤*wf λd.⊤` and `a ≤*wf d`:
+
+1. `d` — not a subterm — can be replaced by an e-reduct `d′` that is `wfˢ` with `f ≤ λd′.⊤`
+   (the annotation of the abstraction `f` actually reaches); and
+2. **`C8ˢ`**: if `app f a` terminates, `Γ ∣ [] ⊢ f ≤*wfˢ λd.⊤` and `Γ ∣ [] ⊢ a ≤*wfˢ d`, then
+   `Γ ∣ [a] ⊢ f ≤*wfˢ λd.⊤`.
+
+`C8ˢ` is Conjecture 8 for one operand, in the stack-indexed judgement, on terminating terms. Its
+content is that `f` is `wfˢ` at `[a]`: for `f = u v₁` that asks `u` at `[v₁, a]`, and so on down
+the spine; for `f` an abstraction `λx≤A.b` it asks `b` under `x ≡ a` where Figure 4 gave it under
+`x ≤ A` — lemma (L) of §28, whose variable case is (D) of §28 at the stack where `x` occurs.
+
+Note `Wc-Top`: `⊤` is `wfˢ` at every stack (as in v1), so "`t` is `wfˢ` at `s`" does not say that
+`t` applied to `s` is safe; it is `Wc-App` that compares an operand with a domain. A statement of
+(D) therefore has to carry, beside `t wfˢ` at the longer stack, that each operand is below the
+domain it meets — which is what `spine t s wfˢ` at the empty stack says.
+
+**Modules.** `MPSS/StackWfPromotion` (the machine's reductions against `wfˢ`; item 1) and
+`MPSS/Fig4ToStackWf` (the induction, with `C8ˢ` and the closure of "terminates" under subterms as
+module parameters) are being written. `C8ˢ` itself is the open part: by well-founded induction
+on reduction by β together with promotion of a head variable, mutually (D) and (L), with
+`MPSS/MachineNarrow`, `MPSS/SubstEqvS` and `MPSS/Push` for the machine relation.
