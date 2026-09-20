@@ -1361,3 +1361,15 @@ context `y ≡ r` against the reduct `b[r]`) is where the bookkeeping will be.
 This is the Conjecture 8 programme of §7–§13 again, with a measure supplied by hypothesis where
 §19 found none. It is several modules; the order to write them: (M1), the termination relation
 and its closure properties, (L) and (S) together.
+
+### §30 — status: (M1) proved (2026-09-19)
+
+`MPSS/PushTop`: `push-top : LC g → Γ ∣ σ ⊢ g ≤ lam d c → Γ ∣ (σ ++ a ∷ r) prevalid →
+Γ ∣ (σ ++ a ∷ r) ⊢ g ≤ lam d Top`, for any context and any non-empty extension of the stack; only
+`LC g` is assumed. The proof is a simulation: a relation `R n u u°` — `u°` is `u` except that the
+body of an abstraction standing where the head path has used up `n` operands may be `⊤` — is
+carried through `⟶ᵉ` (`simᵉ`, one step to one step) and `⟶ˢ` (`simˢ`, one step to a chain;
+`Ms-Fun` becomes `Ms-FOp` over `Ms-Top`). `conj8-M1-probe.py` had found no failure in 1,558,592
+instances.
+
+Left for `C8ˢ`: the termination relation and its closure properties; (L) and (S).
