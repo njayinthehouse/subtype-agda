@@ -1,0 +1,97 @@
+# Typecheck every module, then build the proof ledger and publish it to GitHub Pages.
+# The ledger is deployed only from a tree that typechecks.
+name: typecheck and ledger
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AGDA_VERSION: 2.8.0
+  STDLIB_VERSION: "2.3"
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Agda ${{ env.AGDA_VERSION }}
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL "https://github.com/agda/agda/releases/download/v$AGDA_VERSION/Agda-v$AGDA_VERSION-linux.tar.xz" \
+            | tar -xJ -C "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install standard-library ${{ env.STDLIB_VERSION }}
+        run: |
+          mkdir -p "$HOME/agda-stdlib" "$HOME/.config/agda"
+          curl -sSfL "https://github.com/agda/agda-stdlib/archive/refs/tags/v$STDLIB_VERSION.tar.gz" \
+            | tar -xz --strip-components=1 -C "$HOME/agda-stdlib"
+          echo "$HOME/agda-stdlib/standard-library.agda-lib" > "$HOME/.config/agda/libraries"
+
+      # Interface files: the library's never change; ours are keyed on the sources, falling
+      # back to the latest set so an edit rechecks only what depends on it.
+      - uses: actions/cache@v4
+        with:
+          path: ~/agda-stdlib/_build
+          key: stdlib-${{ env.STDLIB_VERSION }}-agda-${{ env.AGDA_VERSION }}
+      - uses: actions/cache@v4
+        with:
+          path: _build
+          key: build-agda-${{ env.AGDA_VERSION }}-${{ hashFiles('**/*.lagda.md', '*.agda-lib') }}
+          restore-keys: build-agda-${{ env.AGDA_VERSION }}-
+
+      - name: Typecheck every module
+        run: |
+          {
+            echo 'module Everything where'
+            find MPSS PSS -name '*.lagda.md' | sort | sed 's/\.lagda\.md$//; s|/|.|g; s/^/import /'
+          } > Everything.agda
+          echo "checking $(grep -c '^import' Everything.agda) modules"
+          agda --version
+          agda Everything.agda +RTS -M6G -RTS
+
+  ledger:
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: njayinthehouse/proof-ledger
+          path: proof-ledger
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build the ledger
+        run: |
+          mkdir -p _site
+          python3 proof-ledger/assets/build.py build MPSS/ledger.json \
+            --annotations MPSS/ledger-annotations.json -o _site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs: ledger
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

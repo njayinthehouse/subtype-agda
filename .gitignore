@@ -1,2 +1,4 @@
 .search-logs/
 __pycache__/
+_build/
+/Everything.agda
